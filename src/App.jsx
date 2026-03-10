@@ -8,6 +8,7 @@ import HomePage from './pages/HomePage';
 import TiendaPage from './pages/TiendaPage';
 import DonacionPage from './pages/DonacionPage';
 import ContactanosPage from './pages/ContactanosPage';
+import ComunidadPage from './pages/ComunidadPage';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -37,6 +38,7 @@ export default function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/tienda" element={<TiendaPage />} />
           <Route path="/donacion" element={<DonacionPage />} />
+          <Route path="/comunidad" element={<ComunidadPage />} />
           <Route path="/contactanos" element={<ContactanosPage />} />
         </Routes>
         <Footer />
