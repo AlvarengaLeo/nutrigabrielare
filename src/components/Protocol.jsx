@@ -18,6 +18,10 @@ export default function Protocol() {
       const cards = gsap.utils.toArray('.protocol-card');
       
       cards.forEach((card, i) => {
+        const content = card.querySelector('.protocol-card-content');
+        const nextCard = cards[i + 1];
+
+        // Pin each card
         ScrollTrigger.create({
           trigger: card,
           start: 'top 20%',
@@ -25,18 +29,33 @@ export default function Protocol() {
           end: 'bottom bottom',
           pin: true,
           pinSpacing: false,
-          animation: gsap.to(card, {
-            scale: 0.95,
-            opacity: 0.5,
-            ease: 'none',
+        });
+
+        // When the NEXT card approaches, fade out this card's content first, then shrink the card
+        if (nextCard) {
+          // Fade content text out quickly
+          gsap.to(content, {
+            opacity: 0,
             scrollTrigger: {
-              trigger: cards[i + 1] || containerRef.current,
+              trigger: nextCard,
+              start: 'top 60%',
+              end: 'top 35%',
+              scrub: true,
+            },
+          });
+
+          // Scale and fade the card shell
+          gsap.to(card, {
+            scale: 0.93,
+            opacity: 0,
+            scrollTrigger: {
+              trigger: nextCard,
               start: 'top 40%',
               end: 'top 20%',
-              scrub: true
-            }
-          })
-        });
+              scrub: true,
+            },
+          });
+        }
       });
     }, containerRef);
     return () => ctx.revert();
@@ -58,7 +77,7 @@ export default function Protocol() {
               {/* Background Abstract Shape */}
               <div className="absolute -right-20 -top-20 w-64 h-64 bg-accent/5 rounded-full blur-3xl" />
               
-              <div className="relative z-10 flex flex-col md:flex-row gap-8 items-start md:items-center">
+              <div className="protocol-card-content relative z-10 flex flex-col md:flex-row gap-8 items-start md:items-center">
                 <div className="font-drama italic text-7xl md:text-[8rem] text-accent/20 leading-none">
                   {step.num}
                 </div>

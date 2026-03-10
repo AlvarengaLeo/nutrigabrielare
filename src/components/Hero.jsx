@@ -46,8 +46,12 @@ export default function Hero() {
           </h1>
           
           <div className="hero-element pt-6">
-            <a href="#conocenos" className="magnetic-btn inline-flex items-center justify-center px-8 py-4 rounded-full bg-primary text-background font-medium text-lg">
-              <span className="relative z-10">Conócenos</span>
+            <a
+              href="#pilares"
+              onClick={(e) => { e.preventDefault(); document.getElementById('pilares')?.scrollIntoView({ behavior: 'smooth' }); }}
+              className="magnetic-btn inline-flex items-center justify-center px-8 py-4 rounded-full bg-primary text-background font-medium text-lg"
+            >
+              <span className="relative z-10">Entrá a la historia</span>
             </a>
           </div>
         </div>

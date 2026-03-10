@@ -43,7 +43,7 @@ export default function Features() {
   }, []);
 
   return (
-    <section id="que-hacemos" ref={sectionRef} className="py-24 bg-[#F7F4EE] relative z-10 w-full overflow-hidden">
+    <section id="pilares" ref={sectionRef} className="py-24 bg-[#F7F4EE] relative z-10 w-full overflow-hidden">
       <div className="container mx-auto px-6 max-w-7xl">
         <div className="mb-16 md:mb-24 flex flex-col items-start max-w-2xl">
           <div className="inline-block px-3 py-1 mb-6 rounded-full border border-primary/20 text-xs font-semibold uppercase tracking-widest text-primary/70">
