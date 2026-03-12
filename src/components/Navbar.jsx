@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import CartIcon from './CartIcon';
 
 const navItems = [
   { label: 'Inicio', path: '/' },
@@ -39,7 +40,8 @@ export default function Navbar() {
         ))}
       </div>
 
-      <div className="hidden md:block">
+      <div className="hidden md:flex items-center gap-4">
+        <CartIcon />
         <Link to="/contactanos" className="magnetic-btn px-6 py-2.5 rounded-full bg-primary text-background font-medium text-sm flex items-center justify-center">
           <span className="relative z-10 transition-colors">Contáctanos</span>
         </Link>

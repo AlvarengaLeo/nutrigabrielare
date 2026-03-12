@@ -1,40 +1,21 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowUpRight } from 'lucide-react';
+import { CATEGORIES, getProductsByCategory } from '../data/products';
+import ProductCard from '../components/ProductCard';
 
 gsap.registerPlugin(ScrollTrigger);
-
-const categories = [
-  {
-    num: '01',
-    title: 'Ropa',
-    desc: 'Playeras, hoodies y piezas esenciales que representan quién sos.',
-    cta: 'Ver colección',
-    href: '#',
-  },
-  {
-    num: '02',
-    title: 'Accesorios',
-    desc: 'Gorras, tazas y detalles que cargan la identidad Majes.',
-    cta: 'Ver accesorios',
-    href: '#',
-  },
-  {
-    num: '03',
-    title: 'Edición Limitada',
-    desc: 'Piezas únicas con historia. Una vez se acaban, se acaban.',
-    cta: 'Ver edición',
-    href: '#',
-  },
-];
 
 export default function TiendaPage() {
   const heroRef = useRef(null);
   const gridRef = useRef(null);
   const closingRef = useRef(null);
+  const panelRef = useRef(null);
+  const [activeCategory, setActiveCategory] = useState(null);
 
+  // ── Initial entrance animations ──
   useEffect(() => {
     let ctx = gsap.context(() => {
       gsap.from('.tienda-hero-el', {
@@ -66,6 +47,49 @@ export default function TiendaPage() {
     return () => ctx.revert();
   }, []);
 
+  // ── Category selection animations ──
+  useEffect(() => {
+    if (activeCategory === null) {
+      gsap.to('.category-block', {
+        scale: 1,
+        opacity: 1,
+        duration: 0.5,
+        ease: 'power2.out',
+      });
+    } else {
+      CATEGORIES.forEach((_, i) => {
+        const el = document.querySelector(`.category-block-${i}`);
+        if (!el) return;
+        if (i === activeCategory) {
+          gsap.to(el, { scale: 1.02, opacity: 1, duration: 0.5, ease: 'power2.out' });
+        } else {
+          gsap.to(el, { scale: 0.97, opacity: 0.6, duration: 0.5, ease: 'power2.out' });
+        }
+      });
+
+      // Panel entrance
+      if (panelRef.current) {
+        gsap.fromTo(panelRef.current,
+          { opacity: 0, y: 30 },
+          { opacity: 1, y: 0, duration: 0.7, ease: 'power3.out', delay: 0.15 }
+        );
+        gsap.from('.product-card', {
+          y: 20,
+          opacity: 0,
+          stagger: 0.08,
+          duration: 0.5,
+          ease: 'power3.out',
+          delay: 0.3,
+        });
+      }
+
+      // Scroll panel into view
+      setTimeout(() => {
+        panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 50);
+    }
+  }, [activeCategory]);
+
   return (
     <>
       {/* ── Hero ── */}
@@ -87,8 +111,18 @@ export default function TiendaPage() {
       <section ref={gridRef} className="py-24 bg-[#F7F4EE] relative z-10 w-full overflow-hidden">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            {categories.map((cat) => (
-              <div key={cat.num} className="category-block group flex flex-col justify-between p-10 md:p-12 rounded-[2.5rem] bg-white border border-primary/5 hover:border-primary/10 transition-colors duration-500 min-h-[420px]">
+            {CATEGORIES.map((cat, index) => (
+              <div
+                key={cat.num}
+                onClick={() => setActiveCategory(activeCategory === index ? null : index)}
+                className={`category-block category-block-${index} group flex flex-col justify-between p-10 md:p-12 rounded-[2.5rem] bg-white border transition-all duration-500 min-h-[420px] cursor-pointer ${
+                  activeCategory === null
+                    ? 'border-primary/5 hover:border-primary/10'
+                    : activeCategory === index
+                      ? 'border-accent/30 shadow-lg'
+                      : 'opacity-60 border-primary/5'
+                }`}
+              >
                 <div>
                   <div className="font-drama italic text-2xl text-accent mb-6">{cat.num}</div>
                   <h3 className="font-heading font-bold text-3xl text-primary mb-4 tracking-tight">{cat.title}</h3>
@@ -96,17 +130,46 @@ export default function TiendaPage() {
                     {cat.desc}
                   </p>
                 </div>
-                <a
-                  href={cat.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center text-primary font-bold font-body group-hover:text-accent transition-colors w-fit"
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveCategory(activeCategory === index ? null : index);
+                  }}
+                  className="inline-flex items-center text-primary font-bold font-body group-hover:text-accent transition-colors w-fit cursor-pointer"
                 >
                   {cat.cta} <ArrowUpRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                </a>
+                </button>
               </div>
             ))}
           </div>
+
+          {/* ── Collection Panel ── */}
+          {activeCategory !== null && (
+            <div
+              key={activeCategory}
+              ref={panelRef}
+              className="rounded-[2.5rem] bg-white border border-primary/5 p-6 md:p-12 mt-12"
+            >
+              {/* Header */}
+              <div>
+                <div className="font-drama italic text-2xl text-accent">{CATEGORIES[activeCategory].num}</div>
+                <h3 className="font-heading font-bold text-3xl text-primary mt-2">{CATEGORIES[activeCategory].title}</h3>
+                <p className="font-body text-primary/60 mt-2">{CATEGORIES[activeCategory].tagline}</p>
+              </div>
+
+              {/* Accent divider */}
+              <div className="w-16 h-[2px] bg-accent rounded-full my-8" />
+
+              {/* Product grid */}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                {getProductsByCategory(CATEGORIES[activeCategory].id).map((product) => (
+                  <div key={product.id} className="product-card">
+                    <ProductCard product={product} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
