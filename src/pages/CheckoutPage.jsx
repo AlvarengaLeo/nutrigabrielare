@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { createOrder } from '../data/orders';
+import { createOrder } from '../services/orderService';
 
 export default function CheckoutPage() {
   const { items, subtotal, clearCart } = useCart();
@@ -18,6 +18,8 @@ export default function CheckoutPage() {
   const [department, setDepartment] = useState('');
   const [notes, setNotes] = useState('');
   const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   // Redirect if cart is empty
   useEffect(() => {
@@ -43,7 +45,7 @@ export default function CheckoutPage() {
   const shippingCost = 5.0;
   const total = subtotal + shippingCost;
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
 
     // Validate required fields
@@ -59,23 +61,32 @@ export default function CheckoutPage() {
     }
 
     setErrors({});
+    setSubmitting(true);
+    setSubmitError('');
 
-    const order = createOrder({
-      userId: user.id,
-      items,
-      contact: {
-        name: user.firstName + ' ' + user.lastName,
-        email: user.email,
-        phone,
-      },
-      shipping: { address, city, department, notes },
-      subtotal,
-      shippingCost,
-      total,
-    });
+    try {
+      const order = await createOrder({
+        userId: user.id,
+        items,
+        contact: {
+          name: user.firstName + ' ' + user.lastName,
+          email: user.email,
+          phone,
+        },
+        shipping: { address, city, department, notes },
+        subtotal,
+        shippingCost,
+        total,
+      });
 
-    clearCart();
-    navigate(`/gracias?order=${order.id}`);
+      clearCart();
+      navigate(`/gracias?order=${order.id}`);
+    } catch (err) {
+      setSubmitError('Error al crear la orden. Intentá de nuevo.');
+      console.error(err);
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (items.length === 0) return null;
@@ -244,11 +255,15 @@ export default function CheckoutPage() {
               </div>
 
               {/* Submit */}
+              {submitError && (
+                <p className="mt-4 text-sm text-red-500 font-body text-center">{submitError}</p>
+              )}
               <button
                 type="submit"
-                className="mt-6 bg-primary text-background w-full py-3.5 rounded-xl font-heading font-bold text-sm hover:opacity-90 transition-opacity"
+                disabled={submitting}
+                className={`mt-6 bg-primary text-background w-full py-3.5 rounded-xl font-heading font-bold text-sm transition-opacity ${submitting ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'}`}
               >
-                Pagar con Wompi →
+                {submitting ? 'Procesando...' : 'Pagar con Wompi →'}
               </button>
 
               <p className="text-xs text-primary/30 text-center mt-3 font-body">

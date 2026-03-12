@@ -13,6 +13,8 @@ export default function RegistroPage() {
   const [lastName, setLastName] = React.useState('');
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [submitting, setSubmitting] = React.useState(false);
 
   const containerRef = useRef(null);
 
@@ -37,15 +39,24 @@ export default function RegistroPage() {
     return () => ctx.revert();
   }, []);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    register(firstName, lastName, email, password);
-    navigate(redirect, { replace: true });
+    setError('');
+    setSubmitting(true);
+    try {
+      const result = await register(firstName, lastName, email, password);
+      if (result?.error) {
+        setError(result.error.message || 'Error al crear la cuenta.');
+      }
+    } catch {
+      setError('Error al crear la cuenta.');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
-  function handleGoogle() {
-    loginWithGoogle();
-    navigate(redirect, { replace: true });
+  async function handleGoogle() {
+    await loginWithGoogle();
   }
 
   return (
@@ -94,6 +105,9 @@ export default function RegistroPage() {
           </div>
 
           {/* Registration form */}
+          {error && (
+            <p className="registro-el text-sm text-red-500 font-body mb-3">{error}</p>
+          )}
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             <div className="registro-el grid grid-cols-2 gap-3">
               <input
@@ -131,9 +145,10 @@ export default function RegistroPage() {
             />
             <button
               type="submit"
-              className="registro-el bg-primary text-background w-full py-3.5 rounded-xl font-heading font-bold text-sm hover:opacity-90 transition-opacity mt-1"
+              disabled={submitting}
+              className={`registro-el bg-primary text-background w-full py-3.5 rounded-xl font-heading font-bold text-sm transition-opacity mt-1 ${submitting ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'}`}
             >
-              Crear cuenta
+              {submitting ? 'Creando...' : 'Crear cuenta'}
             </button>
           </form>
 

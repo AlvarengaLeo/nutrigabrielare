@@ -11,6 +11,8 @@ export default function LoginPage() {
 
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
+  const [error, setError] = React.useState('');
+  const [submitting, setSubmitting] = React.useState(false);
 
   const containerRef = useRef(null);
 
@@ -35,15 +37,24 @@ export default function LoginPage() {
     return () => ctx.revert();
   }, []);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
-    login(email, password);
-    navigate(redirect, { replace: true });
+    setError('');
+    setSubmitting(true);
+    try {
+      const result = await login(email, password);
+      if (result?.error) {
+        setError('Credenciales incorrectas. Intentá de nuevo.');
+      }
+    } catch {
+      setError('Error al iniciar sesión.');
+    } finally {
+      setSubmitting(false);
+    }
   }
 
-  function handleGoogle() {
-    loginWithGoogle();
-    navigate(redirect, { replace: true });
+  async function handleGoogle() {
+    await loginWithGoogle();
   }
 
   return (
@@ -92,6 +103,9 @@ export default function LoginPage() {
           </div>
 
           {/* Email / password form */}
+          {error && (
+            <p className="login-el text-sm text-red-500 font-body mb-3">{error}</p>
+          )}
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
             <input
               className="login-el bg-[#f8f6f3] rounded-xl px-4 py-3 text-sm text-primary placeholder:text-primary/40 outline-none focus:ring-2 focus:ring-accent/40"
@@ -111,9 +125,10 @@ export default function LoginPage() {
             />
             <button
               type="submit"
-              className="login-el bg-primary text-background w-full py-3.5 rounded-xl font-heading font-bold text-sm hover:opacity-90 transition-opacity mt-1"
+              disabled={submitting}
+              className={`login-el bg-primary text-background w-full py-3.5 rounded-xl font-heading font-bold text-sm transition-opacity mt-1 ${submitting ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'}`}
             >
-              Iniciar sesión
+              {submitting ? 'Iniciando...' : 'Iniciar sesión'}
             </button>
           </form>
 

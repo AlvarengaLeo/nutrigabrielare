@@ -1,16 +1,30 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import gsap from 'gsap';
-import { getOrderById } from '../data/orders';
+import { getOrderById } from '../services/orderService';
 
 export default function GraciasPage() {
   const [searchParams] = useSearchParams();
   const orderId = searchParams.get('order');
-  const order = orderId ? getOrderById(orderId) : null;
   const containerRef = useRef(null);
+
+  const [order, setOrder] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!orderId) {
+      setLoading(false);
+      return;
+    }
+    getOrderById(orderId)
+      .then(setOrder)
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [orderId]);
 
   // GSAP entrance animation
   useEffect(() => {
+    if (loading || !order) return;
     const ctx = gsap.context(() => {
       gsap.from('.gracias-el', {
         y: 30,
@@ -21,7 +35,15 @@ export default function GraciasPage() {
       });
     }, containerRef);
     return () => ctx.revert();
-  }, []);
+  }, [loading, order]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-32 pb-20 bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary/20 border-t-accent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   if (!order) {
     return (

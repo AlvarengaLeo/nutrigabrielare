@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowUpRight } from 'lucide-react';
-import { CATEGORIES, getProductsByCategory } from '../data/products';
+import { getCategories, getProductsByCategory } from '../services/productService';
 import ProductCard from '../components/ProductCard';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -14,6 +14,14 @@ export default function TiendaPage() {
   const closingRef = useRef(null);
   const panelRef = useRef(null);
   const [activeCategory, setActiveCategory] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [products, setProducts] = useState([]);
+  const [loadingProducts, setLoadingProducts] = useState(false);
+
+  // Fetch categories on mount
+  useEffect(() => {
+    getCategories().then(setCategories).catch(console.error);
+  }, []);
 
   // ── Initial entrance animations ──
   useEffect(() => {
@@ -47,6 +55,16 @@ export default function TiendaPage() {
     return () => ctx.revert();
   }, []);
 
+  // ── Fetch products when category changes ──
+  useEffect(() => {
+    if (activeCategory === null || categories.length === 0) return;
+    setLoadingProducts(true);
+    getProductsByCategory(categories[activeCategory].id)
+      .then(setProducts)
+      .catch(console.error)
+      .finally(() => setLoadingProducts(false));
+  }, [activeCategory, categories]);
+
   // ── Category selection animations ──
   useEffect(() => {
     if (activeCategory === null) {
@@ -57,7 +75,7 @@ export default function TiendaPage() {
         ease: 'power2.out',
       });
     } else {
-      CATEGORIES.forEach((_, i) => {
+      categories.forEach((_, i) => {
         const el = document.querySelector(`.category-block-${i}`);
         if (!el) return;
         if (i === activeCategory) {
@@ -88,7 +106,7 @@ export default function TiendaPage() {
         panelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 50);
     }
-  }, [activeCategory]);
+  }, [activeCategory, products]);
 
   return (
     <>
@@ -111,7 +129,7 @@ export default function TiendaPage() {
       <section ref={gridRef} className="py-24 bg-[#F7F4EE] relative z-10 w-full overflow-hidden">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-            {CATEGORIES.map((cat, index) => (
+            {categories.map((cat, index) => (
               <div
                 key={cat.num}
                 onClick={() => setActiveCategory(activeCategory === index ? null : index)}
@@ -152,9 +170,9 @@ export default function TiendaPage() {
             >
               {/* Header */}
               <div>
-                <div className="font-drama italic text-2xl text-accent">{CATEGORIES[activeCategory].num}</div>
-                <h3 className="font-heading font-bold text-3xl text-primary mt-2">{CATEGORIES[activeCategory].title}</h3>
-                <p className="font-body text-primary/60 mt-2">{CATEGORIES[activeCategory].tagline}</p>
+                <div className="font-drama italic text-2xl text-accent">{categories[activeCategory].num}</div>
+                <h3 className="font-heading font-bold text-3xl text-primary mt-2">{categories[activeCategory].title}</h3>
+                <p className="font-body text-primary/60 mt-2">{categories[activeCategory].tagline}</p>
               </div>
 
               {/* Accent divider */}
@@ -162,11 +180,17 @@ export default function TiendaPage() {
 
               {/* Product grid */}
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                {getProductsByCategory(CATEGORIES[activeCategory].id).map((product) => (
-                  <div key={product.id} className="product-card">
-                    <ProductCard product={product} />
+                {loadingProducts ? (
+                  <div className="col-span-full flex justify-center py-12">
+                    <div className="w-8 h-8 border-2 border-primary/20 border-t-accent rounded-full animate-spin" />
                   </div>
-                ))}
+                ) : (
+                  products.map((product) => (
+                    <div key={product.id} className="product-card">
+                      <ProductCard product={product} />
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           )}

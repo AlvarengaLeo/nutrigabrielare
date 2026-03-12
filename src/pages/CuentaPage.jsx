@@ -1,9 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useAuth } from '../context/AuthContext';
-import { getOrdersByUser } from '../data/orders';
+import { getOrdersByUser } from '../services/orderService';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,10 +27,20 @@ export default function CuentaPage() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const containerRef = useRef(null);
-
-  const orders = user ? getOrdersByUser(user.id) : [];
+  const [orders, setOrders] = useState([]);
+  const [loadingOrders, setLoadingOrders] = useState(true);
 
   useEffect(() => {
+    if (!user) return;
+    setLoadingOrders(true);
+    getOrdersByUser(user.id)
+      .then(setOrders)
+      .catch(console.error)
+      .finally(() => setLoadingOrders(false));
+  }, [user]);
+
+  useEffect(() => {
+    if (loadingOrders) return;
     const ctx = gsap.context(() => {
       gsap.from('.cuenta-header', {
         y: 30,
@@ -58,10 +68,10 @@ export default function CuentaPage() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [loadingOrders]);
 
-  function handleLogout() {
-    logout();
+  async function handleLogout() {
+    await logout();
     navigate('/');
   }
 

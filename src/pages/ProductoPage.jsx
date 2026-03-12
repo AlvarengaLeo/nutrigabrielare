@@ -1,24 +1,43 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import gsap from 'gsap';
-import { getProductBySlug, getCategoryById } from '../data/products';
+import { getProductBySlug, getCategoryById } from '../services/productService';
 import { ColorSelector, SizeSelector } from '../components/VariantSelector';
 import { useCart } from '../context/CartContext';
 
 export default function ProductoPage() {
   const { slug } = useParams();
-  const product = getProductBySlug(slug);
   const containerRef = useRef(null);
   const { addItem } = useCart();
 
-  const [selectedColor, setSelectedColor] = useState(
-    product?.variants?.colors?.[0]?.name ?? null,
-  );
+  const [product, setProduct] = useState(null);
+  const [category, setCategory] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
+
+  // Fetch product + category
+  useEffect(() => {
+    setLoading(true);
+    setSelectedColor(null);
+    setSelectedSize(null);
+    getProductBySlug(slug)
+      .then((p) => {
+        setProduct(p);
+        if (p?.variants?.colors?.[0]) {
+          setSelectedColor(p.variants.colors[0].name);
+        }
+        if (p?.category) {
+          return getCategoryById(p.category).then(setCategory);
+        }
+      })
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [slug]);
 
   // GSAP entrance animation
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || loading || !product) return;
     const ctx = gsap.context(() => {
       gsap.from('.producto-el', {
         y: 30,
@@ -29,9 +48,18 @@ export default function ProductoPage() {
       });
     }, containerRef);
     return () => ctx.revert();
-  }, [slug]);
+  }, [loading, product]);
 
-  // ── Not found ──
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen pt-32 pb-20 bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-primary/20 border-t-accent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  // Not found
   if (!product) {
     return (
       <div className="min-h-screen pt-32 pb-20 bg-background flex flex-col items-center justify-center text-center">
@@ -48,24 +76,21 @@ export default function ProductoPage() {
     );
   }
 
-  const category = getCategoryById(product.category);
   const selectedColorObj = product.variants.colors.find(
     (c) => c.name === selectedColor,
   );
   const mainBg = selectedColorObj?.hex ?? product.variants.colors[0]?.hex ?? '#1A1A1A';
 
-  // Slight variations for thumbnails
   const thumbColors = [
     mainBg,
-    selectedColorObj
-      ? `${selectedColorObj.hex}dd`
-      : '#1A1A1Add',
-    selectedColorObj
-      ? `${selectedColorObj.hex}bb`
-      : '#1A1A1Abb',
+    selectedColorObj ? `${selectedColorObj.hex}dd` : '#1A1A1Add',
+    selectedColorObj ? `${selectedColorObj.hex}bb` : '#1A1A1Abb',
   ];
 
-  const canAdd = selectedColor && selectedSize && product.stock > 0;
+  // Per-variant stock
+  const variantKey = selectedSize && selectedColor ? `${selectedSize}__${selectedColor}` : null;
+  const currentStock = variantKey ? (product.variantStock?.[variantKey] ?? 0) : product.stock;
+  const canAdd = selectedColor && selectedSize && currentStock > 0;
 
   function handleAddToCart() {
     if (!canAdd) return;
@@ -97,13 +122,10 @@ export default function ProductoPage() {
         <div className="flex flex-col lg:flex-row gap-12 lg:gap-16">
           {/* Gallery (left) */}
           <div className="producto-el flex-1 flex flex-col gap-4">
-            {/* Main image */}
             <div
               className="aspect-[3/4] w-full rounded-2xl transition-colors duration-300"
               style={{ backgroundColor: mainBg }}
             />
-
-            {/* Thumbnails */}
             <div className="flex gap-3">
               {thumbColors.map((color, i) => (
                 <div
@@ -122,27 +144,22 @@ export default function ProductoPage() {
 
           {/* Details (right) */}
           <div className="flex-1 flex flex-col gap-6">
-            {/* Category */}
             <span className="producto-el uppercase text-xs tracking-widest text-accent font-body font-semibold">
               {category?.title}
             </span>
 
-            {/* Name */}
             <h1 className="producto-el font-heading font-extrabold text-3xl text-primary">
               {product.name}
             </h1>
 
-            {/* Price */}
             <p className="producto-el font-drama italic text-2xl text-primary">
               ${product.price.toFixed(2)}
             </p>
 
-            {/* Description */}
             <p className="producto-el font-body text-primary/60 leading-relaxed">
               {product.descriptionLong}
             </p>
 
-            {/* Color selector */}
             <div className="producto-el">
               <ColorSelector
                 colors={product.variants.colors}
@@ -151,7 +168,6 @@ export default function ProductoPage() {
               />
             </div>
 
-            {/* Size selector */}
             <div className="producto-el">
               <SizeSelector
                 sizes={product.variants.sizes}
@@ -160,19 +176,20 @@ export default function ProductoPage() {
               />
             </div>
 
-            {/* Stock indicator */}
+            {/* Stock indicator — per-variant */}
             <div className="producto-el font-body text-sm">
-              {product.stock > 0 ? (
+              {currentStock > 0 ? (
                 <span className="flex items-center gap-2 text-green-600">
                   <span className="text-green-500">●</span>
-                  {product.stock} disponibles
+                  {currentStock} disponibles
                 </span>
               ) : (
-                <span className="text-red-500 font-semibold">Agotado</span>
+                <span className="text-red-500 font-semibold">
+                  {selectedSize && selectedColor ? 'Agotado en esta combinación' : 'Seleccioná talla y color'}
+                </span>
               )}
             </div>
 
-            {/* Add to cart button */}
             <button
               type="button"
               onClick={handleAddToCart}
@@ -186,7 +203,7 @@ export default function ProductoPage() {
             >
               {!selectedColor || !selectedSize
                 ? 'Seleccioná talla y color'
-                : product.stock === 0
+                : currentStock === 0
                   ? 'Agotado'
                   : 'Agregar al carrito'}
             </button>

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { getOrderByTracking } from '../data/orders';
+import { getOrderByTracking } from '../services/orderService';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -54,13 +54,19 @@ export default function TrackingPage() {
   const [searchCode, setSearchCode] = useState(code ?? '');
   const [order, setOrder] = useState(null);
   const [searched, setSearched] = useState(false);
+  const [searching, setSearching] = useState(false);
 
   // Auto-search on mount when URL param is present
   useEffect(() => {
     if (code) {
-      const found = getOrderByTracking(code);
-      setOrder(found);
-      setSearched(true);
+      setSearching(true);
+      getOrderByTracking(code)
+        .then((found) => {
+          setOrder(found);
+          setSearched(true);
+        })
+        .catch(console.error)
+        .finally(() => setSearching(false));
     }
   }, [code]);
 
@@ -96,10 +102,19 @@ export default function TrackingPage() {
     return () => ctx.revert();
   }, [order]);
 
-  function handleSearch() {
-    const found = getOrderByTracking(searchCode.trim());
-    setOrder(found);
-    setSearched(true);
+  async function handleSearch() {
+    setSearching(true);
+    try {
+      const found = await getOrderByTracking(searchCode.trim());
+      setOrder(found);
+      setSearched(true);
+    } catch (err) {
+      console.error(err);
+      setOrder(null);
+      setSearched(true);
+    } finally {
+      setSearching(false);
+    }
   }
 
   function handleKeyDown(e) {
