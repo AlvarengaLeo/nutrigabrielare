@@ -164,23 +164,33 @@ src/
 
 ### Sub-project Phases
 
-1. **Fase 1 (current):** Tienda pública — UI completa con mock data, carrito, auth pages
+1. **Fase 1:** Tienda pública — UI completa con mock data, carrito, auth pages
 2. **Fase 2:** Supabase schema + auth + storage + real data
 3. **Fase 3:** Panel admin — login, CRUD productos, órdenes, usuarios
-4. **Fase 4:** Wompi integration — pagos reales, webhooks, estados
+4. **Fase 4 (current):** Wompi integration — Payment Links, webhooks, Vercel serverless functions
 
 ## Phase 2 — Supabase Backend (Current)
 
 ### Environment Variables
 
+**Frontend (.env, VITE_ prefix):**
 ```
 VITE_SUPABASE_URL — Supabase project URL
 VITE_SUPABASE_ANON_KEY — Supabase publishable/anon key
-VITE_WOMPI_APP_ID — Wompi App ID (Phase 4)
-VITE_WOMPI_API_SECRET — Wompi API Secret (Phase 4)
+VITE_WOMPI_APP_ID — Wompi App ID (public)
 ```
 
-Stored in `.env` (gitignored). Must also be set in Vercel dashboard for production.
+**Backend (Vercel dashboard, no VITE_ prefix):**
+```
+WOMPI_APP_ID — Wompi App ID
+WOMPI_API_SECRET — Wompi API Secret (server-side only)
+WOMPI_EVENT_SECRET — Wompi webhook signature secret
+SUPABASE_URL — Supabase project URL
+SUPABASE_SERVICE_ROLE_KEY — Supabase service role key (bypasses RLS)
+APP_URL — Production URL (e.g., https://majesdesiver.com)
+```
+
+Frontend vars stored in `.env` (gitignored). Backend vars set in Vercel dashboard.
 
 ### Supabase Client
 
@@ -206,3 +216,28 @@ SQL migrations in `supabase/migrations/`. Tables: `profiles`, `product_categorie
 ### Cart
 
 Still uses localStorage (`src/context/CartContext.jsx`). No Supabase dependency.
+
+## Phase 4 — Wompi Payment Integration
+
+### Payment Flow
+
+1. User submits checkout form → order created with `pending_payment` status
+2. Frontend calls `POST /api/wompi/create-link` with user JWT
+3. Serverless function validates ownership, calls Wompi `EnlacePago` API, inserts `payments` record
+4. User is redirected to Wompi's hosted payment page
+5. After payment, Wompi redirects back to `/gracias?order=ORDER_ID`
+6. Webhook (`POST /api/wompi/webhook`) updates payment + order status
+
+### Serverless Functions (Vercel)
+
+- `api/wompi/create-link.js` — Creates Wompi payment link. Validates JWT, checks order ownership and status, uses DB amount (not client).
+- `api/wompi/webhook.js` — Processes Wompi webhook events. Validates SHA256 signature, updates payment/order idempotently.
+
+### Order Status Flow
+
+`pending_payment → confirmed → preparing → shipped → delivered`
+`pending_payment → cancelled` (if payment declined)
+
+### Payment Service
+
+`src/services/paymentService.js` — `createPaymentLink(orderId, accessToken)` and `getPaymentByOrderId(orderId)`
