@@ -1,42 +1,99 @@
 import { createClient } from '@supabase/supabase-js';
-import { createHash } from 'crypto';
+import { createHmac } from 'crypto';
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-function validateSignature(body) {
-  const { signature, timestamp } = body;
-  if (!signature?.properties || !signature?.checksum || !timestamp) {
-    return false;
-  }
+/**
+ * Validates Wompi webhook using HMAC-SHA256.
+ * Wompi sends the hash in the `wompi_hash` header.
+ * The hash is HMAC-SHA256 of the raw body using the API Secret as the key.
+ */
+function validateWebhook(rawBody, receivedHash) {
+  if (!receivedHash || !rawBody) return false;
 
-  // Build concatenated string from properties in order
-  const values = signature.properties.map((prop) => {
-    return prop.split('.').reduce((obj, key) => obj?.[key], body);
-  });
+  const computed = createHmac('sha256', process.env.WOMPI_API_SECRET)
+    .update(rawBody)
+    .digest('hex');
 
-  const concatenated =
-    values.join('') + timestamp + process.env.WOMPI_EVENT_SECRET;
-  const hash = createHash('sha256').update(concatenated).digest('hex');
-
-  return hash === signature.checksum;
+  return computed === receivedHash;
 }
 
-async function processPayment(
-  payment,
-  transactionId,
-  transactionStatus,
-  rawBody
-) {
-  // Already processed — idempotent
-  if (['approved', 'declined'].includes(payment.status)) {
-    return { alreadyProcessed: true };
+export const config = {
+  api: {
+    // Need raw body for HMAC validation
+    bodyParser: false,
+  },
+};
+
+function getRawBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on('data', (chunk) => chunks.push(chunk));
+    req.on('end', () => resolve(Buffer.concat(chunks).toString('utf8')));
+    req.on('error', reject);
+  });
+}
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const orderId = payment.order_id;
-  const isApproved = transactionStatus === 'APPROVED';
+  // ── 1. Read raw body and validate HMAC ─────────────────────
+  const rawBody = await getRawBody(req);
+  const wompiHash = req.headers['wompi_hash'] || req.headers['wompi-hash'];
+
+  if (!validateWebhook(rawBody, wompiHash)) {
+    console.error('Webhook HMAC validation failed');
+    return res.status(401).json({ error: 'Invalid signature' });
+  }
+
+  let body;
+  try {
+    body = JSON.parse(rawBody);
+  } catch {
+    return res.status(400).json({ error: 'Invalid JSON' });
+  }
+
+  // ── 2. Extract webhook data ────────────────────────────────
+  // Wompi SV webhook format:
+  // {
+  //   IdTransaccion, ResultadoTransaccion, Monto,
+  //   EnlacePago: { Id, IdentificadorEnlaceComercio, NombreProducto },
+  //   ...
+  // }
+  const resultado = body.ResultadoTransaccion;
+  const transactionId = body.IdTransaccion;
+  const orderId = body.EnlacePago?.IdentificadorEnlaceComercio;
+
+  if (!orderId) {
+    console.error('Webhook missing IdentificadorEnlaceComercio:', body);
+    return res.status(200).json({ message: 'No order reference, skipping' });
+  }
+
+  // ── 3. Find payment by order_id ────────────────────────────
+  const { data: payment } = await supabase
+    .from('payments')
+    .select('id, status, order_id')
+    .eq('order_id', orderId)
+    .single();
+
+  if (!payment) {
+    console.error('No payment found for order:', orderId);
+    return res.status(200).json({ message: 'Payment not found, skipping' });
+  }
+
+  // ── 4. Idempotency check ───────────────────────────────────
+  if (['approved', 'declined'].includes(payment.status)) {
+    return res.status(200).json({ message: 'Already processed' });
+  }
+
+  // ── 5. Process result ──────────────────────────────────────
+  // ResultadoTransaccion: "ExitosaAprobada" = approved, anything else = declined
+  const isApproved = resultado === 'ExitosaAprobada';
   const newPaymentStatus = isApproved ? 'approved' : 'declined';
   const newOrderStatus = isApproved ? 'confirmed' : 'cancelled';
 
@@ -45,8 +102,8 @@ async function processPayment(
     .from('payments')
     .update({
       status: newPaymentStatus,
-      provider_transaction_id: transactionId,
-      raw_response: rawBody,
+      provider_transaction_id: transactionId || payment.provider_transaction_id,
+      raw_response: body,
       updated_at: new Date().toISOString(),
     })
     .eq('id', payment.id);
@@ -66,64 +123,8 @@ async function processPayment(
     .insert({ order_id: orderId, status: newOrderStatus });
 
   console.log(
-    `Payment ${payment.id} → ${newPaymentStatus}, Order ${orderId} → ${newOrderStatus}`
+    `Webhook: Payment ${payment.id} → ${newPaymentStatus}, Order ${orderId} → ${newOrderStatus}`
   );
-  return { alreadyProcessed: false };
-}
-
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
-  }
-
-  const body = req.body;
-
-  // ── 1. Validate signature ──────────────────────────────────
-  if (!validateSignature(body)) {
-    console.error('Webhook signature validation failed');
-    return res.status(401).json({ error: 'Invalid signature' });
-  }
-
-  // ── 2. Extract transaction data ────────────────────────────
-  const transaction = body.transaction || body.data?.transaction;
-  if (!transaction) {
-    return res
-      .status(200)
-      .json({ message: 'No transaction data, skipping' });
-  }
-
-  const transactionId = transaction.id;
-  const transactionStatus = transaction.status; // APPROVED, DECLINED, VOIDED, ERROR
-  const reference =
-    transaction.reference ||
-    transaction.merchant_reference ||
-    transaction.identificadorEnlaceComercio;
-
-  // ── 3. Find payment by order_id (reference = orderId) ──────
-  const { data: payment } = await supabase
-    .from('payments')
-    .select('id, status, order_id')
-    .eq('order_id', reference)
-    .single();
-
-  if (!payment) {
-    console.error('No payment found for reference:', reference);
-    return res
-      .status(200)
-      .json({ message: 'Payment not found, skipping' });
-  }
-
-  // ── 4. Process payment ─────────────────────────────────────
-  const result = await processPayment(
-    payment,
-    transactionId,
-    transactionStatus,
-    body
-  );
-
-  if (result.alreadyProcessed) {
-    return res.status(200).json({ message: 'Already processed' });
-  }
 
   return res.status(200).json({ message: 'Processed' });
 }
