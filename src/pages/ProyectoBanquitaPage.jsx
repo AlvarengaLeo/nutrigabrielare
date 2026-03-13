@@ -32,7 +32,7 @@ const transparencyStats = [
   { label: 'Familias apoyadas', value: '45+' },
 ];
 
-export default function DonacionPage() {
+export default function ProyectoBanquitaPage() {
   const heroRef = useRef(null);
   const tiersRef = useRef(null);
   const transparencyRef = useRef(null);
@@ -84,7 +84,7 @@ export default function DonacionPage() {
       <section ref={heroRef} className="min-h-[70vh] flex items-end pb-20 pt-32 bg-background relative overflow-hidden">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="don-hero-el inline-block px-3 py-1 mb-6 rounded-full border border-primary/20 text-xs font-semibold uppercase tracking-widest text-primary/70">
-            Donación
+            Proyecto Banquita
           </div>
           <h1 className="don-hero-el font-heading font-extrabold text-5xl md:text-6xl lg:text-7xl tracking-tighter text-primary mb-6 max-w-2xl">
             Proyecto Banquita
@@ -165,7 +165,7 @@ export default function DonacionPage() {
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-2 h-2 rounded-full bg-accent mt-2 shrink-0"></span>
-                <span>Donación de alimentos a 15 familias en Soyapango — Enero 2026</span>
+                <span>Entrega de alimentos a 15 familias en Soyapango — Enero 2026</span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-2 h-2 rounded-full bg-accent mt-2 shrink-0"></span>

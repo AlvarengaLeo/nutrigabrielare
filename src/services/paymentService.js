@@ -22,6 +22,9 @@ export async function createPaymentLink(orderId, accessToken) {
     try {
       const errData = await res.json();
       errorMsg = errData.error || errorMsg;
+      if (Array.isArray(errData.missing) && errData.missing.length > 0) {
+        errorMsg = `${errorMsg} (${errData.missing.join(', ')})`;
+      }
     } catch {
       if (res.status === 404) {
         errorMsg = 'Servicio de pagos no disponible. Verificá que estás en el entorno de producción.';

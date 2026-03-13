@@ -1,7 +1,12 @@
 import React, { Suspense, useEffect } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Navigate, Routes, Route, useLocation } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import ConfigurationErrorScreen from './components/ConfigurationErrorScreen';
+import {
+  hasRequiredPublicRuntimeConfig,
+  missingPublicRuntimeVarDetails,
+} from './config/runtimeConfig';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar';
@@ -10,7 +15,7 @@ import CartDrawer from './components/CartDrawer';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import TiendaPage from './pages/TiendaPage';
-import DonacionPage from './pages/DonacionPage';
+import ProyectoBanquitaPage from './pages/ProyectoBanquitaPage';
 import ContactanosPage from './pages/ContactanosPage';
 import ComunidadPage from './pages/ComunidadPage';
 import ProductoPage from './pages/ProductoPage';
@@ -73,7 +78,14 @@ function AppContent() {
           {/* ── Public routes ── */}
           <Route path="/" element={<HomePage />} />
           <Route path="/tienda" element={<TiendaPage />} />
-          <Route path="/donacion" element={<DonacionPage />} />
+          <Route
+            path="/donacion"
+            element={<Navigate to="/proyecto-banquita" replace />}
+          />
+          <Route
+            path="/proyecto-banquita"
+            element={<ProyectoBanquitaPage />}
+          />
           <Route path="/comunidad" element={<ComunidadPage />} />
           <Route path="/contactanos" element={<ContactanosPage />} />
           <Route path="/producto/:slug" element={<ProductoPage />} />
@@ -82,6 +94,7 @@ function AppContent() {
           <Route path="/registro" element={<RegistroPage />} />
           <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
           <Route path="/gracias" element={<ProtectedRoute><GraciasPage /></ProtectedRoute>} />
+          <Route path="/tracking" element={<TrackingPage />} />
           <Route path="/tracking/:code" element={<TrackingPage />} />
           <Route path="/cuenta" element={<ProtectedRoute><CuentaPage /></ProtectedRoute>} />
 
@@ -106,6 +119,12 @@ function AppContent() {
 }
 
 export default function App() {
+  if (!hasRequiredPublicRuntimeConfig) {
+    return (
+      <ConfigurationErrorScreen missingVars={missingPublicRuntimeVarDetails} />
+    );
+  }
+
   return (
     <AuthProvider>
       <CartProvider>

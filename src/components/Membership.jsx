@@ -54,8 +54,8 @@ export default function Membership() {
             </span>
           </Link>
 
-          {/* Block 2: Proyecto Banquita → /donacion */}
-          <Link to="/donacion" className="entry-block md:col-span-7 flex flex-col justify-center p-10 md:p-16 rounded-[2.5rem] bg-primary text-background group relative overflow-hidden">
+          {/* Block 2: Proyecto Banquita → /proyecto-banquita */}
+          <Link to="/proyecto-banquita" className="entry-block md:col-span-7 flex flex-col justify-center p-10 md:p-16 rounded-[2.5rem] bg-primary text-background group relative overflow-hidden">
             {/* Subtle glow */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
             <div className="relative z-10">

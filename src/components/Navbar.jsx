@@ -6,7 +6,7 @@ import CartIcon from './CartIcon';
 const navItems = [
   { label: 'Inicio', path: '/' },
   { label: 'Tienda', path: '/tienda' },
-  { label: 'Donación', path: '/donacion' },
+  { label: 'Proyecto Banquita', path: '/proyecto-banquita' },
 ];
 
 export default function Navbar() {

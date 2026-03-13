@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const navItems = [
   { label: 'Inicio', path: '/' },
   { label: 'Tienda', path: '/tienda' },
-  { label: 'Donación', path: '/donacion' },
+  { label: 'Proyecto Banquita', path: '/proyecto-banquita' },
   { label: 'Contáctanos', path: '/contactanos' },
 ];
 

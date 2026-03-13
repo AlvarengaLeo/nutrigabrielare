@@ -1,12 +1,31 @@
 import { createClient } from '@supabase/supabase-js';
+import {
+  hasRequiredPublicRuntimeConfig,
+  publicRuntimeConfig,
+  publicRuntimeConfigErrorMessage,
+} from '../config/runtimeConfig.js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error(
-    'Missing VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY environment variables'
-  );
+function createMissingConfigProxy(path = 'supabase') {
+  return new Proxy(function missingSupabaseClient() {}, {
+    get(_target, property) {
+      if (property === Symbol.toStringTag) return 'MissingSupabaseClient';
+      if (property === 'toString') {
+        return () => `[MissingSupabaseClient:${path}]`;
+      }
+      return createMissingConfigProxy(`${path}.${String(property)}`);
+    },
+    apply() {
+      throw new Error(publicRuntimeConfigErrorMessage);
+    },
+    construct() {
+      throw new Error(publicRuntimeConfigErrorMessage);
+    },
+  });
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = hasRequiredPublicRuntimeConfig
+  ? createClient(
+      publicRuntimeConfig.supabaseUrl,
+      publicRuntimeConfig.supabaseAnonKey
+    )
+  : createMissingConfigProxy();

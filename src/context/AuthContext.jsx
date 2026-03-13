@@ -7,14 +7,19 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import {
+  hasRequiredPublicRuntimeConfig,
+  publicRuntimeConfig,
+  publicRuntimeConfigErrorMessage,
+} from '../config/runtimeConfig.js';
 import { supabase } from '../lib/supabase';
 
 // ─── Context ───────────────────────────────────────────────────────────────────
 
 const AuthContext = createContext(null);
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const SUPABASE_URL = publicRuntimeConfig.supabaseUrl;
+const SUPABASE_ANON_KEY = publicRuntimeConfig.supabaseAnonKey;
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -37,6 +42,10 @@ function mapUser(authUser, profile) {
 
 // Direct REST call to get_my_profile RPC — completely bypasses Supabase JS client and its lock issues
 async function fetchProfileDirect(accessToken) {
+  if (!hasRequiredPublicRuntimeConfig) {
+    return null;
+  }
+
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_my_profile`, {
       method: 'POST',
@@ -66,6 +75,12 @@ export function AuthProvider({ children }) {
 
   // Listen for auth state changes
   useEffect(() => {
+    if (!hasRequiredPublicRuntimeConfig) {
+      console.error(`[auth] ${publicRuntimeConfigErrorMessage}`);
+      setLoading(false);
+      return undefined;
+    }
+
     // Get initial session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (session?.user && session.access_token) {
@@ -104,6 +119,10 @@ export function AuthProvider({ children }) {
   // ── Actions ────────────────────────────────────────────────────────────────
 
   const login = useCallback(async (email, password) => {
+    if (!hasRequiredPublicRuntimeConfig) {
+      return { error: new Error(publicRuntimeConfigErrorMessage) };
+    }
+
     handledManually.current = true;
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -121,6 +140,10 @@ export function AuthProvider({ children }) {
   }, []);
 
   const register = useCallback(async (firstName, lastName, email, password) => {
+    if (!hasRequiredPublicRuntimeConfig) {
+      return { error: new Error(publicRuntimeConfigErrorMessage) };
+    }
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -133,6 +156,10 @@ export function AuthProvider({ children }) {
   }, []);
 
   const loginWithGoogle = useCallback(async () => {
+    if (!hasRequiredPublicRuntimeConfig) {
+      return { error: new Error(publicRuntimeConfigErrorMessage) };
+    }
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -143,6 +170,11 @@ export function AuthProvider({ children }) {
   }, []);
 
   const logout = useCallback(async () => {
+    if (!hasRequiredPublicRuntimeConfig) {
+      setUser(null);
+      return;
+    }
+
     await supabase.auth.signOut();
     setUser(null);
   }, []);

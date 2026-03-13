@@ -1,20 +1,30 @@
 import { createClient } from '@supabase/supabase-js';
 import { createHmac } from 'crypto';
+import {
+  loadServerRuntimeConfig,
+  sendServerConfigError,
+} from '../_lib/runtimeConfig.js';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const WEBHOOK_SCOPE = 'wompi/webhook';
+const REQUIRED_ENV = [
+  'SUPABASE_URL',
+  'SUPABASE_SERVICE_ROLE_KEY',
+  'WOMPI_API_SECRET',
+];
 
-/**
- * Validates Wompi webhook using HMAC-SHA256.
- * Wompi sends the hash in the `wompi_hash` header.
- * The hash is HMAC-SHA256 of the raw body using the API Secret as the key.
- */
-function validateWebhook(rawBody, receivedHash) {
-  if (!receivedHash || !rawBody) return false;
+function getSupabaseAdminClient(serverConfig) {
+  return createClient(
+    serverConfig.SUPABASE_URL,
+    serverConfig.SUPABASE_SERVICE_ROLE_KEY
+  );
+}
 
-  const computed = createHmac('sha256', process.env.WOMPI_API_SECRET)
+function validateWebhook(rawBody, receivedHash, apiSecret) {
+  if (!receivedHash || !rawBody || !apiSecret) {
+    return false;
+  }
+
+  const computed = createHmac('sha256', apiSecret)
     .update(rawBody)
     .digest('hex');
 
@@ -23,7 +33,6 @@ function validateWebhook(rawBody, receivedHash) {
 
 export const config = {
   api: {
-    // Need raw body for HMAC validation
     bodyParser: false,
   },
 };
@@ -42,11 +51,20 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // ── 1. Read raw body and validate HMAC ─────────────────────
+  const { config: serverConfig, missing } = loadServerRuntimeConfig({
+    scope: WEBHOOK_SCOPE,
+    required: REQUIRED_ENV,
+  });
+
+  if (missing.length > 0) {
+    return sendServerConfigError(res, WEBHOOK_SCOPE, missing);
+  }
+
+  const supabase = getSupabaseAdminClient(serverConfig);
   const rawBody = await getRawBody(req);
   const wompiHash = req.headers['wompi_hash'] || req.headers['wompi-hash'];
 
-  if (!validateWebhook(rawBody, wompiHash)) {
+  if (!validateWebhook(rawBody, wompiHash, serverConfig.WOMPI_API_SECRET)) {
     console.error('Webhook HMAC validation failed');
     return res.status(401).json({ error: 'Invalid signature' });
   }
@@ -58,13 +76,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid JSON' });
   }
 
-  // ── 2. Extract webhook data ────────────────────────────────
-  // Wompi SV webhook format:
-  // {
-  //   IdTransaccion, ResultadoTransaccion, Monto,
-  //   EnlacePago: { Id, IdentificadorEnlaceComercio, NombreProducto },
-  //   ...
-  // }
   const resultado = body.ResultadoTransaccion;
   const transactionId = body.IdTransaccion;
   const orderId = body.EnlacePago?.IdentificadorEnlaceComercio;
@@ -74,41 +85,36 @@ export default async function handler(req, res) {
     return res.status(200).json({ message: 'No order reference, skipping' });
   }
 
-  // ── 3. Find payment by order_id ────────────────────────────
-  const { data: payment } = await supabase
+  const { data: payment, error: paymentError } = await supabase
     .from('payments')
-    .select('id, status, order_id')
+    .select('id, status, order_id, provider_transaction_id')
     .eq('order_id', orderId)
     .single();
 
-  if (!payment) {
-    console.error('No payment found for order:', orderId);
+  if (paymentError || !payment) {
+    console.error('No payment found for order:', orderId, paymentError);
     return res.status(200).json({ message: 'Payment not found, skipping' });
   }
 
-  // ── 4. Idempotency check ───────────────────────────────────
   if (['approved', 'declined'].includes(payment.status)) {
     return res.status(200).json({ message: 'Already processed' });
   }
 
-  // ── 5. Process result ──────────────────────────────────────
-  // ResultadoTransaccion: "ExitosaAprobada" = approved, anything else = declined
   const isApproved = resultado === 'ExitosaAprobada';
   const newPaymentStatus = isApproved ? 'approved' : 'declined';
   const newOrderStatus = isApproved ? 'confirmed' : 'cancelled';
 
-  // Update payment
   await supabase
     .from('payments')
     .update({
       status: newPaymentStatus,
-      provider_transaction_id: transactionId || payment.provider_transaction_id,
+      provider_transaction_id:
+        transactionId || payment.provider_transaction_id || null,
       raw_response: body,
       updated_at: new Date().toISOString(),
     })
     .eq('id', payment.id);
 
-  // Update order status
   await supabase
     .from('orders')
     .update({
@@ -117,13 +123,12 @@ export default async function handler(req, res) {
     })
     .eq('id', orderId);
 
-  // Insert status history
   await supabase
     .from('order_status_history')
     .insert({ order_id: orderId, status: newOrderStatus });
 
   console.log(
-    `Webhook: Payment ${payment.id} → ${newPaymentStatus}, Order ${orderId} → ${newOrderStatus}`
+    `Webhook: Payment ${payment.id} -> ${newPaymentStatus}, Order ${orderId} -> ${newOrderStatus}`
   );
 
   return res.status(200).json({ message: 'Processed' });

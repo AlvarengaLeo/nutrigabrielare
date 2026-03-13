@@ -1,24 +1,34 @@
 import { createClient } from '@supabase/supabase-js';
+import {
+  loadServerRuntimeConfig,
+  sendServerConfigError,
+} from '../_lib/runtimeConfig.js';
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+const CREATE_LINK_SCOPE = 'wompi/create-link';
+const DEFAULT_APP_URL = 'https://majesdesivar.com';
+const REQUIRED_ENV = [
+  'SUPABASE_URL',
+  'SUPABASE_SERVICE_ROLE_KEY',
+  'WOMPI_APP_ID',
+  'WOMPI_API_SECRET',
+];
 
-/**
- * Obtains an OAuth 2.0 access token from Wompi using Client Credentials flow.
- * Token URL: https://id.wompi.sv/connect/token
- * Params: grant_type=client_credentials, audience=wompi_api, client_id, client_secret
- */
-async function getWompiToken() {
+function getSupabaseAdminClient(serverConfig) {
+  return createClient(
+    serverConfig.SUPABASE_URL,
+    serverConfig.SUPABASE_SERVICE_ROLE_KEY
+  );
+}
+
+async function getWompiToken(serverConfig) {
   const res = await fetch('https://id.wompi.sv/connect/token', {
     method: 'POST',
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: new URLSearchParams({
       grant_type: 'client_credentials',
       audience: 'wompi_api',
-      client_id: process.env.WOMPI_APP_ID,
-      client_secret: process.env.WOMPI_API_SECRET,
+      client_id: serverConfig.WOMPI_APP_ID,
+      client_secret: serverConfig.WOMPI_API_SECRET,
     }),
   });
 
@@ -35,12 +45,21 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // ── 1. Extract and verify user JWT ─────────────────────────
   const authHeader = req.headers.authorization;
   if (!authHeader?.startsWith('Bearer ')) {
-    return res.status(401).json({ error: 'Token de autenticación requerido' });
+    return res.status(401).json({ error: 'Token de autenticacion requerido' });
   }
 
+  const { config: serverConfig, missing } = loadServerRuntimeConfig({
+    scope: CREATE_LINK_SCOPE,
+    required: REQUIRED_ENV,
+  });
+
+  if (missing.length > 0) {
+    return sendServerConfigError(res, CREATE_LINK_SCOPE, missing);
+  }
+
+  const supabase = getSupabaseAdminClient(serverConfig);
   const token = authHeader.slice(7);
   const {
     data: { user },
@@ -48,16 +67,14 @@ export default async function handler(req, res) {
   } = await supabase.auth.getUser(token);
 
   if (authError || !user) {
-    return res.status(401).json({ error: 'Token inválido o expirado' });
+    return res.status(401).json({ error: 'Token invalido o expirado' });
   }
 
-  // ── 2. Validate input ──────────────────────────────────────
-  const { orderId } = req.body;
+  const { orderId } = req.body ?? {};
   if (!orderId) {
     return res.status(400).json({ error: 'orderId es requerido' });
   }
 
-  // ── 3. Fetch order and validate ownership + status ─────────
   const { data: order, error: orderError } = await supabase
     .from('orders')
     .select('id, user_id, total, status')
@@ -69,25 +86,30 @@ export default async function handler(req, res) {
   }
 
   if (order.user_id !== user.id) {
-    return res.status(403).json({ error: 'No tenés permiso para esta orden' });
+    return res.status(403).json({ error: 'No tienes permiso para esta orden' });
   }
 
   if (order.status !== 'pending_payment') {
-    return res.status(400).json({ error: 'Esta orden no está pendiente de pago' });
+    return res
+      .status(400)
+      .json({ error: 'Esta orden no esta pendiente de pago' });
   }
 
-  // ── 4. Get Wompi OAuth token ───────────────────────────────
   let wompiToken;
   try {
-    wompiToken = await getWompiToken();
-  } catch (err) {
-    console.error('Wompi auth error:', err);
-    return res.status(500).json({ error: 'Error de autenticación con Wompi' });
+    wompiToken = await getWompiToken(serverConfig);
+  } catch (error) {
+    console.error('Wompi auth error:', error);
+    return res.status(500).json({ error: 'Error de autenticacion con Wompi' });
   }
 
-  // ── 5. Create Wompi payment link ───────────────────────────
-  const appUrl = process.env.APP_URL || 'https://majesdesiver.com';
-  const returnUrl = `${appUrl}/gracias?order=${orderId}`;
+  const appUrl = process.env.APP_URL?.trim() || DEFAULT_APP_URL;
+  if (!process.env.APP_URL?.trim()) {
+    console.warn(
+      `[${CREATE_LINK_SCOPE}] Missing optional env APP_URL. Falling back to ${DEFAULT_APP_URL}.`
+    );
+  }
+  const returnUrl = `${appUrl}/gracias?order=${encodeURIComponent(orderId)}`;
   const webhookUrl = `${appUrl}/api/wompi/webhook`;
 
   let wompiResponse;
@@ -101,7 +123,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         identificadorEnlaceComercio: orderId,
         monto: parseFloat(order.total),
-        nombreProducto: `Orden ${orderId} — Majes de Sivar`,
+        nombreProducto: `Orden ${orderId} - Majes de Sivar`,
         configuracion: {
           urlRedirect: returnUrl,
           urlWebhook: webhookUrl,
@@ -113,14 +135,15 @@ export default async function handler(req, res) {
 
     if (!wompiRes.ok || !wompiResponse.urlEnlace) {
       console.error('Wompi error:', wompiResponse);
-      return res.status(500).json({ error: 'Error al crear enlace de pago en Wompi' });
+      return res
+        .status(500)
+        .json({ error: 'Error al crear enlace de pago en Wompi' });
     }
-  } catch (err) {
-    console.error('Wompi fetch error:', err);
+  } catch (error) {
+    console.error('Wompi fetch error:', error);
     return res.status(500).json({ error: 'No se pudo conectar con Wompi' });
   }
 
-  // ── 6. Insert payment record ───────────────────────────────
   const { error: paymentError } = await supabase.from('payments').insert({
     order_id: orderId,
     provider: 'wompi',
@@ -134,6 +157,5 @@ export default async function handler(req, res) {
     console.error('Payment insert error:', paymentError);
   }
 
-  // ── 7. Return payment URL ──────────────────────────────────
   return res.status(200).json({ urlEnlace: wompiResponse.urlEnlace });
 }
