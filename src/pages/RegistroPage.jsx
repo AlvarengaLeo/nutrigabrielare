@@ -27,14 +27,14 @@ export default function RegistroPage() {
 
   // GSAP entrance animation
   useEffect(() => {
+    const els = containerRef.current?.querySelectorAll('.registro-el');
+    if (!els) return;
+    gsap.set(els, { opacity: 1, y: 0 });
     const ctx = gsap.context(() => {
-      gsap.from('.registro-el', {
-        y: 20,
-        opacity: 0,
-        duration: 0.6,
-        stagger: 0.1,
-        ease: 'power3.out',
-      });
+      gsap.fromTo(els,
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, stagger: 0.1, ease: 'power3.out' }
+      );
     }, containerRef);
     return () => ctx.revert();
   }, []);

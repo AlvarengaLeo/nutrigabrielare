@@ -42,29 +42,26 @@ export default function CuentaPage() {
   useEffect(() => {
     if (loadingOrders) return;
     const ctx = gsap.context(() => {
-      gsap.from('.cuenta-header', {
-        y: 30,
-        opacity: 0,
-        duration: 0.7,
-        ease: 'power3.out',
-      });
+      const headerEls = containerRef.current?.querySelectorAll('.cuenta-header');
+      if (headerEls) gsap.set(headerEls, { opacity: 1, y: 0 });
+      gsap.fromTo(headerEls || '.cuenta-header',
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out' }
+      );
 
-      gsap.from('.orders-section', {
-        y: 20,
-        opacity: 0,
-        duration: 0.6,
-        ease: 'power3.out',
-        delay: 0.15,
-      });
+      const sectionEls = containerRef.current?.querySelectorAll('.orders-section');
+      if (sectionEls) gsap.set(sectionEls, { opacity: 1, y: 0 });
+      gsap.fromTo(sectionEls || '.orders-section',
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out', delay: 0.15 }
+      );
 
-      gsap.from('.order-card', {
-        y: 16,
-        opacity: 0,
-        duration: 0.5,
-        ease: 'power3.out',
-        stagger: 0.12,
-        delay: 0.25,
-      });
+      const cardEls = containerRef.current?.querySelectorAll('.order-card');
+      if (cardEls) gsap.set(cardEls, { opacity: 1, y: 0 });
+      gsap.fromTo(cardEls || '.order-card',
+        { y: 16, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out', stagger: 0.12, delay: 0.25 }
+      );
     }, containerRef);
 
     return () => ctx.revert();

@@ -12,13 +12,12 @@ export default function CarritoPage() {
   useEffect(() => {
     if (!containerRef.current) return;
     const ctx = gsap.context(() => {
-      gsap.from('.carrito-el', {
-        y: 30,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.12,
-        ease: 'power3.out',
-      });
+      const els = containerRef.current?.querySelectorAll('.carrito-el');
+      if (els) gsap.set(els, { opacity: 1, y: 0 });
+      gsap.fromTo(els || '.carrito-el',
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, stagger: 0.12, ease: 'power3.out' }
+      );
     }, containerRef);
     return () => ctx.revert();
   }, []);

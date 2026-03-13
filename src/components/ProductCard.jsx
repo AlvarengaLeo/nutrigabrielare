@@ -7,8 +7,9 @@ import { ArrowUpRight } from 'lucide-react';
  * @param {{ product: import('../data/products').PRODUCTS[number] }} props
  */
 export default function ProductCard({ product }) {
-  const { slug, name, price, variants } = product;
+  const { slug, name, price, variants, images } = product;
   const swatchColor = variants?.colors?.[0]?.hex ?? '#1A1A1A';
+  const hasImage = images && images.length > 0;
 
   return (
     <Link
@@ -16,11 +17,22 @@ export default function ProductCard({ product }) {
       className="group/product flex flex-col gap-3 font-body"
       aria-label={`Ver producto: ${name}`}
     >
-      {/* Color swatch / image placeholder */}
-      <div
-        className="aspect-[3/4] w-full rounded-2xl transition-transform duration-300 ease-out group-hover/product:scale-[1.03]"
-        style={{ backgroundColor: swatchColor }}
-      />
+      {/* Product image or color swatch fallback */}
+      {hasImage ? (
+        <div className="aspect-[3/4] w-full rounded-2xl overflow-hidden transition-transform duration-300 ease-out group-hover/product:scale-[1.03]">
+          <img
+            src={images[0]}
+            alt={name}
+            className="w-full h-full object-cover"
+            loading="lazy"
+          />
+        </div>
+      ) : (
+        <div
+          className="aspect-[3/4] w-full rounded-2xl transition-transform duration-300 ease-out group-hover/product:scale-[1.03]"
+          style={{ backgroundColor: swatchColor }}
+        />
+      )}
 
       {/* Info row */}
       <div className="flex items-start justify-between gap-2">

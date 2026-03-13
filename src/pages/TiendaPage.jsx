@@ -20,7 +20,11 @@ export default function TiendaPage() {
 
   // Fetch categories on mount
   useEffect(() => {
-    getCategories().then(setCategories).catch(console.error);
+    getCategories()
+      .then((cats) => {
+        setCategories(cats);
+      })
+      .catch(() => {});
   }, []);
 
   // ── Initial entrance animations ──

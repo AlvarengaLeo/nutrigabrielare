@@ -4,6 +4,7 @@ import React, {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from 'react';
 import { supabase } from '../lib/supabase';
@@ -11,6 +12,9 @@ import { supabase } from '../lib/supabase';
 // ─── Context ───────────────────────────────────────────────────────────────────
 
 const AuthContext = createContext(null);
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // ─── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -27,7 +31,30 @@ function mapUser(authUser, profile) {
       profile?.last_name ||
       authUser.user_metadata?.last_name ||
       '',
+    role: profile?.role || 'customer',
   };
+}
+
+// Direct REST call to get_my_profile RPC — completely bypasses Supabase JS client and its lock issues
+async function fetchProfileDirect(accessToken) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_my_profile`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: '{}',
+    });
+    if (res.ok) {
+      const data = await res.json();
+      return data;
+    }
+  } catch {
+    // ignore
+  }
+  return null;
 }
 
 // ─── Provider ──────────────────────────────────────────────────────────────────
@@ -35,22 +62,14 @@ function mapUser(authUser, profile) {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const fetchProfile = useCallback(async (authUser) => {
-    const { data } = await supabase
-      .from('profiles')
-      .select('first_name, last_name')
-      .eq('id', authUser.id)
-      .single();
-    return data;
-  }, []);
+  const handledManually = useRef(false);
 
   // Listen for auth state changes
   useEffect(() => {
     // Get initial session
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (session?.user) {
-        const profile = await fetchProfile(session.user);
+      if (session?.user && session.access_token) {
+        const profile = await fetchProfileDirect(session.access_token);
         setUser(mapUser(session.user, profile));
       }
       setLoading(false);
@@ -60,8 +79,18 @@ export function AuthProvider({ children }) {
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        const profile = await fetchProfile(session.user);
+      if (handledManually.current) {
+        handledManually.current = false;
+        setLoading(false);
+        return;
+      }
+      if (event === 'SIGNED_OUT') {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+      if (session?.user && session.access_token) {
+        const profile = await fetchProfileDirect(session.access_token);
         setUser(mapUser(session.user, profile));
       } else {
         setUser(null);
@@ -70,16 +99,24 @@ export function AuthProvider({ children }) {
     });
 
     return () => subscription.unsubscribe();
-  }, [fetchProfile]);
+  }, []);
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
   const login = useCallback(async (email, password) => {
+    handledManually.current = true;
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    if (error) return { error };
+    if (error) {
+      handledManually.current = false;
+      return { error };
+    }
+    if (data?.user && data?.session?.access_token) {
+      const profile = await fetchProfileDirect(data.session.access_token);
+      setUser(mapUser(data.user, profile));
+    }
     return { data };
   }, []);
 
@@ -112,17 +149,24 @@ export function AuthProvider({ children }) {
 
   // ── Context value ──────────────────────────────────────────────────────────
 
+  const isAdmin = user?.role === 'admin';
+  const isEditor = user?.role === 'editor' || isAdmin;
+  const isGestor = user?.role === 'gestor' || isAdmin;
+
   const value = useMemo(
     () => ({
       user,
       loading,
       isAuthenticated: user !== null,
+      isAdmin,
+      isEditor,
+      isGestor,
       login,
       register,
       loginWithGoogle,
       logout,
     }),
-    [user, loading, login, register, loginWithGoogle, logout],
+    [user, loading, isAdmin, isEditor, isGestor, login, register, loginWithGoogle, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

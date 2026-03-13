@@ -73,29 +73,27 @@ export default function TrackingPage() {
   // GSAP entrance animation
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from('.tracking-hero', {
-        y: 30,
-        opacity: 0,
-        duration: 0.7,
-        ease: 'power3.out',
-      });
+      const heroEls = containerRef.current?.querySelectorAll('.tracking-hero');
+      if (heroEls) gsap.set(heroEls, { opacity: 1, y: 0 });
+      gsap.fromTo(heroEls || '.tracking-hero',
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.7, ease: 'power3.out' }
+      );
 
       if (order) {
-        gsap.from('.order-header', {
-          y: 20,
-          opacity: 0,
-          duration: 0.6,
-          ease: 'power3.out',
-          delay: 0.1,
-        });
-        gsap.from('.timeline-step', {
-          y: 16,
-          opacity: 0,
-          duration: 0.5,
-          ease: 'power3.out',
-          stagger: 0.12,
-          delay: 0.2,
-        });
+        const headerEls = containerRef.current?.querySelectorAll('.order-header');
+        if (headerEls) gsap.set(headerEls, { opacity: 1, y: 0 });
+        gsap.fromTo(headerEls || '.order-header',
+          { y: 20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.6, ease: 'power3.out', delay: 0.1 }
+        );
+
+        const stepEls = containerRef.current?.querySelectorAll('.timeline-step');
+        if (stepEls) gsap.set(stepEls, { opacity: 1, y: 0 });
+        gsap.fromTo(stepEls || '.timeline-step',
+          { y: 16, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.5, ease: 'power3.out', stagger: 0.12, delay: 0.2 }
+        );
       }
     }, containerRef);
 

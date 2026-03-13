@@ -160,3 +160,184 @@ export async function getAllProducts() {
 
   return data.map(transformProduct);
 }
+
+/**
+ * Fetch all products including inactive (for admin).
+ */
+export async function getAllProductsAdmin() {
+  const { data, error } = await supabase
+    .from('products')
+    .select(PRODUCT_SELECT);
+
+  if (error) throw error;
+  return data.map(transformProduct);
+}
+
+/**
+ * Create a new product.
+ */
+export async function createProduct({ name, slug, categoryId, price, description, descriptionLong, active = true, featured = false }) {
+  const { data, error } = await supabase
+    .from('products')
+    .insert({
+      id: slug,
+      slug,
+      name,
+      category_id: categoryId,
+      price,
+      description,
+      description_long: descriptionLong,
+      active,
+      featured,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Update a product.
+ */
+export async function updateProduct(id, updates) {
+  const row = {};
+  if (updates.name !== undefined) row.name = updates.name;
+  if (updates.slug !== undefined) row.slug = updates.slug;
+  if (updates.categoryId !== undefined) row.category_id = updates.categoryId;
+  if (updates.price !== undefined) row.price = updates.price;
+  if (updates.description !== undefined) row.description = updates.description;
+  if (updates.descriptionLong !== undefined) row.description_long = updates.descriptionLong;
+  if (updates.active !== undefined) row.active = updates.active;
+  if (updates.featured !== undefined) row.featured = updates.featured;
+
+  const { data, error } = await supabase
+    .from('products')
+    .update(row)
+    .eq('id', id)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Soft-delete a product (set active=false).
+ */
+export async function deleteProduct(id) {
+  return updateProduct(id, { active: false });
+}
+
+/**
+ * Create a product variant.
+ */
+export async function createVariant(productId, { size, colorName, colorHex, stock, active = true }) {
+  const { data, error } = await supabase
+    .from('product_variants')
+    .insert({
+      product_id: productId,
+      size,
+      color_name: colorName,
+      color_hex: colorHex,
+      stock,
+      active,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Update a product variant.
+ */
+export async function updateVariant(variantId, updates) {
+  const row = {};
+  if (updates.size !== undefined) row.size = updates.size;
+  if (updates.colorName !== undefined) row.color_name = updates.colorName;
+  if (updates.colorHex !== undefined) row.color_hex = updates.colorHex;
+  if (updates.stock !== undefined) row.stock = updates.stock;
+  if (updates.active !== undefined) row.active = updates.active;
+
+  const { data, error } = await supabase
+    .from('product_variants')
+    .update(row)
+    .eq('id', variantId)
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Delete a product variant.
+ */
+export async function deleteVariant(variantId) {
+  const { error } = await supabase
+    .from('product_variants')
+    .delete()
+    .eq('id', variantId);
+
+  if (error) throw error;
+}
+
+/**
+ * Upload a product image to Supabase Storage.
+ */
+export async function uploadProductImage(productId, file) {
+  const filePath = `${productId}/${Date.now()}-${file.name}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from('product-images')
+    .upload(filePath, file);
+
+  if (uploadError) throw uploadError;
+
+  const { data: { publicUrl } } = supabase.storage
+    .from('product-images')
+    .getPublicUrl(filePath);
+
+  // Get current max sort_order for this product
+  const { data: existing } = await supabase
+    .from('product_images')
+    .select('sort_order')
+    .eq('product_id', productId)
+    .order('sort_order', { ascending: false })
+    .limit(1);
+
+  const nextOrder = (existing?.[0]?.sort_order ?? -1) + 1;
+
+  const { data, error } = await supabase
+    .from('product_images')
+    .insert({
+      product_id: productId,
+      url: publicUrl,
+      sort_order: nextOrder,
+    })
+    .select()
+    .single();
+
+  if (error) throw error;
+  return data;
+}
+
+/**
+ * Delete a product image from Storage and database.
+ */
+export async function deleteProductImage(imageId, url) {
+  // Extract storage path from URL
+  const match = url.match(/product-images\/(.+)$/);
+  if (match) {
+    await supabase.storage.from('product-images').remove([match[1]]);
+  }
+
+  const { error } = await supabase
+    .from('product_images')
+    .delete()
+    .eq('id', imageId);
+
+  if (error) throw error;
+}

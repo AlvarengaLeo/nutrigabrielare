@@ -17,13 +17,20 @@ export async function createPaymentLink(orderId, accessToken) {
     body: JSON.stringify({ orderId }),
   });
 
-  const data = await res.json();
-
   if (!res.ok) {
-    throw new Error(data.error || 'Error al crear enlace de pago');
+    let errorMsg = 'Error al crear enlace de pago';
+    try {
+      const errData = await res.json();
+      errorMsg = errData.error || errorMsg;
+    } catch {
+      if (res.status === 404) {
+        errorMsg = 'Servicio de pagos no disponible. Verificá que estás en el entorno de producción.';
+      }
+    }
+    throw new Error(errorMsg);
   }
 
-  return data;
+  return await res.json();
 }
 
 /**
