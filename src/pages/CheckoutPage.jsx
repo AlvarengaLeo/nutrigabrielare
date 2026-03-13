@@ -4,9 +4,11 @@ import gsap from 'gsap';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { createOrder } from '../services/orderService';
+import { createPaymentLink } from '../services/paymentService';
+import { supabase } from '../lib/supabase';
 
 export default function CheckoutPage() {
-  const { items, subtotal, clearCart } = useCart();
+  const { items, subtotal } = useCart();
   const { user } = useAuth();
   const navigate = useNavigate();
   const containerRef = useRef(null);
@@ -31,13 +33,12 @@ export default function CheckoutPage() {
   // GSAP entrance animation
   useEffect(() => {
     const ctx = gsap.context(() => {
-      gsap.from('.checkout-el', {
-        y: 30,
-        opacity: 0,
-        duration: 0.7,
-        stagger: 0.12,
-        ease: 'power3.out',
-      });
+      const els = containerRef.current?.querySelectorAll('.checkout-el');
+      if (els) gsap.set(els, { opacity: 1, y: 0 });
+      gsap.fromTo(els || '.checkout-el',
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.7, stagger: 0.12, ease: 'power3.out' }
+      );
     }, containerRef);
     return () => ctx.revert();
   }, []);
@@ -65,6 +66,7 @@ export default function CheckoutPage() {
     setSubmitError('');
 
     try {
+      // Create order with pending_payment status
       const order = await createOrder({
         userId: user.id,
         items,
@@ -77,14 +79,24 @@ export default function CheckoutPage() {
         subtotal,
         shippingCost,
         total,
+        status: 'pending_payment',
       });
 
-      clearCart();
-      navigate(`/gracias?order=${order.id}`);
+      // Save orderId as backup
+      localStorage.setItem('majes-pending-order', order.id);
+
+      // Get access token for the serverless function
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error('No se pudo obtener la sesión');
+      }
+
+      // Create Wompi payment link and redirect
+      const { urlEnlace } = await createPaymentLink(order.id, session.access_token);
+      window.location.href = urlEnlace;
     } catch (err) {
-      setSubmitError('Error al crear la orden. Intentá de nuevo.');
+      setSubmitError(err.message || 'Error al procesar el pago. Intentá de nuevo.');
       console.error(err);
-    } finally {
       setSubmitting(false);
     }
   }
@@ -191,16 +203,6 @@ export default function CheckoutPage() {
               </div>
             </div>
 
-            {/* Notas adicionales */}
-            <div className="checkout-el bg-white rounded-2xl p-6">
-              <textarea
-                placeholder="Notas adicionales (opcional)"
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                rows={3}
-                className={`${inputBase} resize-none`}
-              />
-            </div>
           </div>
 
           {/* ── Right Column — Order Summary ─────────────────────────── */}
@@ -263,7 +265,7 @@ export default function CheckoutPage() {
                 disabled={submitting}
                 className={`mt-6 bg-primary text-background w-full py-3.5 rounded-xl font-heading font-bold text-sm transition-opacity ${submitting ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'}`}
               >
-                {submitting ? 'Procesando...' : 'Pagar con Wompi →'}
+                {submitting ? 'Redirigiendo a Wompi...' : 'Pagar con Wompi →'}
               </button>
 
               <p className="text-xs text-primary/30 text-center mt-3 font-body">
