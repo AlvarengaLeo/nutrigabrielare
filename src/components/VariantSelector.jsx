@@ -48,7 +48,7 @@ export function SizeSelector({ sizes, selected, onSelect }) {
   return (
     <div className="flex flex-col gap-2">
       <span className="font-body text-xs font-semibold tracking-widest uppercase text-primary/50">
-        Talla
+        Opción / Formato
       </span>
       <div className="flex flex-wrap gap-2">
         {sizes.map((size) => {

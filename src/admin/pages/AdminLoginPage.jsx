@@ -54,8 +54,8 @@ export default function AdminLoginPage() {
   return (
     <div ref={containerRef} className="min-h-screen flex bg-background">
       <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-[#1A1A1A]">
-        <img src="/logo.png" alt="Majes de Sivar" className="w-20 h-20 rounded-full object-cover mb-4" />
-        <span className="font-drama italic text-xl text-accent">Majes de Sivar</span>
+        <img src="/media/logosgaby-21.png" alt="Nutrigabrielare" className="w-20 h-20 rounded-full object-contain mb-4" />
+        <span className="font-drama italic text-xl text-accent">Nutrigabrielare</span>
         <span className="text-sm text-white/40 mt-1">Panel Administrativo</span>
       </div>
       <div className="flex-1 flex items-center justify-center px-6 py-24">

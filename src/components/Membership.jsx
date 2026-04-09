@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, BookOpen } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -27,61 +27,71 @@ export default function Membership() {
   }, []);
 
   return (
-    <section id="comunidad" ref={sectionRef} className="py-24 md:py-32 bg-background relative z-10 w-full overflow-hidden">
+    <section id="recursos" ref={sectionRef} className="py-24 md:py-32 bg-background relative z-10 w-full overflow-hidden">
       <div className="container mx-auto px-6 max-w-6xl">
-        <div className="mb-20 md:mb-28 flex flex-col items-start border-l-2 border-accent pl-6">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-heading font-extrabold text-primary tracking-tighter mb-4">
-            Tres formas de sumarte
+        <div className="flex flex-col items-start w-full relative z-20 mb-20 lg:mb-24">
+          <div className="entry-block inline-flex items-center gap-2 px-4 py-1.5 bg-health/10 text-primary border border-health/20 rounded-full mb-6 max-w-fit">
+            <BookOpen className="w-4 h-4 text-accent" />
+            <span className="text-xs font-bold font-body uppercase tracking-wider text-primary">Recursos</span>
+          </div>
+
+          <h2 className="entry-block font-heading not-italic text-4xl md:text-5xl lg:text-[4rem] text-primary tracking-tight leading-[1.1] max-w-3xl">
+            Herramientas & Planes—<br/>
+            <span className="font-drama italic text-accent">Acelera tus Resultados</span>
           </h2>
-          <p className="font-drama italic text-2xl md:text-3xl text-primary/60">
-            Comunidad, impacto y colección.
-          </p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-stretch">
           
-          {/* Block 1: Comunidad → /comunidad */}
-          <Link to="/comunidad" className="entry-block md:col-span-5 flex flex-col justify-between p-10 md:p-12 rounded-[2.5rem] bg-white border border-primary/5 hover:border-primary/10 transition-colors duration-500 group">
+          {/* Block 1: Planes & Comunidad */}
+          <Link to="/comunidad" className="entry-block md:col-span-6 flex flex-col justify-between p-10 md:p-12 rounded-[2.5rem] bg-white border border-primary/5 hover:border-primary/10 hover:-translate-y-3 hover:shadow-2xl transition-transform duration-700 ease-out group">
             <div>
               <div className="font-drama italic text-xl text-accent mb-6">01</div>
-              <h3 className="font-heading font-bold text-3xl text-primary mb-4 tracking-tight">Comunidad</h3>
-              <p className="font-body text-primary/70 text-lg leading-relaxed mb-12">
-                Historias, contenido y momentos reales del universo Majes.
+              <h3 className="font-heading font-bold text-3xl text-primary mb-4 tracking-tight">Planes Nutricionales</h3>
+              <p className="font-body text-primary/70 text-lg leading-relaxed mb-6">
+                Descubre planes visuales y estratégicos, como nuestro famoso plan de <strong>1500 cal</strong> (112g proteína, 161g carb, 49g grasa).
               </p>
+              <div className="w-full h-32 rounded-xl bg-gradient-to-br from-primary/5 to-accent/10 mb-8 flex items-center justify-center overflow-hidden relative">
+                <span className="font-heading font-bold text-primary/30 text-2xl absolute z-0 tracking-widest hidden md:block uppercase">Ejemplos Reales</span>
+                <div className="flex gap-2 relative z-10">
+                    <div className="w-16 h-16 rounded-full bg-health/20 border-2 border-white shadow-sm flex items-center justify-center text-health font-bold text-xs">-10%</div>
+                    <div className="w-16 h-16 rounded-full bg-accent/20 border-2 border-white shadow-sm flex items-center justify-center text-accent font-bold text-xs">Proteína</div>
+                </div>
+              </div>
             </div>
             <span className="inline-flex items-center text-primary font-bold font-body group-hover:text-accent transition-colors w-fit">
-              Explorar comunidad <ArrowUpRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+              Unirse a la comunidad <ArrowUpRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
             </span>
           </Link>
 
-          {/* Block 2: Proyecto Banquita → /proyecto-banquita */}
-          <Link to="/proyecto-banquita" className="entry-block md:col-span-7 flex flex-col justify-center p-10 md:p-16 rounded-[2.5rem] bg-primary text-background group relative overflow-hidden">
+          {/* Block 2: Consulta Social */}
+          <Link to="/proyecto-banquita" className="entry-block md:col-span-6 flex flex-col justify-center p-10 md:p-16 rounded-[2.5rem] bg-primary text-background hover:-translate-y-3 hover:shadow-2xl transition-transform duration-700 ease-out group relative overflow-hidden">
             {/* Subtle glow */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
             <div className="relative z-10">
               <div className="font-drama italic text-xl text-accent/50 mb-6">02</div>
-              <h3 className="font-heading font-bold text-3xl md:text-4xl mb-4 tracking-tight">Proyecto Banquita</h3>
-              <p className="font-body text-background/70 text-lg md:text-xl leading-relaxed mb-10 max-w-md">
-                Una forma de convertir la hermandad en ayuda real.
+              <h3 className="font-heading font-bold text-3xl md:text-4xl mb-4 tracking-tight">Consulta Social</h3>
+              <p className="font-body text-background/70 text-lg md:text-xl leading-relaxed mb-10 max-w-sm">
+                Comprometidos con el bienestar integral, hacemos la nutrición profesional accesible a quienes verdaderamente lo necesitan.
               </p>
               <span className="magnetic-btn inline-flex items-center justify-center px-8 py-4 rounded-full bg-background text-primary font-bold font-body transition-colors">
-                <span className="relative z-10">Hacer un aporte</span>
+                <span className="relative z-10">Más información</span>
               </span>
             </div>
           </Link>
 
-          {/* Block 3: Colección → /tienda */}
-          <Link to="/tienda" className="entry-block md:col-span-12 flex flex-col md:flex-row items-start md:items-center justify-between p-10 md:p-12 rounded-[2.5rem] bg-accent/5 border border-accent/10 group">
-            <div className="md:w-1/2 mb-8 md:mb-0">
+          {/* Block 3: Tienda / Ecommerce */}
+          <Link to="/tienda" className="entry-block md:col-span-12 flex flex-col md:flex-row items-start md:items-center justify-between p-10 md:p-12 rounded-[2.5rem] bg-accent/5 border border-accent/10 hover:-translate-y-3 hover:shadow-2xl transition-transform duration-700 ease-out group">
+            <div className="md:w-3/5 mb-8 md:mb-0">
               <div className="font-drama italic text-xl text-primary/40 mb-4">03</div>
-              <h3 className="font-heading font-bold text-3xl text-primary mb-3 tracking-tight">Colección</h3>
-              <p className="font-body text-primary/70 text-lg leading-relaxed">
-                Piezas creadas desde la identidad de Majes de Sivar.
+              <h3 className="font-heading font-bold text-3xl text-primary mb-3 tracking-tight">Recursos & E-commerce</h3>
+              <p className="font-body text-primary/70 text-lg leading-relaxed max-w-2xl">
+                Lleva tu nutrición al siguiente nivel. Encuentra recetarios exclusivos, guías especializadas y vitaminas curadas directamente desde mi tienda en línea.
               </p>
             </div>
             <div className="md:w-auto">
-              <span className="inline-flex items-center justify-center px-8 py-4 rounded-full border border-primary text-primary font-bold font-body group-hover:bg-primary group-hover:text-background transition-colors duration-300">
-                Ver colección
+              <span className="inline-flex items-center justify-center px-10 py-5 rounded-full bg-primary text-background font-bold font-body group-hover:scale-105 transition-transform duration-300 shadow-xl shadow-primary/20">
+                Explorar tienda virtual
               </span>
             </div>
           </Link>

@@ -57,13 +57,13 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }) {
       {/* Logo */}
       <div className={`flex items-center gap-3 px-4 py-5 border-b border-primary/5 ${collapsed && !onClose ? 'justify-center' : ''}`}>
         <img
-          src="/logo.png"
-          alt="Majes de Sivar"
+          src="/media/logosgaby-21.png"
+          alt="Nutrigabrielare"
           className="w-8 h-8 object-contain flex-shrink-0"
         />
         {(!collapsed || onClose) && (
           <span className="font-heading font-extrabold text-sm text-primary leading-tight">
-            Majes de Sivar
+            Nutrigabrielare
           </span>
         )}
         {onClose && (

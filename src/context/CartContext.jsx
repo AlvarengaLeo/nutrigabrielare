@@ -10,7 +10,7 @@ import React, {
 
 // ─── Storage key ───────────────────────────────────────────────────────────────
 
-const STORAGE_KEY = 'majes-cart';
+const STORAGE_KEY = 'nutri-cart';
 
 // ─── Context ───────────────────────────────────────────────────────────────────
 

@@ -83,7 +83,7 @@ export default function CheckoutPage() {
       });
 
       // Save orderId as backup
-      localStorage.setItem('majes-pending-order', order.id);
+      localStorage.setItem('nutri-pending-order', order.id);
 
       // Get access token for the serverless function
       const { data: { session } } = await supabase.auth.getSession();

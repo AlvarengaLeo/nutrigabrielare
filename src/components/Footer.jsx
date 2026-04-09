@@ -4,35 +4,35 @@ import { Link } from 'react-router-dom';
 const navItems = [
   { label: 'Inicio', path: '/' },
   { label: 'Tienda', path: '/tienda' },
-  { label: 'Proyecto Banquita', path: '/proyecto-banquita' },
-  { label: 'Contáctanos', path: '/contactanos' },
+  { label: 'Consulta Social', path: '/proyecto-banquita' },
 ];
 
 const communityLinks = [
-  { name: 'Instagram', url: 'https://www.instagram.com/majesdesivar/' },
-  { name: 'YouTube', url: 'https://www.youtube.com/@majesdesivar' },
-  { name: 'TikTok', url: 'https://www.tiktok.com/@majesdesivarr' },
-  { name: 'Facebook', url: 'https://www.facebook.com/profile.php?id=61562686467881' },
-  { name: 'Kick', url: 'https://kick.com/majesdesivar' },
+  { name: 'Instagram', url: 'https://www.instagram.com/nutrigabrielare/' },
+  { name: 'Comunidad', url: '/comunidad' },
+  { name: 'Términos y Condiciones', url: '#' },
 ];
 
 export default function Footer() {
   return (
-    <footer className="bg-dark text-[#F5F0EB] py-16 md:py-24 rounded-t-[4rem] mt-10 w-full relative z-20 overflow-hidden">
+    <footer className="bg-primary text-background py-16 md:py-24 rounded-t-[4rem] mt-10 w-full relative z-20 overflow-hidden">
       <div className="container mx-auto px-6 max-w-7xl">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8 mb-16">
-          <div className="md:col-span-6 flex flex-col items-start pr-0 md:pr-16">
-            <h2 className="font-heading font-extrabold text-3xl md:text-4xl mb-6 tracking-tight">
-              Majes de Sivar
+          <div className="md:col-span-5 flex flex-col items-start pr-0 md:pr-10">
+            <h2 className="font-heading font-extrabold text-3xl md:text-4xl mb-6 tracking-tight text-highlight">
+              Gabriela Retana
             </h2>
-            <p className="font-drama italic text-xl md:text-2xl text-white/60 leading-relaxed max-w-md">
-              "Y mientras tengamos algo que contar y de qué reírnos... seguiremos siendo Majes de Sivar."
+            <p className="font-body text-lg md:text-xl text-background/80 leading-relaxed max-w-md mb-8">
+              Transformando tu bienestar a través de una nutrición profesional, empática y con base científica.
             </p>
+            <a href="https://wa.me/50376284719" target="_blank" rel="noopener noreferrer" className="magnetic-btn inline-flex items-center justify-center px-8 py-3 rounded-full bg-accent text-white font-medium text-sm transition-transform hover:scale-105 shadow-lg shadow-accent/20">
+              <span className="relative z-10">Agenda tu Cita Ahora</span>
+            </a>
           </div>
           
           <div className="md:col-span-3">
-            <h4 className="font-heading font-bold mb-6 text-white/50 uppercase tracking-widest text-sm">Sitio</h4>
-            <ul className="space-y-4 font-body">
+            <h4 className="font-heading font-bold mb-6 text-white/50 uppercase tracking-widest text-sm">Sitio & Comunidad</h4>
+            <ul className="space-y-4 font-body mb-8">
               {navItems.map((item) => (
                 <li key={item.label}>
                   <Link to={item.path} className="hover-lift inline-block text-white/80 hover:text-accent transition-colors">
@@ -41,31 +41,47 @@ export default function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
-          
-          <div className="md:col-span-3">
-            <h4 className="font-heading font-bold mb-6 text-white/50 uppercase tracking-widest text-sm">Comunidad</h4>
             <ul className="space-y-4 font-body">
               {communityLinks.map((link) => (
                 <li key={link.name}>
-                  <a href={link.url} target="_blank" rel="noopener noreferrer" className="hover-lift inline-block text-white/80 hover:text-accent transition-colors">
-                    {link.name}
-                  </a>
+                  {link.url.startsWith('/') ? (
+                    <Link to={link.url} className="hover-lift inline-block text-white/80 hover:text-accent transition-colors">
+                      {link.name}
+                    </Link>
+                  ) : (
+                    <a href={link.url} target="_blank" rel="noopener noreferrer" className="hover-lift inline-block text-white/80 hover:text-accent transition-colors">
+                      {link.name}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
           </div>
+          
+          <div className="md:col-span-4">
+            <h4 className="font-heading font-bold mb-6 text-white/50 uppercase tracking-widest text-sm">Ubicación y Atención</h4>
+            <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 backdrop-blur-sm">
+              <p className="font-body text-white/90 leading-relaxed mb-6">
+                <strong className="text-accent block mb-1">Presencial</strong>
+                Santa Ana, El Salvador.<br/>
+              </p>
+              <p className="font-body text-white/90 leading-relaxed">
+                <strong className="text-accent block mb-1">Online</strong>
+                Cobertura Nacional e Internacional para que logres tus metas desde cualquier lugar del mundo.
+              </p>
+            </div>
+          </div>
         </div>
 
-        <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="font-body text-white/40 text-sm">
-            © Majes de Sivar 2026
+        <div className="border-t border-background/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="font-body text-background/40 text-sm">
+            © Gabriela Retana 2026. Todos los derechos reservados.
           </div>
-          <div className="flex items-center space-x-3 text-sm font-body text-white/60">
-            <span>Hermandad activa</span>
+          <div className="flex items-center space-x-3 text-sm font-body text-background/60">
+            <span>Consultas activas</span>
             <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-health opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-health"></span>
             </span>
           </div>
         </div>

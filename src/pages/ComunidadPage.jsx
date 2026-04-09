@@ -8,28 +8,28 @@ gsap.registerPlugin(ScrollTrigger);
 
 const contentBlocks = [
   {
-    title: 'Detrás de cámaras',
-    desc: 'Lo que no siempre se ve, pero también cuenta la historia.',
+    title: 'Recetas prácticas',
+    desc: 'Opciones saludables, fáciles y deliciosas para tu día a día.',
   },
   {
-    title: 'Historias de El Salvador',
-    desc: 'La mirada de Majes sobre la gente, la calle y lo real.',
+    title: 'Educación nutricional',
+    desc: 'Aprende a nutrir tu cuerpo con información respaldada por la ciencia.',
   },
   {
-    title: 'Momentos del grupo',
-    desc: 'La jodedera, los recuerdos y lo cotidiano que mantiene viva la hermandad.',
+    title: 'Bienestar mental',
+    desc: 'La conexión entre cómo te sientes y cómo comes.',
   },
   {
-    title: 'Contenido en vivo',
-    desc: 'Espacios para conectar en tiempo real desde distintas plataformas.',
+    title: 'Seguimiento continuo',
+    desc: 'Espacios para conectar y mantener la motivación firme.',
   },
 ];
 
 const platforms = [
   {
     name: 'Instagram',
-    desc: 'Historias, reels y momentos del día a día de Majes.',
-    url: 'https://www.instagram.com/majesdesivar/',
+    desc: 'Recetas, tips y contenido de bienestar del día a día.',
+    url: 'https://www.instagram.com/nutrigabrielare/',
   },
   {
     name: 'Facebook',
@@ -39,17 +39,17 @@ const platforms = [
   {
     name: 'TikTok',
     desc: 'Clips, humor, energía y contenido rápido con la vibra del grupo.',
-    url: 'https://www.tiktok.com/@majesdesivarr',
+    url: 'https://www.tiktok.com/@nutrigabrielare',
   },
   {
     name: 'YouTube',
     desc: 'Videos, formatos más largos y contenido para ver con más calma.',
-    url: 'https://www.youtube.com/@majesdesivar',
+    url: 'https://www.youtube.com/@nutrigabrielare',
   },
   {
     name: 'Kick',
     desc: 'Lives, interacción en tiempo real y momentos sin filtro.',
-    url: 'https://kick.com/majesdesivar',
+    url: 'https://kick.com/nutrigabrielare',
   },
 ];
 
@@ -109,16 +109,16 @@ export default function ComunidadPage() {
       <section ref={heroRef} className="min-h-[70vh] flex items-end pb-20 pt-32 bg-background relative overflow-hidden">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="com-hero-el inline-block px-3 py-1 mb-6 rounded-full border border-primary/20 text-xs font-semibold uppercase tracking-widest text-primary/70">
-            Comunidad
+            Comunidad Nutri
           </div>
           <h1 className="com-hero-el font-heading font-extrabold text-5xl md:text-6xl lg:text-7xl tracking-tighter text-primary mb-6 max-w-2xl">
-            Donde vive la hermandad.
+            Tu espacio de bienestar.
           </h1>
           <p className="com-hero-el font-body text-lg md:text-xl text-primary/60 max-w-xl leading-relaxed mb-4">
-            Historias, contenido y momentos reales del universo Majes de Sivar.
+            Educación, inspiración y motivación continua guiada por profesionales.
           </p>
           <p className="com-hero-el font-body text-base md:text-lg text-primary/50 max-w-xl leading-relaxed mb-8">
-            Desde clips espontáneos hasta detrás de cámaras, lives, historias y momentos del grupo: aquí encontrás las puertas para seguir conectando con Majes desde donde más te guste.
+            Desde recetas rápidas e información científica, hasta consultas directas en vivo. Queremos ser la ayuda diaria que transforma tu vida en un estilo duradero y saludable.
           </p>
           <div className="com-hero-el">
             <a
@@ -133,7 +133,7 @@ export default function ComunidadPage() {
       </section>
 
       {/* ── Qué vas a encontrar ── */}
-      <section ref={contentRef} className="py-24 bg-[#F7F4EE] relative z-10 w-full overflow-hidden">
+      <section ref={contentRef} className="py-24 bg-background relative z-10 w-full overflow-hidden">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="mb-16 flex flex-col items-start max-w-2xl">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-extrabold text-primary tracking-tighter mb-4">
@@ -171,7 +171,7 @@ export default function ComunidadPage() {
               Explorar canales
             </h2>
             <p className="font-body text-primary/60 text-lg max-w-xl">
-              Elegí desde dónde querés entrar al universo Majes.
+              Elige desde dónde quieres conectar con Nutrigabrielare.
             </p>
           </div>
 
@@ -220,19 +220,19 @@ export default function ComunidadPage() {
       </section>
 
       {/* ── Closing CTA ── */}
-      <section ref={closingRef} className="py-28 md:py-36 bg-[#0a0a0a] relative overflow-hidden flex items-center justify-center">
+      <section ref={closingRef} className="py-28 md:py-36 bg-primary relative overflow-hidden flex items-center justify-center">
         <div
-          className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none"
+          className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
           style={{
-            backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, #9fc2ff 10px, #9fc2ff 11px), repeating-linear-gradient(-45deg, transparent, transparent 10px, #9fc2ff 10px, #9fc2ff 11px)`,
+            backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, #73D9CF 10px, #73D9CF 11px), repeating-linear-gradient(-45deg, transparent, transparent 10px, #73D9CF 10px, #73D9CF 11px)`,
           }}
         />
         <div className="container mx-auto px-6 relative z-10 text-center max-w-3xl">
           <h2 className="closing-com-el font-drama italic text-3xl md:text-5xl lg:text-6xl text-accent tracking-tight leading-tight mb-6">
-            Seguí la historia desde donde más te guste.
+            Mantén la inspiración.
           </h2>
-          <p className="closing-com-el font-body text-white/50 text-lg md:text-xl leading-relaxed mb-10 max-w-xl mx-auto">
-            Cada plataforma muestra una parte distinta de Majes de Sivar. Elegí la tuya y seguí conectando con la hermandad.
+          <p className="closing-com-el font-body text-background/80 text-lg md:text-xl leading-relaxed mb-10 max-w-xl mx-auto">
+            Cada red social tiene un enfoque diferente para acompañarte en tu transformación diaria hacia una mejor versión.
           </p>
           <div className="closing-com-el">
             <Link

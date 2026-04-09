@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react';
 import { getProductBySlug, getCategoryById } from '../services/productService';
 import { ColorSelector, SizeSelector } from '../components/VariantSelector';
 import { useCart } from '../context/CartContext';
+import MarkdownRenderer from '../components/MarkdownRenderer';
 
 export default function ProductoPage() {
   const { slug } = useParams();
@@ -17,6 +18,7 @@ export default function ProductoPage() {
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [selectedImage, setSelectedImage] = useState(0);
+  const [quantity, setQuantity] = useState(1);
 
   // Fetch product + category
   useEffect(() => {
@@ -24,11 +26,15 @@ export default function ProductoPage() {
     setSelectedColor(null);
     setSelectedSize(null);
     setSelectedImage(0);
+    setQuantity(1);
     getProductBySlug(slug)
       .then((p) => {
         setProduct(p);
         if (p?.variants?.colors?.[0]) {
           setSelectedColor(p.variants.colors[0].name);
+        }
+        if (p?.variants?.sizes?.[0]) {
+          setSelectedSize(p.variants.sizes[0]);
         }
         if (p?.category) {
           return getCategoryById(p.category).then(setCategory);
@@ -79,20 +85,39 @@ export default function ProductoPage() {
     );
   }
 
-  const selectedColorObj = product.variants.colors.find(
-    (c) => c.name === selectedColor,
-  );
-  const mainBg = selectedColorObj?.hex ?? product.variants.colors[0]?.hex ?? '#1A1A1A';
+  // Determine if product has variants
+  // Filter out internal/default variant values
+  const realColors = (product.variants?.colors ?? []).filter(c => c.name !== 'Estándar');
+  const realSizes = (product.variants?.sizes ?? []).filter(s => s !== 'Único');
+  const hasColors = realColors.length > 0;
+  const hasSizes = realSizes.length > 0;
+  const hasVariants = hasColors || hasSizes;
+
+  const selectedColorObj = hasColors
+    ? product.variants.colors.find((c) => c.name === selectedColor)
+    : null;
+  const mainBg = selectedColorObj?.hex ?? '#F3F2F0';
   const hasImages = product.images && product.images.length > 0;
 
-  // Per-variant stock
-  const variantKey = selectedSize && selectedColor ? `${selectedSize}__${selectedColor}` : null;
-  const currentStock = variantKey ? (product.variantStock?.[variantKey] ?? 0) : product.stock;
-  const canAdd = selectedColor && selectedSize && currentStock > 0;
+  // Per-variant stock (only if variants exist)
+  let currentStock;
+  let canAdd;
+
+  if (hasVariants) {
+    const variantKey = selectedSize && selectedColor ? `${selectedSize}__${selectedColor}` : null;
+    currentStock = variantKey ? (product.variantStock?.[variantKey] ?? 0) : product.stock;
+    canAdd = (!hasColors || selectedColor) && (!hasSizes || selectedSize) && currentStock > 0;
+  } else {
+    // No variants — use total product stock
+    currentStock = product.stock ?? 999; // default to available if no stock tracking
+    canAdd = currentStock > 0;
+  }
 
   function handleAddToCart() {
     if (!canAdd) return;
-    addItem(product, selectedSize, selectedColor, 1);
+    const size = selectedSize || 'Único';
+    const color = selectedColor || 'Estándar';
+    addItem(product, size, color, quantity);
   }
 
   return (
@@ -133,11 +158,11 @@ export default function ProductoPage() {
           <div className="producto-el flex-1 flex flex-col gap-4">
             {hasImages ? (
               <>
-                <div className="aspect-[3/4] w-full rounded-2xl overflow-hidden">
+                <div className="aspect-square w-full bg-[#F3F2F0] overflow-hidden flex items-center justify-center">
                   <img
                     src={product.images[selectedImage]}
                     alt={`${product.name} - imagen ${selectedImage + 1}`}
-                    className="w-full h-full object-cover"
+                    className="w-[85%] h-[85%] object-contain mix-blend-multiply"
                   />
                 </div>
                 {product.images.length > 1 && (
@@ -148,7 +173,7 @@ export default function ProductoPage() {
                         type="button"
                         onClick={() => setSelectedImage(i)}
                         className={[
-                          'aspect-square w-20 rounded-xl overflow-hidden transition-all duration-200',
+                          'aspect-square w-20 overflow-hidden transition-all duration-200 bg-[#F3F2F0] flex items-center justify-center',
                           i === selectedImage
                             ? 'border-2 border-accent'
                             : 'border border-primary/10 opacity-60 hover:opacity-80',
@@ -157,7 +182,7 @@ export default function ProductoPage() {
                         <img
                           src={img}
                           alt={`${product.name} - miniatura ${i + 1}`}
-                          className="w-full h-full object-cover"
+                          className="w-[85%] h-[85%] object-contain mix-blend-multiply"
                         />
                       </button>
                     ))}
@@ -166,8 +191,8 @@ export default function ProductoPage() {
               </>
             ) : (
               <div
-                className="aspect-[3/4] w-full rounded-2xl transition-colors duration-300"
-                style={{ backgroundColor: mainBg }}
+                className="aspect-square w-full transition-colors duration-300 bg-[#F3F2F0]"
+                style={selectedColorObj ? { backgroundColor: mainBg } : undefined}
               />
             )}
           </div>
@@ -186,39 +211,75 @@ export default function ProductoPage() {
               ${product.price.toFixed(2)}
             </p>
 
-            <p className="producto-el font-body text-primary/60 leading-relaxed">
-              {product.descriptionLong}
-            </p>
-
-            <div className="producto-el">
-              <ColorSelector
-                colors={product.variants.colors}
-                selected={selectedColor}
-                onSelect={setSelectedColor}
-              />
+            <div className="producto-el font-body text-primary/60">
+              <MarkdownRenderer content={product.description} />
             </div>
 
-            <div className="producto-el">
-              <SizeSelector
-                sizes={product.variants.sizes}
-                selected={selectedSize}
-                onSelect={setSelectedSize}
-              />
-            </div>
+            {/* Color selector — only if colors exist */}
+            {hasColors && (
+              <div className="producto-el">
+                <ColorSelector
+                  colors={realColors}
+                  selected={selectedColor}
+                  onSelect={setSelectedColor}
+                />
+              </div>
+            )}
 
-            {/* Stock indicator — per-variant */}
-            <div className="producto-el font-body text-sm">
-              {currentStock > 0 ? (
-                <span className="flex items-center gap-2 text-green-600">
-                  <span className="text-green-500">●</span>
-                  {currentStock} disponibles
+            {/* Size selector — only if sizes exist */}
+            {hasSizes && (
+              <div className="producto-el">
+                <SizeSelector
+                  sizes={realSizes}
+                  selected={selectedSize}
+                  onSelect={setSelectedSize}
+                />
+              </div>
+            )}
+
+            {/* Quantity selector */}
+            <div className="producto-el flex flex-col gap-2">
+              <span className="font-body text-xs font-semibold tracking-widest uppercase text-primary/50">
+                Cantidad
+              </span>
+              <div className="flex items-center border border-primary/10 rounded-xl overflow-hidden w-fit">
+                <button
+                  type="button"
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="px-4 py-3 text-primary/50 hover:text-primary transition-colors"
+                >
+                  −
+                </button>
+                <span className="px-4 py-3 font-body text-sm font-semibold text-primary min-w-[3rem] text-center">
+                  {quantity}
                 </span>
-              ) : (
-                <span className="text-red-500 font-semibold">
-                  {selectedSize && selectedColor ? 'Agotado en esta combinación' : 'Seleccioná talla y color'}
-                </span>
-              )}
+                <button
+                  type="button"
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="px-4 py-3 text-primary/50 hover:text-primary transition-colors"
+                >
+                  +
+                </button>
+              </div>
             </div>
+
+            {/* Stock indicator */}
+            {hasVariants && (
+              <div className="producto-el font-body text-sm">
+                {currentStock > 0 ? (
+                  <span className="flex items-center gap-2 text-green-600">
+                    <span className="text-green-500">●</span>
+                    {currentStock} disponibles
+                  </span>
+                ) : (
+                  <span className="text-red-500 font-semibold">
+                    {(!hasColors || selectedColor) && (!hasSizes || selectedSize)
+                      ? 'Agotado en esta combinación'
+                      : 'Selecciona las opciones'}
+                  </span>
+                )}
+              </div>
+            )}
 
             <button
               type="button"
@@ -231,10 +292,12 @@ export default function ProductoPage() {
                   : 'bg-primary/30 text-background/60 cursor-not-allowed',
               ].join(' ')}
             >
-              {!selectedColor || !selectedSize
-                ? 'Seleccioná talla y color'
-                : currentStock === 0
+              {hasVariants && ((!hasColors || selectedColor) && (!hasSizes || selectedSize))
+                ? currentStock === 0
                   ? 'Agotado'
+                  : 'Agregar al carrito'
+                : hasVariants
+                  ? 'Selecciona las opciones'
                   : 'Agregar al carrito'}
             </button>
           </div>
@@ -243,3 +306,4 @@ export default function ProductoPage() {
     </div>
   );
 }
+

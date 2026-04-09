@@ -89,7 +89,7 @@ export default function GraciasPage() {
     if (paymentStatus === 'approved' && !cartClearedRef.current) {
       cartClearedRef.current = true;
       clearCart();
-      localStorage.removeItem('majes-pending-order');
+      localStorage.removeItem('nutri-pending-order');
     }
   }, [paymentStatus, clearCart]);
 

@@ -7,29 +7,29 @@ gsap.registerPlugin(ScrollTrigger);
 
 const tiers = [
   {
-    name: 'Maje Solidario',
-    amount: '$5',
-    desc: 'Un gesto sencillo que suma. Cada aporte, por pequeño que sea, llega directo.',
+    name: 'Evaluación Básica',
+    amount: '$15',
+    desc: 'Un diagnóstico inicial para conocer tu estado de salud y obtener recomendaciones prácticas.',
     icon: Heart,
   },
   {
-    name: 'Maje de Corazón',
-    amount: '$25',
-    desc: 'Un compromiso más cercano con la comunidad. Tu aporte sostiene jornadas completas.',
+    name: 'Plan Hormonal / Gestacional',
+    amount: '$30',
+    desc: 'Programa diseñado específicamente para el cuidado y equilibrio de la mujer.',
     icon: Users,
   },
   {
-    name: 'Maje Banquita',
+    name: 'Programa Integral',
     amount: '$50+',
-    desc: 'El nivel más alto de hermandad. Ayudás a construir algo que trasciende.',
+    desc: 'Evaluación completa, plan personalizado, monitoreo y acompañamiento constante.',
     icon: Award,
   },
 ];
 
 const transparencyStats = [
-  { label: 'Recaudado', value: '$2,450' },
-  { label: 'Jornadas realizadas', value: '3' },
-  { label: 'Familias apoyadas', value: '45+' },
+  { label: 'Pacientes en control', value: '120+' },
+  { label: 'Planes entregados', value: '450+' },
+  { label: 'Charlas impartidas', value: '15' },
 ];
 
 export default function ProyectoBanquitaPage() {
@@ -84,26 +84,26 @@ export default function ProyectoBanquitaPage() {
       <section ref={heroRef} className="min-h-[70vh] flex items-end pb-20 pt-32 bg-background relative overflow-hidden">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="don-hero-el inline-block px-3 py-1 mb-6 rounded-full border border-primary/20 text-xs font-semibold uppercase tracking-widest text-primary/70">
-            Proyecto Banquita
+            Programa de Apoyo
           </div>
           <h1 className="don-hero-el font-heading font-extrabold text-5xl md:text-6xl lg:text-7xl tracking-tighter text-primary mb-6 max-w-2xl">
-            Proyecto Banquita
+            Consulta Social
           </h1>
           <p className="don-hero-el font-body text-lg md:text-xl text-primary/60 max-w-xl leading-relaxed">
-            Una forma real de convertir la hermandad en ayuda.
+            Haciendo la nutrición profesional accesible y transformadora para todos.
           </p>
         </div>
       </section>
 
       {/* ── Tiers ── */}
-      <section ref={tiersRef} className="py-24 bg-[#F7F4EE] relative z-10 w-full overflow-hidden">
+      <section ref={tiersRef} className="py-24 bg-background relative z-10 w-full overflow-hidden">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="mb-16 flex flex-col items-start max-w-2xl">
             <h2 className="text-3xl md:text-4xl font-heading font-extrabold text-primary tracking-tighter mb-4">
-              Elegí cómo sumar
+              Nuestros planes
             </h2>
             <p className="font-body text-primary/60 text-lg">
-              Cada opción es una forma de ser parte. No hay montos pequeños cuando la intención es real.
+              Soluciones estructuradas para distintas necesidades, garantizando un acompañamiento profesional ético y respetuoso de tu cuerpo.
             </p>
           </div>
 
@@ -126,7 +126,7 @@ export default function ProyectoBanquitaPage() {
                     href="#"
                     className="magnetic-btn inline-flex items-center justify-center w-full py-4 rounded-full bg-primary text-background font-bold font-body transition-colors"
                   >
-                    <span className="relative z-10">Hacer un aporte</span>
+                    <span className="relative z-10">Agendar</span>
                   </a>
                 </div>
               );
@@ -140,36 +140,36 @@ export default function ProyectoBanquitaPage() {
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="mb-16 border-l-2 border-accent pl-6">
             <h2 className="transparency-el text-3xl md:text-4xl font-heading font-extrabold text-primary tracking-tighter mb-4">
-              Transparencia
+              Impacto & Charlas
             </h2>
             <p className="transparency-el font-body text-primary/60 text-lg max-w-xl">
-              Creemos que la confianza se construye mostrando con claridad cómo se usa cada aporte. Aquí, todo se ve.
+              Creemos firmemente en la prevención y la educación nutricional a gran escala.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
             {transparencyStats.map((stat) => (
-              <div key={stat.label} className="transparency-el p-8 rounded-[2rem] bg-[#F7F4EE] border border-primary/5 text-center">
+              <div key={stat.label} className="transparency-el p-8 rounded-[2rem] bg-white border border-primary/5 text-center">
                 <div className="font-heading font-extrabold text-4xl md:text-5xl text-primary mb-2">{stat.value}</div>
                 <div className="font-body text-primary/50 text-sm uppercase tracking-widest">{stat.label}</div>
               </div>
             ))}
           </div>
 
-          <div className="transparency-el p-8 md:p-12 rounded-[2rem] bg-[#F7F4EE] border border-primary/5">
-            <h3 className="font-heading font-bold text-xl text-primary mb-4">Últimas actualizaciones</h3>
+          <div className="transparency-el p-8 md:p-12 rounded-[2rem] bg-white border border-primary/5">
+            <h3 className="font-heading font-bold text-xl text-primary mb-4">Últimas actividades</h3>
             <ul className="space-y-4 font-body text-primary/70 text-base">
               <li className="flex items-start gap-3">
-                <span className="w-2 h-2 rounded-full bg-accent mt-2 shrink-0"></span>
-                <span>Jornada de entrega de útiles escolares en San Salvador — Febrero 2026</span>
+                <span className="w-2 h-2 rounded-full bg-health mt-2 shrink-0"></span>
+                <span>Taller de alimentación balanceada para madres comunitarias — Febrero 2026</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="w-2 h-2 rounded-full bg-accent mt-2 shrink-0"></span>
-                <span>Entrega de alimentos a 15 familias en Soyapango — Enero 2026</span>
+                <span className="w-2 h-2 rounded-full bg-health mt-2 shrink-0"></span>
+                <span>Jornada de tamizaje nutricional en clínica comunitaria — Enero 2026</span>
               </li>
               <li className="flex items-start gap-3">
-                <span className="w-2 h-2 rounded-full bg-accent mt-2 shrink-0"></span>
-                <span>Primera jornada Banquita: limpieza comunitaria + convivio — Diciembre 2025</span>
+                <span className="w-2 h-2 rounded-full bg-health mt-2 shrink-0"></span>
+                <span>Campaña contra la anemia: Diagnóstico y planes preventivos — Diciembre 2025</span>
               </li>
             </ul>
           </div>
@@ -177,15 +177,15 @@ export default function ProyectoBanquitaPage() {
       </section>
 
       {/* ── Closing ── */}
-      <section ref={closingRef} className="py-28 md:py-36 bg-[#0a0a0a] relative overflow-hidden flex items-center justify-center">
-        <div className="absolute inset-0 z-0 opacity-[0.02] pointer-events-none"
+      <section ref={closingRef} className="py-28 md:py-36 bg-primary relative overflow-hidden flex items-center justify-center">
+        <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
           style={{
-            backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, #9fc2ff 10px, #9fc2ff 11px), repeating-linear-gradient(-45deg, transparent, transparent 10px, #9fc2ff 10px, #9fc2ff 11px)`,
+            backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, #73D9CF 10px, #73D9CF 11px), repeating-linear-gradient(-45deg, transparent, transparent 10px, #73D9CF 10px, #73D9CF 11px)`,
           }}
         />
         <div className="container mx-auto px-6 relative z-10 text-center max-w-3xl">
           <h2 className="closing-don-el font-drama italic text-3xl md:text-5xl lg:text-6xl text-accent tracking-tight leading-tight">
-            No queremos competir con nadie. Solo queremos sumar algo bueno.
+            Nutrición basada en empatía y evidencia.
           </h2>
         </div>
       </section>

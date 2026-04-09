@@ -2,17 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import AdminLayout from '../components/AdminLayout';
-import VariantEditor from '../components/VariantEditor';
 import ImageUploader from '../components/ImageUploader';
 import {
-  getProductBySlug,
-  getAllProductsAdmin,
   getCategories,
   createProduct,
   updateProduct,
   createVariant,
-  updateVariant,
-  deleteVariant,
   uploadProductImage,
   deleteProductImage,
 } from '../../services/productService';
@@ -42,9 +37,10 @@ export default function AdminProductoForm() {
   const [descriptionLong, setDescriptionLong] = useState('');
   const [active, setActive] = useState(true);
   const [featured, setFeatured] = useState(false);
-  const [variants, setVariants] = useState([]);
+  const [stock, setStock] = useState('0');
   const [images, setImages] = useState([]);
-  const [originalVariants, setOriginalVariants] = useState([]);
+  // Pending files for new products (not yet saved to DB)
+  const [pendingFiles, setPendingFiles] = useState([]);
 
   useEffect(() => {
     async function load() {
@@ -53,7 +49,6 @@ export default function AdminProductoForm() {
         setCategories(cats);
 
         if (isEdit) {
-          // Fetch product by ID (not slug) - get raw from supabase
           const { data: product, error: fetchErr } = await supabase
             .from('products')
             .select(`
@@ -75,16 +70,11 @@ export default function AdminProductoForm() {
           setActive(product.active);
           setFeatured(product.featured);
 
-          const vars = (product.product_variants ?? []).map((v) => ({
-            id: v.id,
-            size: v.size,
-            colorName: v.color_name,
-            colorHex: v.color_hex,
-            stock: v.stock,
-            active: v.active,
-          }));
-          setVariants(vars);
-          setOriginalVariants(vars);
+          // Calculate total stock from variants
+          const totalStock = (product.product_variants ?? [])
+            .filter(v => v.active)
+            .reduce((sum, v) => sum + (v.stock ?? 0), 0);
+          setStock(String(totalStock));
 
           const imgs = (product.product_images ?? [])
             .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0))
@@ -129,25 +119,29 @@ export default function AdminProductoForm() {
           description, descriptionLong, active, featured,
         });
 
-        // Sync variants
-        const originalIds = new Set(originalVariants.map((v) => v.id));
-        const currentIds = new Set(variants.filter((v) => v.id).map((v) => v.id));
+        // Update stock: find existing default variant or create one
+        const { data: existingVars } = await supabase
+          .from('product_variants')
+          .select('id')
+          .eq('product_id', id);
 
-        // Delete removed variants
-        for (const ov of originalVariants) {
-          if (!currentIds.has(ov.id)) await deleteVariant(ov.id);
+        if (existingVars && existingVars.length > 0) {
+          // Update the first variant's stock
+          await supabase
+            .from('product_variants')
+            .update({ stock: parseInt(stock) || 0 })
+            .eq('id', existingVars[0].id);
+        } else {
+          // Create a default variant
+          await createVariant(id, {
+            size: 'Único',
+            colorName: 'Estándar',
+            colorHex: '#73D9CF',
+            stock: parseInt(stock) || 0,
+            active: true,
+          });
         }
 
-        // Create new + update existing
-        for (const v of variants) {
-          if (v.id && originalIds.has(v.id)) {
-            await updateVariant(v.id, { size: v.size, colorName: v.colorName, colorHex: v.colorHex, stock: v.stock, active: v.active });
-          } else if (!v.id) {
-            await createVariant(id, { size: v.size, colorName: v.colorName, colorHex: v.colorHex, stock: v.stock, active: v.active });
-          }
-        }
-
-        // Reload
         navigate(0); // refresh page
       } else {
         // Create product
@@ -156,9 +150,18 @@ export default function AdminProductoForm() {
           description, descriptionLong, active, featured,
         });
 
-        // Create variants
-        for (const v of variants) {
-          await createVariant(created.id, { size: v.size, colorName: v.colorName, colorHex: v.colorHex, stock: v.stock, active: v.active });
+        // Create a default variant with stock
+        await createVariant(created.id, {
+          size: 'Único',
+          colorName: 'Estándar',
+          colorHex: '#73D9CF',
+          stock: parseInt(stock) || 0,
+          active: true,
+        });
+
+        // Upload pending images
+        for (const file of pendingFiles) {
+          await uploadProductImage(created.id, file);
         }
 
         navigate(`/admin/productos/${created.id}`, { replace: true });
@@ -171,13 +174,23 @@ export default function AdminProductoForm() {
   }
 
   async function handleImageUpload(file) {
-    const result = await uploadProductImage(id, file);
-    setImages((prev) => [...prev, { id: result.id, url: result.url, sortOrder: result.sort_order }]);
+    if (isEdit) {
+      // Direct upload for existing products
+      const result = await uploadProductImage(id, file);
+      setImages((prev) => [...prev, { id: result.id, url: result.url, sortOrder: result.sort_order }]);
+    } else {
+      // Queue files for upload after product creation
+      setPendingFiles((prev) => [...prev, file]);
+    }
   }
 
   async function handleImageDelete(imageId, url) {
     await deleteProductImage(imageId, url);
     setImages((prev) => prev.filter((img) => img.id !== imageId));
+  }
+
+  function removePendingFile(index) {
+    setPendingFiles((prev) => prev.filter((_, i) => i !== index));
   }
 
   const inputClass = 'bg-[#f8f6f3] rounded-xl px-4 py-3 text-sm text-primary placeholder:text-primary/40 outline-none focus:ring-2 focus:ring-accent/40 w-full';
@@ -210,7 +223,7 @@ export default function AdminProductoForm() {
             </div>
           </div>
 
-          <div className="form-el grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="form-el grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-1 block">Categoría</label>
               <select className={inputClass} value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required>
@@ -222,16 +235,18 @@ export default function AdminProductoForm() {
               <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-1 block">Precio ($)</label>
               <input className={inputClass} type="number" step="0.01" min="0" value={price} onChange={(e) => setPrice(e.target.value)} required />
             </div>
+            <div>
+              <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-1 block">Stock</label>
+              <input className={inputClass} type="number" min="0" value={stock} onChange={(e) => setStock(e.target.value)} />
+            </div>
           </div>
 
           <div className="form-el">
-            <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-1 block">Descripción corta</label>
-            <textarea className={`${inputClass} min-h-[80px]`} value={description} onChange={(e) => setDescription(e.target.value)} />
-          </div>
-
-          <div className="form-el">
-            <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-1 block">Descripción larga</label>
-            <textarea className={`${inputClass} min-h-[120px]`} value={descriptionLong} onChange={(e) => setDescriptionLong(e.target.value)} />
+            <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-1 block">Descripción</label>
+            <textarea className={`${inputClass} min-h-[160px] font-mono text-[13px] leading-relaxed`} value={description} onChange={(e) => setDescription(e.target.value)} placeholder={"## Detalles del Producto\n\n- **Composición:** Contiene 30 vitaminas\n- **Pureza:** USDA Organic\n- **Uso:** 4 cápsulas diarias"} />
+            <p className="mt-1.5 font-body text-[11px] text-primary/30">
+              Formato: **negrita**, *cursiva*, ## título, - viñetas
+            </p>
           </div>
 
           <div className="form-el flex items-center gap-6">
@@ -245,21 +260,59 @@ export default function AdminProductoForm() {
             </label>
           </div>
 
-          {/* Variants */}
+          {/* Images */}
           <div className="form-el">
-            <h3 className="font-heading font-bold text-lg text-primary mb-3">Variantes</h3>
-            <div className="bg-white rounded-2xl border border-primary/5 p-4">
-              <VariantEditor variants={variants} onChange={setVariants} />
-            </div>
-          </div>
-
-          {/* Images (edit mode only) */}
-          {isEdit && (
-            <div className="form-el">
-              <h3 className="font-heading font-bold text-lg text-primary mb-3">Imágenes</h3>
+            <h3 className="font-heading font-bold text-lg text-primary mb-3">Imágenes</h3>
+            {isEdit ? (
               <ImageUploader productId={id} images={images} onUpload={handleImageUpload} onDelete={handleImageDelete} />
-            </div>
-          )}
+            ) : (
+              <div>
+                {/* File picker for new products */}
+                <div
+                  onClick={() => document.getElementById('new-product-images')?.click()}
+                  className="border-2 border-dashed rounded-2xl p-8 text-center cursor-pointer transition-colors border-primary/20 hover:border-primary/40"
+                >
+                  <div className="flex flex-col items-center gap-2">
+                    <svg className="w-8 h-8 text-primary/30" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 4v16m8-8H4" /></svg>
+                    <span className="font-body text-sm text-primary/50">Haz click para seleccionar imágenes</span>
+                    <span className="font-body text-xs text-primary/30">Se subirán al guardar el producto</span>
+                  </div>
+                  <input
+                    id="new-product-images"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="hidden"
+                    onChange={(e) => {
+                      if (e.target.files) {
+                        for (const file of e.target.files) {
+                          handleImageUpload(file);
+                        }
+                      }
+                    }}
+                  />
+                </div>
+
+                {/* Preview pending files */}
+                {pendingFiles.length > 0 && (
+                  <div className="grid grid-cols-3 gap-3 mt-4">
+                    {pendingFiles.map((file, i) => (
+                      <div key={i} className="relative group aspect-square rounded-xl overflow-hidden bg-primary/5">
+                        <img src={URL.createObjectURL(file)} alt="" className="w-full h-full object-cover" />
+                        <button
+                          type="button"
+                          onClick={() => removePendingFile(i)}
+                          className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Save */}
           <button
@@ -274,3 +327,4 @@ export default function AdminProductoForm() {
     </AdminLayout>
   );
 }
+

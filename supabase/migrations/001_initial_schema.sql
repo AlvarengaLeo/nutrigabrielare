@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════════
--- Majes de Sivar — Phase 2: Initial Schema
+-- Nutrigabrielare — Phase 2: Initial Schema
 -- ═══════════════════════════════════════════════════════════════════
 
 -- ─── PROFILES ────────────────────────────────────────────────────
@@ -341,9 +341,9 @@ declare
 begin
   select count(*) + 1 into next_num
   from public.orders
-  where id like 'MJS-' || current_year || '-%';
+  where id like 'NTG-' || current_year || '-%';
 
-  order_id := 'MJS-' || current_year || '-' || lpad(next_num::text, 4, '0');
+  order_id := 'NTG-' || current_year || '-' || lpad(next_num::text, 4, '0');
   return order_id;
 end;
 $$;

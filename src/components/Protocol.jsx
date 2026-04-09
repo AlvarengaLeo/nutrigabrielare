@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { Calendar } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -8,9 +9,21 @@ export default function Protocol() {
   const containerRef = useRef(null);
   
   const steps = [
-    { num: '01', title: 'Memoria', desc: 'Lo que vivimos merece quedar contado.' },
-    { num: '02', title: 'Voz', desc: 'Queremos mostrar El Salvador desde la mirada de la gente real.' },
-    { num: '03', title: 'Huella', desc: 'Si la amistad nos formó, también puede servir para aportar algo bueno.' }
+    { 
+      num: '01', 
+      title: 'Contáctanos', 
+      desc: 'Escríbenos por WhatsApp al 7628-4719. Conversaremos sobre tus objetivos y te ofreceremos los horarios disponibles más cercanos.' 
+    },
+    { 
+      num: '02', 
+      title: 'Reserva tu cupo', 
+      desc: 'Asegura tu espacio mediante una transferencia de $10.00. El saldo restante se cancela el día de tu consulta. Tu compromiso nos permite brindarte el nivel de servicio que mereces.' 
+    },
+    { 
+      num: '03', 
+      title: 'Disponibilidad y Políticas', 
+      desc: 'Horarios: Mar y Jue (9:00am a 5:30pm), Mié (7:00am a 3:30pm), Vie (1:00pm a 7:00pm), Sáb (8:00am a 5:00pm). Las cancelaciones realizadas con 48h de anticipación gozan de devolución íntegra del anticipo.' 
+    }
   ];
 
   useEffect(() => {
@@ -62,28 +75,35 @@ export default function Protocol() {
   }, []);
 
   return (
-    <section id="nosotros" className="bg-dark text-[#F5F0EB] py-24 w-full relative">
+    <section id="reservas" className="bg-white py-24 w-full relative">
       <div className="container mx-auto px-6 max-w-4xl pt-10 pb-[50vh]" ref={containerRef}>
         
-        <div className="mb-20">
-          <h2 className="text-4xl md:text-6xl font-heading font-extrabold tracking-tighter mb-4">Qué queremos dejar</h2>
-          <div className="w-20 h-1 bg-accent rounded-full"></div>
+        <div className="flex flex-col items-start w-full relative z-20 mb-20 lg:mb-24">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-health/10 text-primary border border-health/20 rounded-full mb-6 max-w-fit">
+            <Calendar className="w-4 h-4 text-accent" />
+            <span className="text-xs font-bold font-body uppercase tracking-wider text-primary">Reservas</span>
+          </div>
+
+          <h2 className="font-heading not-italic text-4xl md:text-5xl lg:text-[4rem] text-primary tracking-tight leading-[1.1] max-w-3xl">
+            Agenda tu Cita—<br/>
+            <span className="font-drama italic text-accent">Empieza tu Proceso Hoy</span>
+          </h2>
         </div>
 
         <div className="relative space-y-24">
           {steps.map((step, idx) => (
-            <div key={idx} className="protocol-card min-h-[40vh] bg-[#222] border border-white/5 p-10 md:p-16 rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col justify-center">
+            <div key={idx} className="protocol-card min-h-[40vh] bg-background border border-primary/5 p-10 md:p-16 rounded-[3rem] shadow-xl hover:shadow-2xl transition-shadow duration-700 relative overflow-hidden flex flex-col justify-center">
               
               {/* Background Abstract Shape */}
-              <div className="absolute -right-20 -top-20 w-64 h-64 bg-accent/5 rounded-full blur-3xl" />
+              <div className="absolute -right-20 -top-20 w-64 h-64 bg-accent/5 rounded-full blur-3xl pointer-events-none" />
               
               <div className="protocol-card-content relative z-10 flex flex-col md:flex-row gap-8 items-start md:items-center">
                 <div className="font-drama italic text-7xl md:text-[8rem] text-accent/20 leading-none">
                   {step.num}
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-3xl md:text-5xl font-heading font-bold mb-6 tracking-tight text-[#F5F0EB]">{step.title}</h3>
-                  <p className="text-lg md:text-xl font-body text-white/50 leading-relaxed">
+                  <h3 className="text-3xl md:text-4xl font-heading font-bold mb-6 tracking-tight text-primary">{step.title}</h3>
+                  <p className="text-lg md:text-xl font-body text-primary/70 leading-relaxed max-w-xl">
                     {step.desc}
                   </p>
                 </div>

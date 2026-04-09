@@ -4,7 +4,7 @@
 
 @layer base {
   body {
-    @apply font-body bg-background text-primary antialiased selection:bg-accent selection:text-white;
+    @apply font-body bg-background text-primary antialiased selection:bg-highlight selection:text-primary;
     overflow-x: hidden;
   }
   

@@ -15,7 +15,7 @@ const subjectOptions = [
 
 const faqs = [
   {
-    q: '¿Cómo puedo colaborar con Majes de Sivar?',
+    q: '¿Cómo puedo agendar una consulta con Nutrigabrielare?',
     a: 'Podés escribirnos directamente usando el formulario de arriba o contactarnos por redes. Estamos abiertos a ideas, proyectos y alianzas que tengan sentido con nuestra identidad.',
   },
   {
@@ -28,7 +28,7 @@ const faqs = [
   },
   {
     q: '¿Tienen tienda o productos disponibles?',
-    a: 'Sí. Nuestra colección incluye ropa, accesorios y ediciones limitadas. Todo diseñado desde la identidad Majes de Sivar.',
+    a: 'Sí. Nuestra tienda incluye recursos y guías diseñadas científicamente desde la metodología de Nutrigabrielare.',
   },
   {
     q: '¿Cómo puedo contactarlos para prensa o alianzas?',
