@@ -77,6 +77,7 @@ export function CartProvider({ children }) {
   const addItem = useCallback((product, size, color, qty = 1) => {
     setItems((prev) => {
       const key = itemKey(product.id, size, color);
+      const nextImage = product.images?.[0] ?? null;
       const existing = prev.find(
         (i) => itemKey(i.productId, i.size, i.color) === key,
       );
@@ -84,7 +85,14 @@ export function CartProvider({ children }) {
       if (existing) {
         return prev.map((i) =>
           itemKey(i.productId, i.size, i.color) === key
-            ? { ...i, quantity: i.quantity + qty }
+            ? {
+                ...i,
+                slug: product.slug,
+                name: product.name,
+                price: product.price,
+                image: nextImage ?? i.image ?? null,
+                quantity: i.quantity + qty,
+              }
             : i,
         );
       }
@@ -99,7 +107,7 @@ export function CartProvider({ children }) {
           size,
           color,
           quantity: qty,
-          image: product.images?.[0] ?? '/products/placeholder-dark.jpg',
+          image: nextImage,
         },
       ];
     });

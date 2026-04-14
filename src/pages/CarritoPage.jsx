@@ -1,8 +1,28 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { X, Minus, Plus } from 'lucide-react';
 import { useCart } from '../context/CartContext';
+
+function CartItemThumbnail({ item }) {
+  const [hasImageError, setHasImageError] = useState(false);
+  const hasImage = Boolean(item.image) && !hasImageError;
+
+  return (
+    <div className="w-20 h-24 rounded-xl bg-primary/5 shrink-0 overflow-hidden flex items-center justify-center">
+      {hasImage ? (
+        <img
+          src={item.image}
+          alt={item.name}
+          className="w-[85%] h-[85%] object-contain mix-blend-multiply"
+          onError={() => setHasImageError(true)}
+        />
+      ) : (
+        <div className="w-12 h-12 rounded-full bg-primary/10" />
+      )}
+    </div>
+  );
+}
 
 export default function CarritoPage() {
   const { items, subtotal, removeItem, updateQuantity } = useCart();
@@ -62,8 +82,7 @@ export default function CarritoPage() {
                   key={`${item.productId}__${item.size}__${item.color}`}
                   className="carrito-el relative bg-white rounded-2xl p-5 flex gap-5 items-start"
                 >
-                  {/* Color placeholder */}
-                  <div className="w-20 h-24 rounded-xl bg-primary shrink-0" />
+                  <CartItemThumbnail item={item} />
 
                   {/* Info */}
                   <div className="flex-1 flex flex-col gap-2 min-w-0">
