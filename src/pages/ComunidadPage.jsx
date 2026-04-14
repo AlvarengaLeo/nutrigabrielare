@@ -25,39 +25,11 @@ const contentBlocks = [
   },
 ];
 
-const platforms = [
-  {
-    name: 'Instagram',
-    desc: 'Recetas, tips y contenido de bienestar del día a día.',
-    url: 'https://www.instagram.com/nutrigabrielare/',
-  },
-  {
-    name: 'Facebook',
-    desc: 'Publicaciones, comunidad y actualizaciones del proyecto.',
-    url: 'https://www.facebook.com/profile.php?id=61562686467881',
-  },
-  {
-    name: 'TikTok',
-    desc: 'Clips, humor, energía y contenido rápido con la vibra del grupo.',
-    url: 'https://www.tiktok.com/@nutrigabrielare',
-  },
-  {
-    name: 'YouTube',
-    desc: 'Videos, formatos más largos y contenido para ver con más calma.',
-    url: 'https://www.youtube.com/@nutrigabrielare',
-  },
-  {
-    name: 'Kick',
-    desc: 'Lives, interacción en tiempo real y momentos sin filtro.',
-    url: 'https://kick.com/nutrigabrielare',
-  },
-];
+
 
 export default function ComunidadPage() {
   const heroRef = useRef(null);
   const contentRef = useRef(null);
-  const channelsRef = useRef(null);
-  const closingRef = useRef(null);
 
   useEffect(() => {
     let ctx = gsap.context(() => {
@@ -78,30 +50,11 @@ export default function ComunidadPage() {
         stagger: 0.12,
         ease: 'power3.out',
       });
-
-      gsap.from('.channel-card', {
-        scrollTrigger: { trigger: channelsRef.current, start: 'top 85%' },
-        y: 30,
-        duration: 0.8,
-        stagger: 0.1,
-        ease: 'power3.out',
-      });
-
-      gsap.from('.closing-com-el', {
-        scrollTrigger: { trigger: closingRef.current, start: 'top 80%' },
-        y: 30,
-        opacity: 0,
-        duration: 1,
-        ease: 'power3.out',
-      });
     });
     return () => ctx.revert();
   }, []);
 
-  const scrollToChannels = (e) => {
-    e.preventDefault();
-    document.getElementById('explorar-canales')?.scrollIntoView({ behavior: 'smooth' });
-  };
+
 
   return (
     <>
@@ -121,13 +74,7 @@ export default function ComunidadPage() {
             Desde recetas prácticas y educación en salud hormonal, hasta conversaciones en vivo sobre hábitos y bienestar integral. Te acompaño más allá de la consulta.
           </p>
           <div className="com-hero-el">
-            <a
-              href="#explorar-canales"
-              onClick={scrollToChannels}
-              className="magnetic-btn inline-flex items-center justify-center px-8 py-4 rounded-full bg-primary text-background font-medium text-lg"
-            >
-              <span className="relative z-10">Explorar canales</span>
-            </a>
+            {/* Omitted original scrollToChannels button */}
           </div>
         </div>
       </section>
@@ -163,87 +110,7 @@ export default function ComunidadPage() {
         </div>
       </section>
 
-      {/* ── Explorar canales ── */}
-      <section id="explorar-canales" ref={channelsRef} className="py-24 md:py-32 bg-background relative z-10 w-full overflow-hidden">
-        <div className="container mx-auto px-6 max-w-6xl">
-          <div className="mb-16 md:mb-20 border-l-2 border-accent pl-6">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-heading font-extrabold text-primary tracking-tighter mb-4">
-              Explorar canales
-            </h2>
-            <p className="font-body text-primary/60 text-lg max-w-xl">
-              Elige desde dónde quieres conectar con Nutrigabrielare.
-            </p>
-          </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10">
-            {platforms.map((platform, idx) => {
-              const isFeatured = idx === 0;
-              const colSpan = idx < 2 ? (isFeatured ? 'md:col-span-7' : 'md:col-span-5') : 'md:col-span-4';
-
-              return (
-                <a
-                  key={platform.name}
-                  href={platform.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`channel-card group flex flex-col justify-between p-10 md:p-12 rounded-[2.5rem] border transition-all duration-500 hover:-translate-y-1 min-h-[280px] ${colSpan} ${
-                    isFeatured
-                      ? 'bg-primary text-background border-primary/10'
-                      : 'bg-white border-primary/5 hover:border-primary/10'
-                  }`}
-                >
-                  <div>
-                    <h3 className={`font-heading font-bold text-2xl md:text-3xl mb-4 tracking-tight ${
-                      isFeatured ? 'text-background' : 'text-primary'
-                    }`}>
-                      {platform.name}
-                    </h3>
-                    <p className={`font-body text-base md:text-lg leading-relaxed mb-8 max-w-sm ${
-                      isFeatured ? 'text-background/70' : 'text-primary/70'
-                    }`}>
-                      {platform.desc}
-                    </p>
-                  </div>
-                  <div className={`inline-flex items-center font-bold font-body w-fit transition-colors ${
-                    isFeatured
-                      ? 'text-background/80 group-hover:text-accent'
-                      : 'text-primary group-hover:text-accent'
-                  }`}>
-                    Visitar {platform.name}
-                    <ArrowUpRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                  </div>
-                </a>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      {/* ── Closing CTA ── */}
-      <section ref={closingRef} className="py-28 md:py-36 bg-primary relative overflow-hidden flex items-center justify-center">
-        <div
-          className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
-          style={{
-            backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, #73D9CF 10px, #73D9CF 11px), repeating-linear-gradient(-45deg, transparent, transparent 10px, #73D9CF 10px, #73D9CF 11px)`,
-          }}
-        />
-        <div className="container mx-auto px-6 relative z-10 text-center max-w-3xl">
-          <h2 className="closing-com-el font-drama italic text-3xl md:text-5xl lg:text-6xl text-accent tracking-tight leading-tight mb-6">
-            Tu bienestar no tiene horario.
-          </h2>
-          <p className="closing-com-el font-body text-background/80 text-lg md:text-xl leading-relaxed mb-10 max-w-xl mx-auto">
-            Cada canal es una forma diferente de acompañarte. Elige el que más conecte contigo y hagamos de tu salud un estilo de vida.
-          </p>
-          <div className="closing-com-el">
-            <Link
-              to="/"
-              className="magnetic-btn inline-flex items-center justify-center px-8 py-4 rounded-full border border-white/20 text-white/80 font-bold font-body hover:bg-white hover:text-primary transition-colors duration-300"
-            >
-              <span className="relative z-10">Volver al inicio</span>
-            </Link>
-          </div>
-        </div>
-      </section>
     </>
   );
 }

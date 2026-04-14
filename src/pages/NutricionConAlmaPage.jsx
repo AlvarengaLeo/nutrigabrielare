@@ -36,7 +36,6 @@ export default function NutricionConAlmaPage() {
   const heroRef = useRef(null);
   const tiersRef = useRef(null);
   const transparencyRef = useRef(null);
-  const closingRef = useRef(null);
 
   useEffect(() => {
     let ctx = gsap.context(() => {
@@ -64,14 +63,6 @@ export default function NutricionConAlmaPage() {
         opacity: 0,
         duration: 1,
         stagger: 0.1,
-        ease: 'power3.out',
-      });
-
-      gsap.from('.closing-don-el', {
-        scrollTrigger: { trigger: closingRef.current, start: 'top 80%' },
-        y: 30,
-        opacity: 0,
-        duration: 1,
         ease: 'power3.out',
       });
     });
@@ -176,19 +167,7 @@ export default function NutricionConAlmaPage() {
         </div>
       </section>
 
-      {/* ── Closing ── */}
-      <section ref={closingRef} className="py-28 md:py-36 bg-primary relative overflow-hidden flex items-center justify-center">
-        <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none"
-          style={{
-            backgroundImage: `repeating-linear-gradient(45deg, transparent, transparent 10px, #73D9CF 10px, #73D9CF 11px), repeating-linear-gradient(-45deg, transparent, transparent 10px, #73D9CF 10px, #73D9CF 11px)`,
-          }}
-        />
-        <div className="container mx-auto px-6 relative z-10 text-center max-w-3xl">
-          <h2 className="closing-don-el font-drama italic text-3xl md:text-5xl lg:text-6xl text-accent tracking-tight leading-tight">
-            Alimentar el alma también es nutrir.
-          </h2>
-        </div>
-      </section>
+
     </>
   );
 }

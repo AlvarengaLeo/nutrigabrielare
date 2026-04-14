@@ -15,7 +15,7 @@ import CartDrawer from './components/CartDrawer';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import TiendaPage from './pages/TiendaPage';
-import NutricionConAlmaPage from './pages/ProyectoBanquitaPage';
+import NutricionConAlmaPage from './pages/NutricionConAlmaPage';
 import ContactanosPage from './pages/ContactanosPage';
 import ComunidadPage from './pages/ComunidadPage';
 import ProductoPage from './pages/ProductoPage';
