@@ -81,10 +81,10 @@ export default function TiendaPage() {
       <section ref={heroRef} className="pb-8 pt-40 bg-background relative overflow-hidden">
         <div className="container mx-auto px-6 max-w-7xl text-center flex flex-col items-center">
           <h1 className="tienda-hero-el font-drama italic text-5xl md:text-6xl lg:text-7xl tracking-tighter text-primary mb-6 max-w-3xl">
-            Un Regalo de la Naturaleza a tu Salud.
+            Tus herramientas de bienestar.
           </h1>
           <p className="tienda-hero-el font-body text-lg md:text-xl text-primary/60 max-w-xl leading-relaxed mb-6">
-            Recursos, guías y suplementos seleccionados para potenciar tu bienestar de forma pura y holística.
+            Ebooks, guías, programas y recetarios diseñados para cada etapa de tu transformación. Compra y descarga al instante.
           </p>
         </div>
       </section>
@@ -140,7 +140,7 @@ export default function TiendaPage() {
       <section ref={closingRef} className="py-24 md:py-32 bg-[#F3F2F0] relative overflow-hidden flex items-center justify-start mt-12 bg-background border-t border-primary/10">
         <div className="container mx-auto px-6 max-w-7xl relative z-10">
           <h2 className="closing-el font-heading font-black uppercase text-5xl md:text-6xl lg:text-[5rem] text-primary tracking-tighter leading-[1.05] max-w-4xl">
-            CONTÁCTANOS,<br/>ESTAMOS PARA AYUDAR!
+            ¿DUDAS?<br/>ESCRÍBEME, TE AYUDO!
           </h2>
         </div>
       </section>

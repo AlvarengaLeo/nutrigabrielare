@@ -1,9 +1,12 @@
 import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { Leaf } from 'lucide-react';
+import { useHomeContent } from '../context/HomeContentContext';
 
 export default function Hero() {
   const containerRef = useRef(null);
+  const { content } = useHomeContent();
+  const d = content.hero;
   
   useEffect(() => {
     let ctx = gsap.context(() => {
@@ -52,6 +55,13 @@ export default function Hero() {
     return () => ctx.revert();
   }, []);
 
+  const handleCtaClick = (e, href) => {
+    if (href?.startsWith('#')) {
+      e.preventDefault();
+      document.getElementById(href.slice(1))?.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <section ref={containerRef} className="relative min-h-[95vh] w-full flex flex-col lg:flex-row overflow-hidden">
       
@@ -59,43 +69,47 @@ export default function Hero() {
       <div className="w-full lg:w-[60%] bg-[#F2FCFA] pt-40 lg:pt-48 pb-20 lg:pb-24 px-6 md:px-12 lg:pl-[10%] flex items-center relative z-10">
         
         {/* Subtle Leaf Decor */}
-        <Leaf className="floating-leaf absolute top-20 left-10 w-24 h-24 text-primary/5 pointer-events-none hidden md:block" />
-        <Leaf className="floating-leaf-alt absolute bottom-20 left-1/3 w-16 h-16 text-primary/5 pointer-events-none hidden lg:block" />
+        {d.showDecorativeLeaves !== false && (
+          <>
+            <Leaf className="floating-leaf absolute top-20 left-10 w-24 h-24 text-primary/5 pointer-events-none hidden md:block" />
+            <Leaf className="floating-leaf-alt absolute bottom-20 left-1/3 w-16 h-16 text-primary/5 pointer-events-none hidden lg:block" />
+          </>
+        )}
         
         <div className="max-w-2xl xl:max-w-3xl relative z-20">
           
           {/* Badge */}
           <div className="hero-element inline-flex items-center gap-2 px-4 py-1.5 bg-health/10 text-health border border-health/20 rounded-full mb-8 relative">
             <Leaf className="w-4 h-4 fill-current opacity-80" />
-            <span className="text-xs font-bold font-body uppercase tracking-wider text-primary">Nutrición con sentido</span>
+            <span className="text-xs font-bold font-body uppercase tracking-wider text-primary">{d.badge}</span>
           </div>
           
           {/* Headline */}
-          <h1 className="hero-element font-drama italic text-5xl md:text-6xl lg:text-[5.5rem] tracking-tight text-primary leading-[1.05] mb-6">
-            Tener un <span className="font-heading not-italic">Equilibrio—</span><br/>
-            Nutricional <span className="font-heading not-italic text-accent">Esencial</span>
+          <h1 className="hero-element font-drama italic text-5xl md:text-6xl lg:text-[5rem] xl:text-[5.5rem] tracking-tight text-primary leading-[1.05] mb-6">
+            {d.titleLine1} <span className="font-heading not-italic">{d.titleHighlight1}</span>{' '}
+            {d.titleLine2} <span className="font-heading not-italic text-accent">{d.titleHighlight2}</span>
           </h1>
           
           {/* Subheadline */}
           <p className="hero-element font-body text-lg md:text-xl text-primary/70 mb-10 max-w-lg leading-relaxed">
-            Hacemos más fácil tomar decisiones saludables mediante orientación nutricional personalizada, conciencia de ingredientes y herramientas curadas para tu vida real.
+            {d.subtitle}
           </p>
           
           {/* Buttons */}
           <div className="hero-element flex flex-wrap gap-4">
             <a
-              href="#servicios"
-              onClick={(e) => { e.preventDefault(); document.getElementById('servicios')?.scrollIntoView({ behavior: 'smooth' }); }}
+              href={d.primaryCta?.href || '#servicios'}
+              onClick={(e) => handleCtaClick(e, d.primaryCta?.href)}
               className="magnetic-btn inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-primary text-background font-bold text-sm tracking-wide"
             >
-              <span className="relative z-10">Explorar Herramientas</span>
+              <span className="relative z-10">{d.primaryCta?.text || 'Explorar Servicios'}</span>
             </a>
             <a
-              href="#recursos"
-              onClick={(e) => { e.preventDefault(); document.getElementById('recursos')?.scrollIntoView({ behavior: 'smooth' }); }}
+              href={d.secondaryCta?.href || '#recursos'}
+              onClick={(e) => handleCtaClick(e, d.secondaryCta?.href)}
               className="inline-flex items-center justify-center px-8 py-3.5 rounded-full border-2 border-primary/10 text-primary font-bold text-sm tracking-wide hover:border-primary hover:bg-primary hover:text-background transition-all duration-300"
             >
-              Consultar Guías
+              {d.secondaryCta?.text || 'Recursos y Ebooks'}
             </a>
           </div>
         </div>
@@ -103,16 +117,19 @@ export default function Hero() {
       
       {/* Dark Section (Right) */}
       <div className="hidden lg:block lg:w-[40%] bg-primary relative z-0">
-        <Leaf className="floating-leaf absolute top-32 right-20 w-32 h-32 text-white/5 pointer-events-none" />
-        <Leaf className="floating-leaf-alt absolute bottom-32 -left-10 w-24 h-24 text-white/5 pointer-events-none" />
+        {d.showDecorativeLeaves !== false && (
+          <>
+            <Leaf className="floating-leaf absolute top-32 right-20 w-32 h-32 text-white/5 pointer-events-none" />
+            <Leaf className="floating-leaf-alt absolute bottom-32 -left-10 w-24 h-24 text-white/5 pointer-events-none" />
+          </>
+        )}
       </div>
 
       {/* Main Image Layering */}
-      {/* Positioned absolute so it can overlap the two split sections */}
-      <div className="absolute bottom-0 right-0 w-full lg:w-[45%] h-[75%] lg:h-[85%] pointer-events-auto z-20 flex justify-center lg:justify-end items-end overflow-hidden lg:overflow-visible lg:pr-24 xl:pr-48">
-        <div className="model-wrapper relative w-full h-full flex justify-center lg:justify-end items-end origin-bottom">
+      <div className="hidden lg:flex absolute bottom-0 right-0 lg:w-[45%] lg:h-[85%] pointer-events-auto z-20 justify-end items-end lg:pr-24 xl:pr-48">
+        <div className="model-wrapper relative w-full h-full flex justify-end items-end origin-bottom">
           <img 
-            src="/media/hero_model.png" 
+            src={d.heroImage || '/media/hero_model.png'}
             alt="Gabriela Retana" 
             onError={(e) => {
               e.target.src = '/media/model_placeholder.png';

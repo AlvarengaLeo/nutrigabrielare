@@ -1,30 +1,32 @@
 import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Scale, HeartPulse, Carrot, Leaf } from 'lucide-react';
+import { Scale, HeartPulse, Carrot, Leaf, Heart, Activity, Brain, Sparkles, Sun, Moon, Flame, Droplets, Apple, Zap, Eye, Shield, Star, Flower2, TreePine } from 'lucide-react';
+import { useHomeContent } from '../context/HomeContentContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Icon map for dynamic rendering
+const ICON_MAP = {
+  Scale, HeartPulse, Carrot, Leaf, Heart, Activity, Brain,
+  Sparkles, Sun, Moon, Flame, Droplets, Apple, Zap, Eye, Shield, Star, Flower2, TreePine,
+};
+
+function DynamicIcon({ name, className }) {
+  const Icon = ICON_MAP[name] || Scale;
+  return <Icon className={className} />;
+}
+
 export default function WhyChooseUs() {
   const containerRef = useRef(null);
+  const { content } = useHomeContent();
+  const d = content.why_choose_us;
 
-  const reasons = [
-    {
-      icon: <Scale className="w-5 h-5 text-primary" />,
-      title: 'Sin Extremos, Solo Balance',
-      desc: 'Creemos en un progreso realista, sin dietas extremas ni soluciones de moda. Construimos rutinas para un bienestar a largo plazo.'
-    },
-    {
-      icon: <HeartPulse className="w-5 h-5 text-primary" />,
-      title: 'Pérdida de Peso Saludable',
-      desc: 'Descubre estrategias efectivas basadas en evidencia para optimizar tu composición corporal mediante planes agradables y seguros.'
-    },
-    {
-      icon: <Carrot className="w-5 h-5 text-primary" />,
-      title: 'Servicio Integral de Nutrición',
-      desc: 'Eleva de nivel tu calidad de vida a través de asesoría experta. Toma el control total sobre tu salud con máxima confianza.'
-    }
-  ];
+  const reasons = (d.reasons || []).map((r) => ({
+    icon: <DynamicIcon name={r.icon} className="w-5 h-5 text-primary" />,
+    title: r.title,
+    desc: r.description,
+  }));
 
   useEffect(() => {
     let ctx = gsap.context(() => {
@@ -33,11 +35,13 @@ export default function WhyChooseUs() {
         scrollTrigger: { trigger: containerRef.current, start: 'top 80%' },
         y: 30, opacity: 0, duration: 0.8, stagger: 0.2, ease: 'power3.out'
       });
+      
       // Animate entire list block as one unit
       gsap.from('.wcu-list', {
         scrollTrigger: { trigger: containerRef.current, start: 'top 70%' },
         y: 50, opacity: 0, duration: 1, ease: 'power3.out'
       });
+      
       // Animate Plate Entrance
       gsap.from('.wcu-plate', {
         scrollTrigger: { trigger: containerRef.current, start: 'top 60%' },
@@ -70,11 +74,11 @@ export default function WhyChooseUs() {
         <div className="flex flex-col items-center lg:items-end text-center lg:text-right w-full max-w-4xl mb-16 lg:pr-10">
           <div className="wcu-header inline-flex items-center gap-2 px-4 py-1.5 bg-health/10 text-health border border-health/20 rounded-full mb-6 relative">
             <Leaf className="w-4 h-4 fill-current opacity-80" />
-            <span className="text-xs font-bold font-body uppercase tracking-wider text-primary">Por qué elegirnos</span>
+            <span className="text-xs font-bold font-body uppercase tracking-wider text-primary">{d.badge}</span>
           </div>
           <h2 className="wcu-header font-drama italic text-4xl md:text-5xl lg:text-[4rem] text-primary tracking-tight leading-[1.1]">
-            No Buscamos <span className="font-heading not-italic whitespace-nowrap">Perfección—</span><br/>
-            Te Buscamos a <span className="font-heading not-italic text-accent">Ti</span>
+            {d.titleLine1} <span className="font-heading not-italic whitespace-nowrap">{d.titleHighlight1}</span><br/>
+            {d.titleLine2} <span className="font-heading not-italic text-accent">{d.titleHighlight2}</span>
           </h2>
         </div>
 
@@ -104,7 +108,7 @@ export default function WhyChooseUs() {
           <div className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 w-[45%] h-full z-10 pointer-events-auto items-center justify-end translate-x-[20%]">
             <div className="plate-wrapper w-full max-w-[800px]">
               <img 
-                src="/media/healthy_plate.png" 
+                src={d.plateImage || '/media/healthy_plate.png'}
                 alt="Platillo Saludable" 
                 className="wcu-plate w-full h-auto object-contain mix-blend-multiply contrast-[1.15] brightness-110 hover:scale-105 hover:-rotate-6 transition-all duration-[1s] ease-out cursor-pointer"
               />

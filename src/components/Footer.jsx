@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 const navItems = [
   { label: 'Inicio', path: '/' },
   { label: 'Tienda', path: '/tienda' },
-  { label: 'Consulta Social', path: '/proyecto-banquita' },
+  { label: 'Nutrición con Alma', path: '/nutricion-con-alma' },
 ];
 
 const communityLinks = [
@@ -23,7 +23,7 @@ export default function Footer() {
               Gabriela Retana
             </h2>
             <p className="font-body text-lg md:text-xl text-background/80 leading-relaxed max-w-md mb-8">
-              Transformando tu bienestar a través de una nutrición profesional, empática y con base científica.
+              Especialista en salud hormonal de la mujer con enfoque holístico. Te acompaño a lograr tus objetivos cuidando tu cuerpo, mente y alma.
             </p>
             <a href="https://wa.me/50376284719" target="_blank" rel="noopener noreferrer" className="magnetic-btn inline-flex items-center justify-center px-8 py-3 rounded-full bg-accent text-white font-medium text-sm transition-transform hover:scale-105 shadow-lg shadow-accent/20">
               <span className="relative z-10">Agenda tu Cita Ahora</span>

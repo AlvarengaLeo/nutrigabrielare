@@ -1,18 +1,19 @@
 import React from 'react';
+import { HomeContentProvider } from '../context/HomeContentContext';
 import Hero from '../components/Hero';
-import Features from '../components/Features';
 import Philosophy from '../components/Philosophy';
-import Protocol from '../components/Protocol';
 import WhyChooseUs from '../components/WhyChooseUs';
+import Features from '../components/Features';
+import Protocol from '../components/Protocol';
 
 export default function HomePage() {
   return (
-    <>
+    <HomeContentProvider>
       <Hero />
       <Philosophy />
       <WhyChooseUs />
       <Features />
       <Protocol />
-    </>
+    </HomeContentProvider>
   );
 }

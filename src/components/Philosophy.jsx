@@ -1,12 +1,26 @@
 import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Heart, Activity, Brain } from 'lucide-react';
+import { Heart, Activity, Brain, Leaf, Scale, HeartPulse, Carrot, Sparkles, Sun, Moon, Flame, Droplets, Apple, Zap, Eye, Shield, Star, Flower2, TreePine } from 'lucide-react';
+import { useHomeContent } from '../context/HomeContentContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
+// Icon map for dynamic icon rendering
+const ICON_MAP = {
+  Heart, Activity, Brain, Leaf, Scale, HeartPulse, Carrot,
+  Sparkles, Sun, Moon, Flame, Droplets, Apple, Zap, Eye, Shield, Star, Flower2, TreePine,
+};
+
+function DynamicIcon({ name, className }) {
+  const Icon = ICON_MAP[name] || Heart;
+  return <Icon className={className} />;
+}
+
 export default function Philosophy() {
   const sectionRef = useRef(null);
+  const { content } = useHomeContent();
+  const d = content.philosophy;
 
   useEffect(() => {
     let ctx = gsap.context(() => {
@@ -67,18 +81,13 @@ export default function Philosophy() {
     return () => ctx.revert();
   }, []);
 
-  const values = [
-    { icon: <Heart className="w-6 h-6 text-accent" />, label: 'Empatía' },
-    { icon: <Activity className="w-6 h-6 text-accent" />, label: 'Evidencia Científica' },
-    { icon: <Brain className="w-6 h-6 text-accent" />, label: 'Crecimiento' },
-  ];
+  const values = (d.values || []).map((v) => ({
+    icon: <DynamicIcon name={v.icon} className="w-6 h-6 text-accent" />,
+    label: v.label,
+  }));
 
-  const stats = [
-    { value: '99%', label: 'Casos de Éxito' },
-    { value: '12+', label: 'Años de Experiencia' },
-    { value: '1,200+', label: 'Planes Creados' },
-    { value: '200+', label: 'Recursos Disponibles' },
-  ];
+  const stats = d.stats || [];
+  const imgs = d.decorativeImages || {};
 
   return (
     <section ref={sectionRef} className="py-24 md:py-32 bg-white relative z-10 w-full overflow-hidden">
@@ -86,24 +95,24 @@ export default function Philosophy() {
         {/* Left Side (slide in from left) */}
         <div className="blobs-left absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[2%] -left-[10%] md:top-[5%] md:left-[2%] xl:left-[5%] opacity-30 md:opacity-100">
             <div className="floating-blob">
-                <img src="/media/ora.png" alt="Orange" className="w-20 h-20 md:w-40 md:h-40 object-contain mix-blend-multiply contrast-[1.05] brightness-105 md:hover:scale-110 md:hover:-rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
+                <img src={imgs.topLeft || '/media/ora.png'} alt="Decorativo" className="w-20 h-20 md:w-40 md:h-40 object-contain mix-blend-multiply contrast-[1.05] brightness-105 md:hover:scale-110 md:hover:-rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
             </div>
         </div>
         <div className="blobs-left absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[35%] -left-[20%] md:top-[35%] md:-left-[15%] xl:-left-[20%] opacity-20 md:opacity-100">
             <div className="floating-blob">
-                <img src="/media/pom.png" alt="Pomegranate" className="w-32 h-32 md:w-64 md:h-64 object-contain mix-blend-multiply contrast-[1.05] brightness-105 md:hover:scale-110 md:hover:-rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
+                <img src={imgs.midLeft || '/media/pom.png'} alt="Decorativo" className="w-32 h-32 md:w-64 md:h-64 object-contain mix-blend-multiply contrast-[1.05] brightness-105 md:hover:scale-110 md:hover:-rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
             </div>
         </div>
 
         {/* Right Side (slide in from right) */}
         <div className="blobs-right absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[15%] -right-[5%] md:top-[15%] md:right-[8%] xl:right-[12%] opacity-40 md:opacity-100">
             <div className="floating-blob">
-                <img src="/media/tom.png" alt="Tomato" className="w-16 h-16 md:w-28 md:h-28 object-contain mix-blend-multiply contrast-[1.05] brightness-105 md:hover:scale-110 md:hover:rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
+                <img src={imgs.topRight || '/media/tom.png'} alt="Decorativo" className="w-16 h-16 md:w-28 md:h-28 object-contain mix-blend-multiply contrast-[1.05] brightness-105 md:hover:scale-110 md:hover:rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
             </div>
         </div>
         <div className="blobs-right absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[45%] -right-[25%] md:top-[45%] md:-right-[15%] xl:-right-[20%] opacity-20 md:opacity-100">
             <div className="floating-blob">
-                <img src="/media/broc.png" alt="Broccoli" className="w-40 h-40 md:w-80 md:h-80 object-contain mix-blend-multiply contrast-[1.05] brightness-105 md:hover:scale-110 md:hover:rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
+                <img src={imgs.midRight || '/media/broc.png'} alt="Decorativo" className="w-40 h-40 md:w-80 md:h-80 object-contain mix-blend-multiply contrast-[1.05] brightness-105 md:hover:scale-110 md:hover:rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
             </div>
         </div>
 
@@ -111,12 +120,12 @@ export default function Philosophy() {
           {/* Badge */}
           <div className="philo-element inline-flex items-center gap-2 px-4 py-1.5 bg-health/10 text-health border border-health/20 rounded-full mb-6 relative">
             <Heart className="w-4 h-4 fill-current opacity-80" />
-            <span className="text-xs font-bold font-body uppercase tracking-wider text-primary">Quiénes Somos</span>
+            <span className="text-xs font-bold font-body uppercase tracking-wider text-primary">{d.badge}</span>
           </div>
 
           <h2 className="philo-element font-drama italic text-4xl md:text-5xl lg:text-[4rem] text-primary tracking-tight leading-[1.1] mb-12 max-w-3xl mx-auto">
-            Priorizando tu <span className="font-heading not-italic">Nutrición—</span><br/>
-            para una Salud <span className="font-heading not-italic text-accent">Óptima</span>
+            {d.titleLine1} <span className="font-heading not-italic">{d.titleHighlight1}</span><br/>
+            {d.titleLine2} <span className="font-heading not-italic text-accent">{d.titleHighlight2}</span>
           </h2>
 
           {/* 3 Icons Row */}
@@ -133,7 +142,7 @@ export default function Philosophy() {
 
           {/* Subtext */}
           <p className="philo-element font-body text-lg md:text-xl text-primary/70 max-w-2xl leading-relaxed">
-            Nuestra plataforma está diseñada para guiarte, no para generarte culpa. Con recursos arraigados a la ciencia y diseñados para la vida real, te ayudamos a realizar pequeños cambios que conducen a un impacto monumental.
+            {d.description}
           </p>
         </div>
 

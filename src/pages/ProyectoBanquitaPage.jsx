@@ -32,7 +32,7 @@ const transparencyStats = [
   { label: 'Charlas impartidas', value: '15' },
 ];
 
-export default function ProyectoBanquitaPage() {
+export default function NutricionConAlmaPage() {
   const heroRef = useRef(null);
   const tiersRef = useRef(null);
   const transparencyRef = useRef(null);
@@ -84,13 +84,13 @@ export default function ProyectoBanquitaPage() {
       <section ref={heroRef} className="min-h-[70vh] flex items-end pb-20 pt-32 bg-background relative overflow-hidden">
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="don-hero-el inline-block px-3 py-1 mb-6 rounded-full border border-primary/20 text-xs font-semibold uppercase tracking-widest text-primary/70">
-            Programa de Apoyo
+            Nutrición con Alma
           </div>
           <h1 className="don-hero-el font-heading font-extrabold text-5xl md:text-6xl lg:text-7xl tracking-tighter text-primary mb-6 max-w-2xl">
-            Consulta Social
+            Nutrición con Alma
           </h1>
           <p className="don-hero-el font-body text-lg md:text-xl text-primary/60 max-w-xl leading-relaxed">
-            Haciendo la nutrición profesional accesible y transformadora para todos.
+            Creo que el bienestar integral es un derecho. Por eso hago la nutrición profesional accesible a quienes más lo necesitan.
           </p>
         </div>
       </section>
@@ -100,10 +100,10 @@ export default function ProyectoBanquitaPage() {
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="mb-16 flex flex-col items-start max-w-2xl">
             <h2 className="text-3xl md:text-4xl font-heading font-extrabold text-primary tracking-tighter mb-4">
-              Nuestros planes
+              Planes accesibles
             </h2>
             <p className="font-body text-primary/60 text-lg">
-              Soluciones estructuradas para distintas necesidades, garantizando un acompañamiento profesional ético y respetuoso de tu cuerpo.
+              Acompañamiento profesional con enfoque holístico adaptado a distintas necesidades, siempre respetando tu cuerpo y tu proceso.
             </p>
           </div>
 
@@ -140,10 +140,10 @@ export default function ProyectoBanquitaPage() {
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="mb-16 border-l-2 border-accent pl-6">
             <h2 className="transparency-el text-3xl md:text-4xl font-heading font-extrabold text-primary tracking-tighter mb-4">
-              Impacto & Charlas
+              Impacto & Educación
             </h2>
             <p className="transparency-el font-body text-primary/60 text-lg max-w-xl">
-              Creemos firmemente en la prevención y la educación nutricional a gran escala.
+              La prevención y la educación nutricional son parte de mi misión. Cada charla y cada plan cuenta.
             </p>
           </div>
 
@@ -185,7 +185,7 @@ export default function ProyectoBanquitaPage() {
         />
         <div className="container mx-auto px-6 relative z-10 text-center max-w-3xl">
           <h2 className="closing-don-el font-drama italic text-3xl md:text-5xl lg:text-6xl text-accent tracking-tight leading-tight">
-            Nutrición basada en empatía y evidencia.
+            Alimentar el alma también es nutrir.
           </h2>
         </div>
       </section>

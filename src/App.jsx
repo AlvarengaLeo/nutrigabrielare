@@ -15,7 +15,7 @@ import CartDrawer from './components/CartDrawer';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import TiendaPage from './pages/TiendaPage';
-import ProyectoBanquitaPage from './pages/ProyectoBanquitaPage';
+import NutricionConAlmaPage from './pages/ProyectoBanquitaPage';
 import ContactanosPage from './pages/ContactanosPage';
 import ComunidadPage from './pages/ComunidadPage';
 import ProductoPage from './pages/ProductoPage';
@@ -39,6 +39,7 @@ const AdminCategorias = React.lazy(() => import('./admin/pages/AdminCategorias')
 const AdminOrdenes = React.lazy(() => import('./admin/pages/AdminOrdenes'));
 const AdminOrdenDetalle = React.lazy(() => import('./admin/pages/AdminOrdenDetalle'));
 const AdminUsuarios = React.lazy(() => import('./admin/pages/AdminUsuarios'));
+const AdminHomePage = React.lazy(() => import('./admin/pages/AdminHomePage'));
 const AdminRoute = React.lazy(() => import('./admin/components/AdminRoute'));
 
 function AdminSpinner() {
@@ -80,11 +81,15 @@ function AppContent() {
           <Route path="/tienda" element={<TiendaPage />} />
           <Route
             path="/donacion"
-            element={<Navigate to="/proyecto-banquita" replace />}
+            element={<Navigate to="/nutricion-con-alma" replace />}
           />
           <Route
             path="/proyecto-banquita"
-            element={<ProyectoBanquitaPage />}
+            element={<Navigate to="/nutricion-con-alma" replace />}
+          />
+          <Route
+            path="/nutricion-con-alma"
+            element={<NutricionConAlmaPage />}
           />
           <Route path="/comunidad" element={<ComunidadPage />} />
           <Route path="/contactanos" element={<ContactanosPage />} />
@@ -101,6 +106,7 @@ function AppContent() {
           {/* ── Admin routes ── */}
           <Route path="/admin/login" element={<Suspense fallback={<AdminSpinner />}><AdminLoginPage /></Suspense>} />
           <Route path="/admin" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','editor','gestor']}><AdminDashboard /></AdminRoute></Suspense>} />
+          <Route path="/admin/home" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','editor']}><AdminHomePage /></AdminRoute></Suspense>} />
           <Route path="/admin/productos" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','editor']}><AdminProductos /></AdminRoute></Suspense>} />
           <Route path="/admin/productos/nuevo" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','editor']}><AdminProductoForm /></AdminRoute></Suspense>} />
           <Route path="/admin/productos/:id" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','editor']}><AdminProductoForm /></AdminRoute></Suspense>} />

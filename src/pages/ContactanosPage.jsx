@@ -6,37 +6,37 @@ import { ChevronDown, Send } from 'lucide-react';
 gsap.registerPlugin(ScrollTrigger);
 
 const subjectOptions = [
+  'Consulta nutricional',
+  'Productos digitales',
   'Colaboraciones',
-  'Prensa',
-  'Voluntariado',
   'Propuesta comercial',
   'Solo quiero saludar',
 ];
 
 const faqs = [
   {
-    q: '¿Cómo puedo agendar una consulta con Nutrigabrielare?',
-    a: 'Podés escribirnos directamente usando el formulario de arriba o contactarnos por redes. Estamos abiertos a ideas, proyectos y alianzas que tengan sentido con nuestra identidad.',
+    q: '¿Cómo puedo agendar una consulta?',
+    a: 'Escríbeme por WhatsApp al 7628-4719. Conversamos sobre tus metas y encontramos el horario que mejor funcione para ti. La consulta se reserva con un anticipo de $10.',
   },
   {
-    q: '¿Cómo funciona Proyecto Banquita?',
-    a: 'Es nuestra iniciativa social. Recaudamos fondos a través de aportes voluntarios y los destinamos directamente a jornadas comunitarias en El Salvador. Todo con transparencia total.',
+    q: '¿En qué se diferencia tu enfoque de otros nutricionistas?',
+    a: 'Me especializo en salud hormonal de la mujer y trabajo con un enfoque holístico. No solo vemos alimentación: evaluamos sueño, salud mental, digestiva y movimiento para crear un plan verdaderamente integral.',
   },
   {
-    q: '¿Puedo proponer una causa o iniciativa?',
-    a: 'Claro. Si tenés una causa que creés que conecta con lo que hacemos, mandanos tu propuesta. La revisamos y si tiene sentido, la sumamos.',
+    q: '¿Qué productos digitales ofrecen?',
+    a: 'Tengo ebooks con diferentes enfoques, guías nutricionales, programas y recetarios. Todos están disponibles para compra y descarga inmediata desde la tienda.',
   },
   {
-    q: '¿Tienen tienda o productos disponibles?',
-    a: 'Sí. Nuestra tienda incluye recursos y guías diseñadas científicamente desde la metodología de Nutrigabrielare.',
+    q: '¿Cómo funciona la app de seguimiento?',
+    a: 'Mis pacientes usan una app exclusiva donde pueden visualizar su progreso y acceder a su plan de alimentación en todo momento.',
   },
   {
-    q: '¿Cómo puedo contactarlos para prensa o alianzas?',
-    a: 'Usá el formulario de contacto seleccionando "Prensa" o "Propuesta comercial" en el asunto y te responderemos lo antes posible.',
+    q: '¿Atienden consultas online?',
+    a: 'Sí. Ofrezco consultas online tanto a nivel nacional como internacional, con el mismo enfoque holístico y seguimiento personalizado.',
   },
   {
     q: '¿En cuánto tiempo responden los mensajes?',
-    a: 'Generalmente respondemos en 24 a 48 horas. A veces tardamos un poco más, pero siempre contestamos.',
+    a: 'Generalmente respondo en 24 a 48 horas. A veces tardo un poco más, pero siempre contesto.',
   },
 ];
 
@@ -100,10 +100,10 @@ export default function ContactanosPage() {
             Contacto
           </div>
           <h1 className="contact-hero-el font-heading font-extrabold text-5xl md:text-6xl lg:text-7xl tracking-tighter text-primary mb-6 max-w-2xl">
-            Contáctanos
+            Hablemos
           </h1>
           <p className="contact-hero-el font-body text-lg md:text-xl text-primary/60 max-w-xl leading-relaxed">
-            Respondemos todos los mensajes. A veces tardamos, pero siempre contestamos.
+            Estoy aquí para acompañarte. Cuéntame qué necesitas y juntas encontramos la mejor ruta para tu bienestar.
           </p>
         </div>
       </section>

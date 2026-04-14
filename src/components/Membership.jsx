@@ -36,8 +36,8 @@ export default function Membership() {
           </div>
 
           <h2 className="entry-block font-heading not-italic text-4xl md:text-5xl lg:text-[4rem] text-primary tracking-tight leading-[1.1] max-w-3xl">
-            Herramientas & Planes—<br/>
-            <span className="font-drama italic text-accent">Acelera tus Resultados</span>
+            Ebooks, Guías & Programas—<br/>
+            <span className="font-drama italic text-accent">Tu Bienestar Automatizado</span>
           </h2>
         </div>
 
@@ -47,9 +47,9 @@ export default function Membership() {
           <Link to="/comunidad" className="entry-block md:col-span-6 flex flex-col justify-between p-10 md:p-12 rounded-[2.5rem] bg-white border border-primary/5 hover:border-primary/10 hover:-translate-y-3 hover:shadow-2xl transition-transform duration-700 ease-out group">
             <div>
               <div className="font-drama italic text-xl text-accent mb-6">01</div>
-              <h3 className="font-heading font-bold text-3xl text-primary mb-4 tracking-tight">Planes Nutricionales</h3>
+              <h3 className="font-heading font-bold text-3xl text-primary mb-4 tracking-tight">Guías y Recetarios</h3>
               <p className="font-body text-primary/70 text-lg leading-relaxed mb-6">
-                Descubre planes visuales y estratégicos, como nuestro famoso plan de <strong>1500 cal</strong> (112g proteína, 161g carb, 49g grasa).
+                Descarga ebooks con enfoques específicos: salud hormonal, pérdida de peso, recetas prácticas y guías de hábitos para una vida con balance real.
               </p>
               <div className="w-full h-32 rounded-xl bg-gradient-to-br from-primary/5 to-accent/10 mb-8 flex items-center justify-center overflow-hidden relative">
                 <span className="font-heading font-bold text-primary/30 text-2xl absolute z-0 tracking-widest hidden md:block uppercase">Ejemplos Reales</span>
@@ -65,14 +65,14 @@ export default function Membership() {
           </Link>
 
           {/* Block 2: Consulta Social */}
-          <Link to="/proyecto-banquita" className="entry-block md:col-span-6 flex flex-col justify-center p-10 md:p-16 rounded-[2.5rem] bg-primary text-background hover:-translate-y-3 hover:shadow-2xl transition-transform duration-700 ease-out group relative overflow-hidden">
+          <Link to="/nutricion-con-alma" className="entry-block md:col-span-6 flex flex-col justify-center p-10 md:p-16 rounded-[2.5rem] bg-primary text-background hover:-translate-y-3 hover:shadow-2xl transition-transform duration-700 ease-out group relative overflow-hidden">
             {/* Subtle glow */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-accent/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 pointer-events-none" />
             <div className="relative z-10">
               <div className="font-drama italic text-xl text-accent/50 mb-6">02</div>
               <h3 className="font-heading font-bold text-3xl md:text-4xl mb-4 tracking-tight">Consulta Social</h3>
               <p className="font-body text-background/70 text-lg md:text-xl leading-relaxed mb-10 max-w-sm">
-                Comprometidos con el bienestar integral, hacemos la nutrición profesional accesible a quienes verdaderamente lo necesitan.
+                Creo que el bienestar integral debe ser accesible. Por eso ofrezco nutrición profesional a quienes más lo necesitan.
               </p>
               <span className="magnetic-btn inline-flex items-center justify-center px-8 py-4 rounded-full bg-background text-primary font-bold font-body transition-colors">
                 <span className="relative z-10">Más información</span>
@@ -84,9 +84,9 @@ export default function Membership() {
           <Link to="/tienda" className="entry-block md:col-span-12 flex flex-col md:flex-row items-start md:items-center justify-between p-10 md:p-12 rounded-[2.5rem] bg-accent/5 border border-accent/10 hover:-translate-y-3 hover:shadow-2xl transition-transform duration-700 ease-out group">
             <div className="md:w-3/5 mb-8 md:mb-0">
               <div className="font-drama italic text-xl text-primary/40 mb-4">03</div>
-              <h3 className="font-heading font-bold text-3xl text-primary mb-3 tracking-tight">Recursos & E-commerce</h3>
+              <h3 className="font-heading font-bold text-3xl text-primary mb-3 tracking-tight">Tienda de Productos Digitales</h3>
               <p className="font-body text-primary/70 text-lg leading-relaxed max-w-2xl">
-                Lleva tu nutrición al siguiente nivel. Encuentra recetarios exclusivos, guías especializadas y vitaminas curadas directamente desde mi tienda en línea.
+                Ebooks, programas y recetarios diseñados para diferentes objetivos. Compra, descarga y empieza tu transformación de forma inmediata y automatizada.
               </p>
             </div>
             <div className="md:w-auto">

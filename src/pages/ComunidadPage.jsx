@@ -8,20 +8,20 @@ gsap.registerPlugin(ScrollTrigger);
 
 const contentBlocks = [
   {
-    title: 'Recetas prácticas',
-    desc: 'Opciones saludables, fáciles y deliciosas para tu día a día.',
+    title: 'Recetas y nutrición real',
+    desc: 'Opciones prácticas y deliciosas diseñadas para una vida con balance hormonal y bienestar genuino.',
   },
   {
-    title: 'Educación nutricional',
-    desc: 'Aprende a nutrir tu cuerpo con información respaldada por la ciencia.',
+    title: 'Salud hormonal al día',
+    desc: 'Información respaldada por la ciencia sobre cómo tu alimentación impacta tu metabolismo y equilibrio hormonal.',
   },
   {
-    title: 'Bienestar mental',
-    desc: 'La conexión entre cómo te sientes y cómo comes.',
+    title: 'Mente, cuerpo y alma',
+    desc: 'Contenido sobre los tres pilares de mi enfoque holístico: salud mental, movimiento consciente y conexión interior.',
   },
   {
-    title: 'Seguimiento continuo',
-    desc: 'Espacios para conectar y mantener la motivación firme.',
+    title: 'Motivación continua',
+    desc: 'Espacios para conectar, mantenerte inspirada y compartir tu progreso con una comunidad que te entiende.',
   },
 ];
 
@@ -112,13 +112,13 @@ export default function ComunidadPage() {
             Comunidad Nutri
           </div>
           <h1 className="com-hero-el font-heading font-extrabold text-5xl md:text-6xl lg:text-7xl tracking-tighter text-primary mb-6 max-w-2xl">
-            Tu espacio de bienestar.
+            Tu comunidad de bienestar.
           </h1>
           <p className="com-hero-el font-body text-lg md:text-xl text-primary/60 max-w-xl leading-relaxed mb-4">
-            Educación, inspiración y motivación continua guiada por profesionales.
+            Calma, cercanía y motivación. Un espacio donde cuidamos cuerpo, mente y alma juntas.
           </p>
           <p className="com-hero-el font-body text-base md:text-lg text-primary/50 max-w-xl leading-relaxed mb-8">
-            Desde recetas rápidas e información científica, hasta consultas directas en vivo. Queremos ser la ayuda diaria que transforma tu vida en un estilo duradero y saludable.
+            Desde recetas prácticas y educación en salud hormonal, hasta conversaciones en vivo sobre hábitos y bienestar integral. Te acompaño más allá de la consulta.
           </p>
           <div className="com-hero-el">
             <a
@@ -229,10 +229,10 @@ export default function ComunidadPage() {
         />
         <div className="container mx-auto px-6 relative z-10 text-center max-w-3xl">
           <h2 className="closing-com-el font-drama italic text-3xl md:text-5xl lg:text-6xl text-accent tracking-tight leading-tight mb-6">
-            Mantén la inspiración.
+            Tu bienestar no tiene horario.
           </h2>
           <p className="closing-com-el font-body text-background/80 text-lg md:text-xl leading-relaxed mb-10 max-w-xl mx-auto">
-            Cada red social tiene un enfoque diferente para acompañarte en tu transformación diaria hacia una mejor versión.
+            Cada canal es una forma diferente de acompañarte. Elige el que más conecte contigo y hagamos de tu salud un estilo de vida.
           </p>
           <div className="closing-com-el">
             <Link

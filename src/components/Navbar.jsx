@@ -6,7 +6,7 @@ import CartIcon from './CartIcon';
 const navItems = [
   { label: 'Inicio', path: '/' },
   { label: 'Tienda', path: '/tienda' },
-  { label: 'Consulta Social', path: '/proyecto-banquita' },
+  { label: 'Nutrición con Alma', path: '/nutricion-con-alma' },
 ];
 
 export default function Navbar() {

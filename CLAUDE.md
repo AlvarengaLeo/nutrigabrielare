@@ -241,3 +241,63 @@ Still uses localStorage (`src/context/CartContext.jsx`). No Supabase dependency.
 ### Payment Service
 
 `src/services/paymentService.js` — `createPaymentLink(orderId, accessToken)` and `getPaymentByOrderId(orderId)`
+
+## Phase 5 — Home CMS (Editable Homepage)
+
+### Architecture
+
+Single Supabase table `home_content` with one row (`id = 'main'`). Each homepage section is stored as a separate JSONB column: `hero`, `philosophy`, `why_choose_us`, `features`, `protocol`. Public site fetches one row, admin updates individual columns.
+
+### Database
+
+- **Table:** `home_content` — single row, JSONB per section, `updated_at` timestamp
+- **Storage bucket:** `home-images` — for uploaded hero/decorative/plate images
+- **RLS:** Public `SELECT`, editors can `INSERT`/`UPDATE`
+- **Migration:** `supabase/migrations/007_home_content.sql`
+
+### Service Layer
+
+`src/services/homeContentService.js`:
+- `getHomeContent()` — fetches entire row
+- `updateHomeSection(sectionName, data)` — updates single section JSONB
+- `uploadHomeImage(file, folder, fileName)` — uploads to `home-images` bucket
+- `deleteHomeImage(fullUrl)` — removes from storage
+
+### Content Context
+
+`src/context/HomeContentContext.jsx`:
+- `HomeContentProvider` wraps all homepage sections
+- `useHomeContent()` hook returns `{ content, loading }`
+- Always returns valid data via deep-merge with `DEFAULT_HOME` fallback
+- If Supabase fails, homepage renders with hardcoded defaults (never breaks)
+
+### Homepage Components (Dynamic)
+
+All 5 components consume content from `useHomeContent()`:
+- `Hero.jsx` — badge, title lines, highlights, subtitle, CTAs, hero image, decorative leaves toggle
+- `Philosophy.jsx` — badge, title, values (dynamic icon via ICON_MAP), stats, decorative images
+- `WhyChooseUs.jsx` — badge, title, reasons (dynamic icon), plate image
+- `Features.jsx` — badge, title, service cards array (dynamic count, VIP flag)
+- `Protocol.jsx` — badge, title, steps array (dynamic count)
+
+### Admin Module
+
+Single module at `/admin/home` — "Página Principal" in sidebar (admin + editor roles).
+
+**Page:** `src/admin/pages/AdminHomePage.jsx` — 5 tabs (Hero, Filosofía, Diferenciador, Servicios, Reservas)
+
+**Editors** in `src/admin/components/home/`:
+- `HeroEditor.jsx` — badge, titles, CTAs, image upload, decorative toggle
+- `PhilosophyEditor.jsx` — badge, titles, 3 fixed pillars (IconPicker + label), 4 fixed stats, 4 decorative images
+- `WhyChooseUsEditor.jsx` — badge, titles, 3 fixed differentiators (IconPicker + title + desc), plate image
+- `FeaturesEditor.jsx` — badge, titles, dynamic service cards (1-8, add/remove/reorder, VIP toggle)
+- `ProtocolEditor.jsx` — badge, titles, dynamic steps (1-6, add/remove/reorder)
+
+**Shared components:**
+- `SingleImageUploader.jsx` — single-image upload with preview, replace, delete
+- `IconPicker.jsx` — dropdown of 19 pre-approved Lucide icons
+
+### Content Reflection
+
+Immediate on save. No draft/publish. Public site fetches fresh data on each page load (~50ms).
+
