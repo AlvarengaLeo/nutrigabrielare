@@ -7,6 +7,26 @@ import { createOrder } from '../services/orderService';
 import { createPaymentLink } from '../services/paymentService';
 import { supabase } from '../lib/supabase';
 
+function CheckoutItemThumbnail({ item }) {
+  const [hasImageError, setHasImageError] = useState(false);
+  const hasImage = Boolean(item.image) && !hasImageError;
+
+  return (
+    <div className="w-12 h-14 rounded-lg bg-primary/5 flex-shrink-0 overflow-hidden flex items-center justify-center">
+      {hasImage ? (
+        <img
+          src={item.image}
+          alt={item.name}
+          className="w-[85%] h-[85%] object-contain mix-blend-multiply"
+          onError={() => setHasImageError(true)}
+        />
+      ) : (
+        <div className="w-8 h-8 rounded-full bg-primary/10" />
+      )}
+    </div>
+  );
+}
+
 export default function CheckoutPage() {
   const { items, subtotal } = useCart();
   const { user } = useAuth();
@@ -221,7 +241,7 @@ export default function CheckoutPage() {
                       idx < items.length - 1 ? 'border-b border-primary/5' : ''
                     }`}
                   >
-                    <div className="w-12 h-14 rounded-lg bg-primary flex-shrink-0" />
+                    <CheckoutItemThumbnail item={item} />
                     <div className="flex-1 min-w-0">
                       <p className="font-heading text-sm font-bold text-primary truncate">
                         {item.name}{' '}
