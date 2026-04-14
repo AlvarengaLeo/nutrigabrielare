@@ -7,6 +7,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { getProductBySlug } from '../services/productService';
 
 // ─── Storage key ───────────────────────────────────────────────────────────────
 
@@ -37,6 +38,64 @@ function loadItems() {
 export function CartProvider({ children }) {
   const [items, setItems] = useState(loadItems);
   const [drawerOpen, setDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const itemsNeedingRefresh = items.filter(
+      (item) => item.slug && (!item.image || item.image.includes('placeholder')),
+    );
+
+    if (itemsNeedingRefresh.length === 0) {
+      return undefined;
+    }
+
+    Promise.all(
+      itemsNeedingRefresh.map(async (item) => {
+        try {
+          const product = await getProductBySlug(item.slug);
+          return {
+            key: itemKey(item.productId, item.size, item.color),
+            image: product.images?.[0] ?? null,
+            name: product.name,
+            price: product.price,
+            slug: product.slug,
+          };
+        } catch {
+          return null;
+        }
+      }),
+    ).then((results) => {
+      if (cancelled) return;
+
+      const refreshMap = new Map(
+        results.filter(Boolean).map((result) => [result.key, result]),
+      );
+
+      if (refreshMap.size === 0) return;
+
+      setItems((prev) =>
+        prev.map((item) => {
+          const key = itemKey(item.productId, item.size, item.color);
+          const refreshed = refreshMap.get(key);
+
+          return refreshed
+            ? {
+                ...item,
+                slug: refreshed.slug,
+                name: refreshed.name,
+                price: refreshed.price,
+                image: refreshed.image,
+              }
+            : item;
+        }),
+      );
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Persist on every change
   const isFirstRender = useRef(true);
