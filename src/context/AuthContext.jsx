@@ -40,6 +40,26 @@ function mapUser(authUser, profile) {
   };
 }
 
+function normalizeRedirectPath(redirectPath = '/tienda') {
+  if (!redirectPath || typeof redirectPath !== 'string') {
+    return '/tienda';
+  }
+
+  if (
+    redirectPath.startsWith('http://') ||
+    redirectPath.startsWith('https://')
+  ) {
+    try {
+      const url = new URL(redirectPath);
+      return `${url.pathname}${url.search}${url.hash}` || '/tienda';
+    } catch {
+      return '/tienda';
+    }
+  }
+
+  return redirectPath.startsWith('/') ? redirectPath : `/${redirectPath}`;
+}
+
 // Direct REST call to get_my_profile RPC — completely bypasses Supabase JS client and its lock issues
 async function fetchProfileDirect(accessToken) {
   if (!hasRequiredPublicRuntimeConfig) {
@@ -144,6 +164,7 @@ export function AuthProvider({ children }) {
       return { error: new Error(publicRuntimeConfigErrorMessage) };
     }
 
+    handledManually.current = true;
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -151,19 +172,29 @@ export function AuthProvider({ children }) {
         data: { first_name: firstName, last_name: lastName },
       },
     });
-    if (error) return { error };
+    if (error) {
+      handledManually.current = false;
+      return { error };
+    }
+    if (data?.user && data?.session?.access_token) {
+      const profile = await fetchProfileDirect(data.session.access_token);
+      setUser(mapUser(data.user, profile));
+    } else {
+      handledManually.current = false;
+    }
     return { data };
   }, []);
 
-  const loginWithGoogle = useCallback(async () => {
+  const loginWithGoogle = useCallback(async (redirectPath = '/tienda') => {
     if (!hasRequiredPublicRuntimeConfig) {
       return { error: new Error(publicRuntimeConfigErrorMessage) };
     }
 
+    const safeRedirectPath = normalizeRedirectPath(redirectPath);
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.origin + '/tienda',
+        redirectTo: window.location.origin + safeRedirectPath,
       },
     });
     if (error) return { error };

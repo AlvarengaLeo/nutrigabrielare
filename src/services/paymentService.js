@@ -1,62 +1,66 @@
-import { supabase } from '../lib/supabase.js';
+function buildAuthHeaders(accessToken) {
+  return accessToken ? { Authorization: `Bearer ${accessToken}` } : {};
+}
 
-/**
- * Calls the serverless function to create a Wompi payment link.
- *
- * @param {string} orderId — e.g. 'MJS-2026-0001'
- * @param {string} accessToken — Supabase JWT access token
- * @returns {{ urlEnlace: string }}
- */
-export async function createPaymentLink(orderId, accessToken) {
+async function parseApiError(res, fallbackMessage) {
+  let errorMessage = fallbackMessage;
+
+  try {
+    const data = await res.json();
+    errorMessage = data.error || errorMessage;
+
+    if (Array.isArray(data.missing) && data.missing.length > 0) {
+      errorMessage = `${errorMessage} (${data.missing.join(', ')})`;
+    }
+  } catch {
+    if (res.status === 404) {
+      errorMessage =
+        'Servicio no disponible. Verifica que el entorno de pagos este activo.';
+    }
+  }
+
+  return errorMessage;
+}
+
+export async function createPaymentLink(checkout, accessToken = null) {
   const res = await fetch('/api/wompi/create-link', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${accessToken}`,
+      ...buildAuthHeaders(accessToken),
     },
-    body: JSON.stringify({ orderId }),
+    body: JSON.stringify({ checkout }),
   });
 
   if (!res.ok) {
-    let errorMsg = 'Error al crear enlace de pago';
-    try {
-      const errData = await res.json();
-      errorMsg = errData.error || errorMsg;
-      if (Array.isArray(errData.missing) && errData.missing.length > 0) {
-        errorMsg = `${errorMsg} (${errData.missing.join(', ')})`;
-      }
-    } catch {
-      if (res.status === 404) {
-        errorMsg = 'Servicio de pagos no disponible. Verificá que estás en el entorno de producción.';
-      }
-    }
-    throw new Error(errorMsg);
+    throw new Error(
+      await parseApiError(res, 'No se pudo crear el enlace de pago.'),
+    );
   }
 
-  return await res.json();
+  return res.json();
 }
 
-/**
- * Fetches the payment record for a given order.
- *
- * @param {string} orderId — e.g. 'MJS-2026-0001'
- * @returns {Object|null} payment record or null
- */
-export async function getPaymentByOrderId(orderId) {
-  const { data, error } = await supabase
-    .from('payments')
-    .select(
-      'id, order_id, status, provider_transaction_id, amount, currency, created_at'
-    )
-    .eq('order_id', orderId)
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .single();
-
-  if (error) {
-    if (error.code === 'PGRST116') return null; // not found
-    throw new Error(`Failed to fetch payment: ${error.message}`);
+export async function getCheckoutStatus(
+  orderId,
+  { orderKey = null, accessToken = null } = {},
+) {
+  const params = new URLSearchParams({ order: orderId });
+  if (orderKey) {
+    params.set('key', orderKey);
   }
 
-  return data;
+  const res = await fetch(`/api/wompi/order-status?${params.toString()}`, {
+    headers: {
+      ...buildAuthHeaders(accessToken),
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error(
+      await parseApiError(res, 'No se pudo consultar el estado del pedido.'),
+    );
+  }
+
+  return res.json();
 }

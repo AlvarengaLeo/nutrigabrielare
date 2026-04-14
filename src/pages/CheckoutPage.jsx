@@ -1,27 +1,54 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
+import CheckoutAuthPanel from '../components/CheckoutAuthPanel';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
-import { createOrder } from '../services/orderService';
 import { createPaymentLink } from '../services/paymentService';
 import { supabase } from '../lib/supabase';
+
+const CHECKOUT_DRAFT_KEY = 'nutri-checkout-draft';
+const PENDING_ORDER_KEY = 'nutri-pending-order';
+const SHIPPING_COST = 5;
+
+const EMPTY_DRAFT = {
+  name: '',
+  email: '',
+  phone: '',
+  address: '',
+  city: '',
+  department: '',
+  notes: '',
+};
+
+function loadDraft() {
+  try {
+    const raw = localStorage.getItem(CHECKOUT_DRAFT_KEY);
+    return raw ? { ...EMPTY_DRAFT, ...JSON.parse(raw) } : EMPTY_DRAFT;
+  } catch {
+    return EMPTY_DRAFT;
+  }
+}
+
+function getUserDisplayName(user) {
+  return [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim();
+}
 
 function CheckoutItemThumbnail({ item }) {
   const [hasImageError, setHasImageError] = useState(false);
   const hasImage = Boolean(item.image) && !hasImageError;
 
   return (
-    <div className="w-12 h-14 rounded-lg bg-primary/5 flex-shrink-0 overflow-hidden flex items-center justify-center">
+    <div className="flex h-14 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-lg bg-primary/5">
       {hasImage ? (
         <img
           src={item.image}
           alt={item.name}
-          className="w-[85%] h-[85%] object-contain mix-blend-multiply"
+          className="h-[85%] w-[85%] object-contain mix-blend-multiply"
           onError={() => setHasImageError(true)}
         />
       ) : (
-        <div className="w-8 h-8 rounded-full bg-primary/10" />
+        <div className="h-8 w-8 rounded-full bg-primary/10" />
       )}
     </div>
   );
@@ -33,206 +60,263 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   const containerRef = useRef(null);
 
-  // Form state
-  const [phone, setPhone] = useState('');
-  const [address, setAddress] = useState('');
-  const [city, setCity] = useState('');
-  const [department, setDepartment] = useState('');
-  const [notes, setNotes] = useState('');
+  const [draft, setDraft] = useState(loadDraft);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
 
-  // Redirect if cart is empty
   useEffect(() => {
     if (items.length === 0) {
       navigate('/carrito');
     }
   }, [items.length, navigate]);
 
-  // GSAP entrance animation
   useEffect(() => {
     const ctx = gsap.context(() => {
       const els = containerRef.current?.querySelectorAll('.checkout-el');
-      if (els) gsap.set(els, { opacity: 1, y: 0 });
-      gsap.fromTo(els || '.checkout-el',
+      if (els) {
+        gsap.set(els, { opacity: 1, y: 0 });
+      }
+      gsap.fromTo(
+        els || '.checkout-el',
         { y: 30, opacity: 0 },
-        { y: 0, opacity: 1, duration: 0.7, stagger: 0.12, ease: 'power3.out' }
+        { y: 0, opacity: 1, duration: 0.7, stagger: 0.12, ease: 'power3.out' },
       );
     }, containerRef);
+
     return () => ctx.revert();
   }, []);
 
-  const shippingCost = 5.0;
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    setDraft((prev) => ({
+      ...prev,
+      name: prev.name || getUserDisplayName(user),
+      email: prev.email || user.email || '',
+    }));
+  }, [user]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(draft));
+    } catch {
+      // ignore localStorage errors
+    }
+  }, [draft]);
+
+  const shippingCost = SHIPPING_COST;
   const total = subtotal + shippingCost;
+
+  function updateDraftField(field, value) {
+    setDraft((prev) => ({ ...prev, [field]: value }));
+
+    if (errors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: false }));
+    }
+  }
+
+  function validateCheckout() {
+    const nextErrors = {};
+
+    if (!draft.name.trim()) nextErrors.name = true;
+    if (!draft.email.trim()) nextErrors.email = true;
+    if (!draft.phone.trim()) nextErrors.phone = true;
+    if (!draft.address.trim()) nextErrors.address = true;
+    if (!draft.city.trim()) nextErrors.city = true;
+    if (!draft.department.trim()) nextErrors.department = true;
+
+    const emailPattern = /\S+@\S+\.\S+/;
+    if (draft.email.trim() && !emailPattern.test(draft.email.trim())) {
+      nextErrors.email = true;
+    }
+
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).length === 0;
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
 
-    // Validate required fields
-    const newErrors = {};
-    if (!phone.trim()) newErrors.phone = true;
-    if (!address.trim()) newErrors.address = true;
-    if (!city.trim()) newErrors.city = true;
-    if (!department.trim()) newErrors.department = true;
-
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
+    if (!validateCheckout()) {
       return;
     }
 
-    setErrors({});
     setSubmitting(true);
     setSubmitError('');
 
     try {
-      // Create order with pending_payment status
-      const order = await createOrder({
-        userId: user.id,
-        items,
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      const checkoutPayload = {
+        items: items.map((item) => ({
+          productId: item.productId,
+          slug: item.slug,
+          name: item.name,
+          size: item.size,
+          color: item.color,
+          quantity: item.quantity,
+          image: item.image ?? null,
+        })),
         contact: {
-          name: user.firstName + ' ' + user.lastName,
-          email: user.email,
-          phone,
+          name: draft.name.trim(),
+          email: draft.email.trim(),
+          phone: draft.phone.trim(),
         },
-        shipping: { address, city, department, notes },
-        subtotal,
-        shippingCost,
-        total,
-        status: 'pending_payment',
-      });
+        shipping: {
+          address: draft.address.trim(),
+          city: draft.city.trim(),
+          department: draft.department.trim(),
+          notes: draft.notes.trim(),
+        },
+      };
 
-      // Save orderId as backup
-      localStorage.setItem('nutri-pending-order', order.id);
+      const payment = await createPaymentLink(
+        checkoutPayload,
+        session?.access_token ?? null,
+      );
 
-      // Get access token for the serverless function
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session?.access_token) {
-        throw new Error('No se pudo obtener la sesión');
-      }
+      localStorage.setItem(
+        PENDING_ORDER_KEY,
+        JSON.stringify({
+          id: payment.orderId,
+          key: payment.orderKey,
+        }),
+      );
 
-      // Create Wompi payment link and redirect
-      const { urlEnlace } = await createPaymentLink(order.id, session.access_token);
-      window.location.href = urlEnlace;
-    } catch (err) {
-      setSubmitError(err.message || 'Error al procesar el pago. Intentá de nuevo.');
-      console.error(err);
+      window.location.assign(payment.urlEnlace);
+    } catch (error) {
+      setSubmitError(
+        error.message || 'No pudimos preparar tu pago. Intenta de nuevo.',
+      );
+      console.error(error);
       setSubmitting(false);
     }
   }
 
-  if (items.length === 0) return null;
+  if (items.length === 0) {
+    return null;
+  }
 
   const inputBase =
-    'bg-[#f8f6f3] rounded-xl px-4 py-3 text-sm font-body w-full outline-none focus:ring-1 focus:ring-primary/20 transition-colors';
+    'w-full rounded-xl bg-[#f8f6f3] px-4 py-3 text-sm font-body outline-none transition-colors focus:ring-1 focus:ring-primary/20';
 
   return (
-    <div ref={containerRef} className="min-h-screen pt-32 pb-20 bg-background">
-      <div className="container mx-auto px-6 max-w-6xl">
-        <h1 className="checkout-el font-heading font-extrabold text-3xl text-primary mb-8">
+    <div ref={containerRef} className="min-h-screen bg-background pb-20 pt-32">
+      <div className="container mx-auto max-w-6xl px-6">
+        <h1 className="checkout-el mb-8 font-heading text-3xl font-extrabold text-primary">
           Checkout
         </h1>
 
-        <form onSubmit={handleSubmit} className="flex flex-col lg:flex-row gap-6">
-          {/* ── Left Column ──────────────────────────────────────────── */}
-          <div className="flex-[2] min-w-0 space-y-3">
-            {/* Datos de contacto */}
-            <div className="checkout-el bg-white rounded-2xl p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="font-heading font-bold text-sm text-primary">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-6 lg:flex-row">
+          <div className="min-w-0 flex-[2] space-y-3">
+            {!user ? (
+              <CheckoutAuthPanel defaultEmail={draft.email} />
+            ) : (
+              <section className="checkout-el rounded-2xl bg-white p-6">
+                <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <h2 className="font-heading text-sm font-bold text-primary">
+                      Checkout desde tu cuenta
+                    </h2>
+                    <p className="mt-2 max-w-xl font-body text-sm text-primary/60">
+                      Tu sesion ya esta activa. Puedes seguir con el pago ahora mismo
+                      y ajustar los datos de contacto o envio si lo necesitas.
+                    </p>
+                  </div>
+                  <span className="text-xs font-body text-green-600">
+                    Sesion iniciada
+                  </span>
+                </div>
+              </section>
+            )}
+
+            <section className="checkout-el rounded-2xl bg-white p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <h2 className="font-heading text-sm font-bold text-primary">
                   Datos de contacto
                 </h2>
-                <span className="text-green-500 text-xs font-body">
-                  ✓ Desde tu cuenta
+                <span className="text-xs font-body text-primary/45">
+                  {user ? 'Puedes editar estos datos' : 'Compra como invitado'}
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <input
                   type="text"
-                  readOnly
-                  value={user.firstName + ' ' + user.lastName}
-                  className={`${inputBase} cursor-default`}
+                  placeholder="Nombre completo"
+                  value={draft.name}
+                  onChange={(e) => updateDraftField('name', e.target.value)}
+                  className={`${inputBase} ${errors.name ? 'border border-red-400' : ''}`}
                 />
                 <input
                   type="email"
-                  readOnly
-                  value={user.email}
-                  className={`${inputBase} cursor-default`}
+                  placeholder="Correo electronico"
+                  value={draft.email}
+                  onChange={(e) => updateDraftField('email', e.target.value)}
+                  className={`${inputBase} ${errors.email ? 'border border-red-400' : ''}`}
                 />
                 <input
                   type="tel"
-                  placeholder="Teléfono"
-                  value={phone}
-                  onChange={(e) => {
-                    setPhone(e.target.value);
-                    if (errors.phone) setErrors((p) => ({ ...p, phone: false }));
-                  }}
+                  placeholder="Telefono"
+                  value={draft.phone}
+                  onChange={(e) => updateDraftField('phone', e.target.value)}
                   className={`${inputBase} sm:col-span-2 ${errors.phone ? 'border border-red-400' : ''}`}
                 />
               </div>
-            </div>
+            </section>
 
-            {/* Dirección de envío */}
-            <div className="checkout-el bg-white rounded-2xl p-6">
-              <h2 className="font-heading font-bold text-sm text-primary mb-1">
-                Dirección de envío
+            <section className="checkout-el rounded-2xl bg-white p-6">
+              <h2 className="mb-1 font-heading text-sm font-bold text-primary">
+                Direccion de envio
               </h2>
-              <span className="text-xs font-body text-primary/50 inline-block mb-4">
-                📦 Envío a domicilio
+              <span className="mb-4 inline-block font-body text-xs text-primary/50">
+                Envio a domicilio
               </span>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <input
                   type="text"
-                  placeholder="Dirección"
-                  value={address}
-                  onChange={(e) => {
-                    setAddress(e.target.value);
-                    if (errors.address) setErrors((p) => ({ ...p, address: false }));
-                  }}
+                  placeholder="Direccion"
+                  value={draft.address}
+                  onChange={(e) => updateDraftField('address', e.target.value)}
                   className={`${inputBase} sm:col-span-2 ${errors.address ? 'border border-red-400' : ''}`}
                 />
                 <input
                   type="text"
                   placeholder="Ciudad"
-                  value={city}
-                  onChange={(e) => {
-                    setCity(e.target.value);
-                    if (errors.city) setErrors((p) => ({ ...p, city: false }));
-                  }}
+                  value={draft.city}
+                  onChange={(e) => updateDraftField('city', e.target.value)}
                   className={`${inputBase} ${errors.city ? 'border border-red-400' : ''}`}
                 />
                 <input
                   type="text"
                   placeholder="Departamento"
-                  value={department}
-                  onChange={(e) => {
-                    setDepartment(e.target.value);
-                    if (errors.department) setErrors((p) => ({ ...p, department: false }));
-                  }}
+                  value={draft.department}
+                  onChange={(e) => updateDraftField('department', e.target.value)}
                   className={`${inputBase} ${errors.department ? 'border border-red-400' : ''}`}
                 />
                 <input
                   type="text"
                   placeholder="Indicaciones de entrega (opcional)"
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
+                  value={draft.notes}
+                  onChange={(e) => updateDraftField('notes', e.target.value)}
                   className={`${inputBase} sm:col-span-2`}
                 />
               </div>
-            </div>
-
+            </section>
           </div>
 
-          {/* ── Right Column — Order Summary ─────────────────────────── */}
-          <div className="flex-1 min-w-0">
-            <div className="checkout-el bg-white rounded-2xl p-6 sticky top-28">
-              <h2 className="font-heading font-bold text-sm text-primary mb-4">
+          <div className="min-w-0 flex-1">
+            <div className="checkout-el sticky top-28 rounded-2xl bg-white p-6">
+              <h2 className="mb-4 font-heading text-sm font-bold text-primary">
                 Tu pedido
               </h2>
 
-              {/* Item list */}
               <div className="space-y-0">
                 {items.map((item, idx) => (
                   <div
@@ -242,54 +326,58 @@ export default function CheckoutPage() {
                     }`}
                   >
                     <CheckoutItemThumbnail item={item} />
-                    <div className="flex-1 min-w-0">
-                      <p className="font-heading text-sm font-bold text-primary truncate">
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate font-heading text-sm font-bold text-primary">
                         {item.name}{' '}
                         <span className="font-normal text-primary/50">
-                          &times;{item.quantity}
+                          x{item.quantity}
                         </span>
                       </p>
-                      <p className="text-xs text-primary/40 font-body">
+                      <p className="font-body text-xs text-primary/40">
                         {item.size} / {item.color}
                       </p>
                     </div>
-                    <p className="font-heading font-bold text-sm text-primary">
+                    <p className="font-heading text-sm font-bold text-primary">
                       ${(item.price * item.quantity).toFixed(2)}
                     </p>
                   </div>
                 ))}
               </div>
 
-              {/* Totals */}
-              <div className="mt-4 space-y-2 text-sm font-body">
+              <div className="mt-4 space-y-2 font-body text-sm">
                 <div className="flex justify-between text-primary/60">
                   <span>Subtotal</span>
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-primary/60">
-                  <span>Envío</span>
+                  <span>Envio</span>
                   <span>${shippingCost.toFixed(2)}</span>
                 </div>
-                <div className="border-t border-primary/10 pt-2 flex justify-between font-bold text-lg text-primary">
+                <div className="flex justify-between border-t border-primary/10 pt-2 text-lg font-bold text-primary">
                   <span>Total</span>
                   <span>${total.toFixed(2)}</span>
                 </div>
               </div>
 
-              {/* Submit */}
-              {submitError && (
-                <p className="mt-4 text-sm text-red-500 font-body text-center">{submitError}</p>
-              )}
+              {submitError ? (
+                <p className="mt-4 text-center font-body text-sm text-red-500">
+                  {submitError}
+                </p>
+              ) : null}
+
               <button
                 type="submit"
                 disabled={submitting}
-                className={`mt-6 bg-primary text-background w-full py-3.5 rounded-xl font-heading font-bold text-sm transition-opacity ${submitting ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'}`}
+                className={`mt-6 w-full rounded-xl bg-primary py-3.5 font-heading text-sm font-bold text-background transition-opacity ${
+                  submitting ? 'cursor-not-allowed opacity-50' : 'hover:opacity-90'
+                }`}
               >
-                {submitting ? 'Redirigiendo a Wompi...' : 'Pagar con Wompi →'}
+                {submitting ? 'Redirigiendo a Wompi...' : 'Pagar con Wompi ->'}
               </button>
 
-              <p className="text-xs text-primary/30 text-center mt-3 font-body">
-                Serás redirigido a Wompi para completar el pago
+              <p className="mt-3 text-center font-body text-xs text-primary/35">
+                Seras redirigido a Wompi para completar el pago sin perder tu
+                carrito ni el progreso del checkout.
               </p>
             </div>
           </div>

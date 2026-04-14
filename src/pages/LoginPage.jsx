@@ -54,7 +54,7 @@ export default function LoginPage() {
   }
 
   async function handleGoogle() {
-    await loginWithGoogle();
+    await loginWithGoogle(redirect);
   }
 
   return (
@@ -134,7 +134,10 @@ export default function LoginPage() {
 
           <p className="login-el font-body text-sm text-primary/50 mt-5 text-center">
             ¿No tenés cuenta?{' '}
-            <Link to="/registro" className="text-accent font-semibold hover:underline">
+            <Link
+              to={`/registro?redirect=${encodeURIComponent(redirect)}`}
+              className="text-accent font-semibold hover:underline"
+            >
               Crear cuenta
             </Link>
           </p>

@@ -56,7 +56,7 @@ export default function RegistroPage() {
   }
 
   async function handleGoogle() {
-    await loginWithGoogle();
+    await loginWithGoogle(redirect);
   }
 
   return (
@@ -154,7 +154,10 @@ export default function RegistroPage() {
 
           <p className="registro-el font-body text-sm text-primary/50 mt-5 text-center">
             ¿Ya tenés cuenta?{' '}
-            <Link to="/login" className="text-accent font-semibold hover:underline">
+            <Link
+              to={`/login?redirect=${encodeURIComponent(redirect)}`}
+              className="text-accent font-semibold hover:underline"
+            >
               Iniciar sesión
             </Link>
           </p>

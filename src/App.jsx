@@ -97,8 +97,8 @@ function AppContent() {
           <Route path="/carrito" element={<CarritoPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/registro" element={<RegistroPage />} />
-          <Route path="/checkout" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
-          <Route path="/gracias" element={<ProtectedRoute><GraciasPage /></ProtectedRoute>} />
+          <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/gracias" element={<GraciasPage />} />
           <Route path="/tracking" element={<TrackingPage />} />
           <Route path="/tracking/:code" element={<TrackingPage />} />
           <Route path="/cuenta" element={<ProtectedRoute><CuentaPage /></ProtectedRoute>} />
