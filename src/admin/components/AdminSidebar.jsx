@@ -57,16 +57,16 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }) {
   const NavContent = ({ onClose }) => (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className={`flex items-center px-4 py-5 border-b border-primary/5 ${collapsed && !onClose ? 'justify-center' : 'justify-between'}`}>
+      <div className="relative flex items-center justify-center px-4 py-6 border-b border-primary/5 min-h-[90px]">
         <img
           src="/media/admin-sidebar-logo.png"
           alt="Nutrigabrielare"
-          className={`object-contain flex-shrink-0 transition-all duration-300 ${collapsed && !onClose ? 'w-8 h-8' : 'w-auto h-12 max-w-[160px]'}`}
+          className={`object-contain transition-all duration-300 mx-auto ${collapsed && !onClose ? 'w-10' : 'w-full'}`}
         />
         {onClose && (
           <button
             onClick={onClose}
-            className="p-1 rounded-lg hover:bg-primary/5 text-primary/50 hover:text-primary transition-colors"
+            className="absolute right-3 top-3 p-1 rounded-lg hover:bg-primary/5 text-primary/50 hover:text-primary transition-colors"
             aria-label="Cerrar menú"
           >
             <X size={18} />
