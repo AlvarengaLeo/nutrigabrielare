@@ -57,7 +57,7 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }) {
   const NavContent = ({ onClose }) => (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className="relative flex items-center justify-center px-4 py-6 border-b border-primary/5 min-h-[90px]">
+      <div className="relative flex items-center justify-center px-4 py-3 border-b border-primary/5">
         <img
           src="/media/admin-sidebar-logo-v2.png"
           alt="Nutrigabrielare"
