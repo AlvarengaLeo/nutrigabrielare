@@ -61,7 +61,7 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }) {
         <img
           src="/media/admin-sidebar-logo.png"
           alt="Nutrigabrielare"
-          className={`object-contain transition-all duration-300 mx-auto ${collapsed && !onClose ? 'w-10' : 'w-4/5'}`}
+          className={`object-contain transition-all duration-300 mx-auto ${collapsed && !onClose ? 'w-10' : 'w-[70%]'}`}
         />
         {onClose && (
           <button
