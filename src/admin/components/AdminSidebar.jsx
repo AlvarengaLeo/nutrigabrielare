@@ -57,21 +57,16 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }) {
   const NavContent = ({ onClose }) => (
     <div className="flex flex-col h-full">
       {/* Logo */}
-      <div className={`flex items-center gap-3 px-4 py-5 border-b border-primary/5 ${collapsed && !onClose ? 'justify-center' : ''}`}>
+      <div className={`flex items-center px-4 py-5 border-b border-primary/5 ${collapsed && !onClose ? 'justify-center' : 'justify-between'}`}>
         <img
-          src="/media/logosgaby-21.png"
+          src="/media/admin-logo.png"
           alt="Nutrigabrielare"
-          className="w-8 h-8 object-contain flex-shrink-0"
+          className={`object-contain flex-shrink-0 transition-all duration-300 ${collapsed && !onClose ? 'w-8 h-8' : 'w-auto h-12 max-w-[160px]'}`}
         />
-        {(!collapsed || onClose) && (
-          <span className="font-heading font-extrabold text-sm text-primary leading-tight">
-            Nutrigabrielare
-          </span>
-        )}
         {onClose && (
           <button
             onClick={onClose}
-            className="ml-auto p-1 rounded-lg hover:bg-primary/5 text-primary/50 hover:text-primary transition-colors"
+            className="p-1 rounded-lg hover:bg-primary/5 text-primary/50 hover:text-primary transition-colors"
             aria-label="Cerrar menú"
           >
             <X size={18} />

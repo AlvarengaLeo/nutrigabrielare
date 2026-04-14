@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import gsap from 'gsap';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function AdminLoginPage() {
@@ -11,6 +12,7 @@ export default function AdminLoginPage() {
   const containerRef = useRef(null);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
@@ -53,19 +55,22 @@ export default function AdminLoginPage() {
 
   return (
     <div ref={containerRef} className="min-h-screen flex bg-background">
-      <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-[#1A1A1A]">
-        <img src="/media/logosgaby-21.png" alt="Nutrigabrielare" className="w-20 h-20 rounded-full object-contain mb-4" />
-        <span className="font-drama italic text-xl text-accent">Nutrigabrielare</span>
-        <span className="text-sm text-white/40 mt-1">Panel Administrativo</span>
+      <div className="hidden md:flex flex-1 flex-col items-center justify-center bg-[#1A1A1A] p-8">
+        <img src="/media/admin-logo.png" alt="Nutrigabrielare" className="w-64 max-w-full h-auto object-contain" />
       </div>
       <div className="flex-1 flex items-center justify-center px-6 py-24">
         <div className="w-full max-w-sm">
-          <h1 className="admin-login-el font-heading font-extrabold text-2xl text-primary mb-1">Acceso al panel</h1>
-          <p className="admin-login-el font-body text-primary/50 text-sm mb-6">Solo para el equipo</p>
-          {error && <p className="admin-login-el text-sm text-red-500 font-body mb-3">{error}</p>}
+          <h1 className="admin-login-el font-heading font-extrabold text-2xl text-primary mb-1 text-center">Acceso al panel</h1>
+          <p className="admin-login-el font-body text-primary/50 text-sm mb-6 text-center">Solo para el equipo</p>
+          {error && <p className="admin-login-el text-sm text-red-500 font-body mb-3 text-center">{error}</p>}
           <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-            <input className="admin-login-el bg-[#f8f6f3] rounded-xl px-4 py-3 text-sm text-primary placeholder:text-primary/40 outline-none focus:ring-2 focus:ring-accent/40" type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            <input className="admin-login-el bg-[#f8f6f3] rounded-xl px-4 py-3 text-sm text-primary placeholder:text-primary/40 outline-none focus:ring-2 focus:ring-accent/40" type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <input className="admin-login-el w-full bg-[#f8f6f3] rounded-xl px-4 py-3 text-sm text-primary placeholder:text-primary/40 outline-none focus:ring-2 focus:ring-accent/40" type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} required />
+            <div className="admin-login-el relative w-full">
+              <input className="w-full bg-[#f8f6f3] rounded-xl px-4 py-3 text-sm text-primary placeholder:text-primary/40 outline-none focus:ring-2 focus:ring-accent/40 pr-10" type={showPassword ? 'text' : 'password'} placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-primary/40 hover:text-primary transition-colors">
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
             <button type="submit" disabled={submitting} className={`admin-login-el bg-primary text-background w-full py-3.5 rounded-xl font-heading font-bold text-sm transition-opacity mt-1 ${submitting ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'}`}>
               {submitting ? 'Iniciando...' : 'Iniciar sesión'}
             </button>
