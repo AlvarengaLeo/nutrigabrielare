@@ -59,7 +59,7 @@ export default function AdminSidebar({ mobileOpen, onMobileClose }) {
       {/* Logo */}
       <div className={`flex items-center px-4 py-5 border-b border-primary/5 ${collapsed && !onClose ? 'justify-center' : 'justify-between'}`}>
         <img
-          src="/media/admin-logo.png"
+          src="/media/admin-sidebar-logo.png"
           alt="Nutrigabrielare"
           className={`object-contain flex-shrink-0 transition-all duration-300 ${collapsed && !onClose ? 'w-8 h-8' : 'w-auto h-12 max-w-[160px]'}`}
         />
