@@ -14,7 +14,8 @@ import Footer from './components/Footer';
 import CartDrawer from './components/CartDrawer';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
-import TiendaPage from './pages/TiendaPage';
+import PlenoLandingPage from './pages/PlenoLandingPage';
+import PlenoCategoryPage from './pages/PlenoCategoryPage';
 import NutricionConAlmaPage from './pages/NutricionConAlmaPage';
 import ContactanosPage from './pages/ContactanosPage';
 import ComunidadPage from './pages/ComunidadPage';
@@ -78,7 +79,10 @@ function AppContent() {
         <Routes>
           {/* ── Public routes ── */}
           <Route path="/" element={<HomePage />} />
-          <Route path="/tienda" element={<TiendaPage />} />
+          <Route path="/pleno" element={<PlenoLandingPage />} />
+          <Route path="/pleno/:kindSlug" element={<PlenoCategoryPage />} />
+          <Route path="/tienda" element={<Navigate to="/pleno" replace />} />
+          <Route path="/tienda/*" element={<Navigate to="/pleno" replace />} />
           <Route
             path="/donacion"
             element={<Navigate to="/nutricion-con-alma" replace />}

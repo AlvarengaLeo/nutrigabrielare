@@ -81,7 +81,7 @@ export default function Membership() {
           </Link>
 
           {/* Block 3: Tienda / Ecommerce */}
-          <Link to="/tienda" className="entry-block md:col-span-12 flex flex-col md:flex-row items-start md:items-center justify-between p-10 md:p-12 rounded-[2.5rem] bg-accent/5 border border-accent/10 hover:-translate-y-3 hover:shadow-2xl transition-transform duration-700 ease-out group">
+          <Link to="/pleno" className="entry-block md:col-span-12 flex flex-col md:flex-row items-start md:items-center justify-between p-10 md:p-12 rounded-[2.5rem] bg-accent/5 border border-accent/10 hover:-translate-y-3 hover:shadow-2xl transition-transform duration-700 ease-out group">
             <div className="md:w-3/5 mb-8 md:mb-0">
               <div className="font-drama italic text-xl text-primary/40 mb-4">03</div>
               <h3 className="font-heading font-bold text-3xl text-primary mb-3 tracking-tight">Tienda de Productos Digitales</h3>

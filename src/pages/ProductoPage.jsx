@@ -2,10 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ArrowLeft } from 'lucide-react';
-import { getProductBySlug, getCategoryById } from '../services/productService';
+import { getProductBySlug, getCategoryById, KIND_TO_SLUG } from '../services/productService';
 import { ColorSelector, SizeSelector } from '../components/VariantSelector';
 import { useCart } from '../context/CartContext';
 import MarkdownRenderer from '../components/MarkdownRenderer';
+
+const WHATSAPP_NUMBER = '50376284719';
 
 export default function ProductoPage() {
   const { slug } = useParams();
@@ -76,7 +78,7 @@ export default function ProductoPage() {
           Producto no encontrado
         </h1>
         <Link
-          to="/tienda"
+          to="/pleno"
           className="font-heading font-bold text-accent hover:underline"
         >
           Volver a la tienda
@@ -85,10 +87,16 @@ export default function ProductoPage() {
     );
   }
 
+  const kind = product.kind ?? 'physical';
+  const isService = kind === 'service';
+  const isDigital = kind === 'digital';
+  const kindSlug = KIND_TO_SLUG[kind] ?? 'suplementos';
+  const showQuote = isService && product.price === 0;
+
   // Determine if product has variants
-  // Filter out internal/default variant values
-  const realColors = (product.variants?.colors ?? []).filter(c => c.name !== 'Estándar');
-  const realSizes = (product.variants?.sizes ?? []).filter(s => s !== 'Único');
+  // Filter out internal/default variant values. Services and digitals never expose variants.
+  const realColors = isService || isDigital ? [] : (product.variants?.colors ?? []).filter(c => c.name !== 'Estándar');
+  const realSizes = isService || isDigital ? [] : (product.variants?.sizes ?? []).filter(s => s !== 'Único');
   const hasColors = realColors.length > 0;
   const hasSizes = realSizes.length > 0;
   const hasVariants = hasColors || hasSizes;
@@ -129,25 +137,21 @@ export default function ProductoPage() {
         {/* Back button + Breadcrumb */}
         <div className="producto-el mb-10 flex flex-col gap-3">
           <Link
-            to="/tienda"
+            to={`/pleno/${kindSlug}`}
             className="inline-flex items-center gap-2 text-sm font-body text-primary/50 hover:text-accent transition-colors w-fit"
           >
             <ArrowLeft size={16} strokeWidth={2} />
-            Volver a la tienda
+            Volver
           </Link>
           <nav className="flex items-center gap-2 text-sm font-body text-primary/50">
-            <Link to="/tienda" className="hover:text-accent transition-colors">
-              Tienda
+            <Link to="/pleno" className="hover:text-accent transition-colors">
+              Pleno
             </Link>
             <span>/</span>
-            {category && (
-              <>
-                <Link to="/tienda" className="hover:text-accent transition-colors">
-                  {category.title}
-                </Link>
-                <span>/</span>
-              </>
-            )}
+            <Link to={`/pleno/${kindSlug}`} className="hover:text-accent transition-colors capitalize">
+              {kindSlug}
+            </Link>
+            <span>/</span>
             <span className="text-primary/80">{product.name}</span>
           </nav>
         </div>
@@ -208,7 +212,7 @@ export default function ProductoPage() {
             </h1>
 
             <p className="producto-el font-drama italic text-2xl text-primary">
-              ${product.price.toFixed(2)}
+              {showQuote ? 'Cotizar' : `$${product.price.toFixed(2)}`}
             </p>
 
             <div className="producto-el font-body text-primary/60">
@@ -237,34 +241,36 @@ export default function ProductoPage() {
               </div>
             )}
 
-            {/* Quantity selector */}
-            <div className="producto-el flex flex-col gap-2">
-              <span className="font-body text-xs font-semibold tracking-widest uppercase text-primary/50">
-                Cantidad
-              </span>
-              <div className="flex items-center border border-primary/10 rounded-xl overflow-hidden w-fit">
-                <button
-                  type="button"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-4 py-3 text-primary/50 hover:text-primary transition-colors"
-                >
-                  −
-                </button>
-                <span className="px-4 py-3 font-body text-sm font-semibold text-primary min-w-[3rem] text-center">
-                  {quantity}
+            {/* Quantity selector — physical only */}
+            {!isService && !isDigital && (
+              <div className="producto-el flex flex-col gap-2">
+                <span className="font-body text-xs font-semibold tracking-widest uppercase text-primary/50">
+                  Cantidad
                 </span>
-                <button
-                  type="button"
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="px-4 py-3 text-primary/50 hover:text-primary transition-colors"
-                >
-                  +
-                </button>
+                <div className="flex items-center border border-primary/10 rounded-xl overflow-hidden w-fit">
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="px-4 py-3 text-primary/50 hover:text-primary transition-colors"
+                  >
+                    −
+                  </button>
+                  <span className="px-4 py-3 font-body text-sm font-semibold text-primary min-w-[3rem] text-center">
+                    {quantity}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setQuantity(quantity + 1)}
+                    className="px-4 py-3 text-primary/50 hover:text-primary transition-colors"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Stock indicator */}
-            {hasVariants && (
+            {/* Stock indicator — only for physical with variants */}
+            {!isService && !isDigital && hasVariants && (
               <div className="producto-el font-body text-sm">
                 {currentStock > 0 ? (
                   <span className="flex items-center gap-2 text-green-600">
@@ -281,25 +287,45 @@ export default function ProductoPage() {
               </div>
             )}
 
-            <button
-              type="button"
-              onClick={handleAddToCart}
-              disabled={!canAdd}
-              className={[
-                'producto-el w-full py-4 rounded-xl font-heading font-bold text-center transition-all duration-200',
-                canAdd
-                  ? 'bg-primary text-background hover:opacity-90 cursor-pointer'
-                  : 'bg-primary/30 text-background/60 cursor-not-allowed',
-              ].join(' ')}
-            >
-              {hasVariants && ((!hasColors || selectedColor) && (!hasSizes || selectedSize))
-                ? currentStock === 0
-                  ? 'Agotado'
-                  : 'Agregar al carrito'
-                : hasVariants
-                  ? 'Selecciona las opciones'
-                  : 'Agregar al carrito'}
-            </button>
+            {/* CTA — kind-aware */}
+            {isService ? (
+              <a
+                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hola, me interesa reservar: ${product.name}`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="producto-el w-full py-4 rounded-xl font-heading font-bold text-center transition-all duration-200 bg-primary text-background hover:opacity-90"
+              >
+                Reservar consulta
+              </a>
+            ) : isDigital ? (
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                className="producto-el w-full py-4 rounded-xl font-heading font-bold text-center transition-all duration-200 bg-primary text-background hover:opacity-90 cursor-pointer"
+              >
+                Comprar y descargar
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleAddToCart}
+                disabled={!canAdd}
+                className={[
+                  'producto-el w-full py-4 rounded-xl font-heading font-bold text-center transition-all duration-200',
+                  canAdd
+                    ? 'bg-primary text-background hover:opacity-90 cursor-pointer'
+                    : 'bg-primary/30 text-background/60 cursor-not-allowed',
+                ].join(' ')}
+              >
+                {hasVariants && ((!hasColors || selectedColor) && (!hasSizes || selectedSize))
+                  ? currentStock === 0
+                    ? 'Agotado'
+                    : 'Agregar al carrito'
+                  : hasVariants
+                    ? 'Selecciona las opciones'
+                    : 'Agregar al carrito'}
+              </button>
+            )}
           </div>
         </div>
       </div>

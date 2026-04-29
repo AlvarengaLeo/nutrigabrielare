@@ -1,10 +1,23 @@
 import { supabase } from '../lib/supabase.js';
 
 const PRODUCT_SELECT = `
-  id, slug, name, category_id, price, description, description_long, active, featured,
+  id, slug, name, category_id, kind, price, description, description_long,
+  active, featured, featured_order, digital_file_path,
   product_images ( url, sort_order ),
   product_variants ( size, color_name, color_hex, stock, active )
 `.trim();
+
+export const KIND_TO_SLUG = {
+  digital: 'digitales',
+  physical: 'suplementos',
+  service: 'servicios',
+};
+
+export const SLUG_TO_KIND = {
+  digitales: 'digital',
+  suplementos: 'physical',
+  servicios: 'service',
+};
 
 /**
  * Maps a raw DB product row to the UI-expected shape.
@@ -54,11 +67,14 @@ function transformProduct(row) {
     slug: row.slug,
     name: row.name,
     category: row.category_id,
+    kind: row.kind ?? 'physical',
     price: row.price,
     description: row.description,
     descriptionLong: row.description_long,
     active: row.active,
     featured: row.featured,
+    featuredOrder: row.featured_order ?? 0,
+    digitalFilePath: row.digital_file_path ?? null,
     images,
     variants: {
       sizes,
@@ -147,6 +163,20 @@ export async function getProductBySlug(slug) {
 }
 
 /**
+ * Fetch all active products of a given kind (digital | physical | service).
+ */
+export async function getProductsByKind(kind) {
+  const { data, error } = await supabase
+    .from('products')
+    .select(PRODUCT_SELECT)
+    .eq('kind', kind)
+    .eq('active', true);
+
+  if (error) throw error;
+  return data.map(transformProduct);
+}
+
+/**
  * Fetch all active products across all categories,
  * including joined images and variants.
  */
@@ -176,7 +206,19 @@ export async function getAllProductsAdmin() {
 /**
  * Create a new product.
  */
-export async function createProduct({ name, slug, categoryId, price, description, descriptionLong, active = true, featured = false }) {
+export async function createProduct({
+  name,
+  slug,
+  categoryId,
+  kind = 'physical',
+  price,
+  description,
+  descriptionLong,
+  active = true,
+  featured = false,
+  featuredOrder = 0,
+  digitalFilePath = null,
+}) {
   const { data, error } = await supabase
     .from('products')
     .insert({
@@ -184,11 +226,14 @@ export async function createProduct({ name, slug, categoryId, price, description
       slug,
       name,
       category_id: categoryId,
+      kind,
       price,
       description,
       description_long: descriptionLong,
       active,
       featured,
+      featured_order: featuredOrder,
+      digital_file_path: digitalFilePath,
     })
     .select()
     .single();
@@ -210,6 +255,9 @@ export async function updateProduct(id, updates) {
   if (updates.descriptionLong !== undefined) row.description_long = updates.descriptionLong;
   if (updates.active !== undefined) row.active = updates.active;
   if (updates.featured !== undefined) row.featured = updates.featured;
+  if (updates.kind !== undefined) row.kind = updates.kind;
+  if (updates.featuredOrder !== undefined) row.featured_order = updates.featuredOrder;
+  if (updates.digitalFilePath !== undefined) row.digital_file_path = updates.digitalFilePath;
 
   const { data, error } = await supabase
     .from('products')

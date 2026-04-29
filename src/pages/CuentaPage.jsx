@@ -105,7 +105,7 @@ export default function CuentaPage() {
                 Cuando hagas tu primera compra, aparecerá acá.
               </p>
               <Link
-                to="/tienda"
+                to="/pleno"
                 className="inline-block bg-primary text-background px-6 py-3 rounded-xl font-heading font-bold text-sm hover:bg-primary/90 transition-colors"
               >
                 Ir a la tienda

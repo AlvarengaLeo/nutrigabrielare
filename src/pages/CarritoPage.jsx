@@ -53,7 +53,7 @@ export default function CarritoPage() {
           Explorá la tienda y encontrá algo que te represente.
         </p>
         <Link
-          to="/tienda"
+          to="/pleno"
           className="bg-primary text-background px-8 py-3.5 rounded-xl font-heading font-bold hover:opacity-90 transition-opacity"
         >
           Ir a la tienda
@@ -191,7 +191,7 @@ export default function CarritoPage() {
 
               {/* Continue shopping */}
               <Link
-                to="/tienda"
+                to="/pleno"
                 className="block text-center text-accent text-sm font-body hover:underline"
               >
                 Seguir comprando

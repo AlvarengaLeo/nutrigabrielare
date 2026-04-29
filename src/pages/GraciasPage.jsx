@@ -164,7 +164,7 @@ export default function GraciasPage() {
             No pudimos encontrar tu pedido
           </p>
           <Link
-            to="/tienda"
+            to="/pleno"
             className="gracias-el inline-block rounded-xl bg-primary px-6 py-3 text-sm font-bold text-background"
           >
             Ir a la tienda
@@ -213,7 +213,7 @@ export default function GraciasPage() {
               Ver seguimiento
             </Link>
             <Link
-              to="/tienda"
+              to="/pleno"
               className="rounded-xl border border-primary/10 bg-white px-6 py-3 text-sm font-bold text-primary"
             >
               Volver a la tienda
@@ -332,7 +332,7 @@ export default function GraciasPage() {
 
         <div className="gracias-el mt-6 flex gap-3">
           <Link
-            to="/tienda"
+            to="/pleno"
             className="flex-1 rounded-xl bg-primary px-6 py-3 text-center text-sm font-bold text-background"
           >
             Volver a la tienda
