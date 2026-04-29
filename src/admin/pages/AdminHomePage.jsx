@@ -1,19 +1,17 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { Home, Sparkles, Heart, Shield, Activity, ExternalLink, Clock } from 'lucide-react';
+import { Home, Sparkles, Heart, Shield, ExternalLink, Clock } from 'lucide-react';
 import AdminLayout from '../components/AdminLayout';
 import { getHomeContent } from '../../services/homeContentService';
 import { DEFAULT_HOME } from '../../context/HomeContentContext';
 import HeroEditor from '../components/home/HeroEditor';
 import PhilosophyEditor from '../components/home/PhilosophyEditor';
 import WhyChooseUsEditor from '../components/home/WhyChooseUsEditor';
-import FeaturesEditor from '../components/home/FeaturesEditor';
 
 const TABS = [
   { id: 'hero', label: 'Hero', icon: Sparkles },
   { id: 'philosophy', label: 'Filosofía', icon: Heart },
   { id: 'why_choose_us', label: 'Diferenciador', icon: Shield },
-  { id: 'features', label: 'Servicios', icon: Activity },
 ];
 
 export default function AdminHomePage() {
@@ -31,7 +29,6 @@ export default function AdminHomePage() {
             hero: { ...DEFAULT_HOME.hero, ...(data.hero || {}) },
             philosophy: { ...DEFAULT_HOME.philosophy, ...(data.philosophy || {}) },
             why_choose_us: { ...DEFAULT_HOME.why_choose_us, ...(data.why_choose_us || {}) },
-            features: { ...DEFAULT_HOME.features, ...(data.features || {}) },
           });
           setUpdatedAt(data.updated_at);
         } else {
@@ -81,8 +78,6 @@ export default function AdminHomePage() {
         return <PhilosophyEditor data={content.philosophy} onSaved={(d) => handleSectionSaved('philosophy', d)} />;
       case 'why_choose_us':
         return <WhyChooseUsEditor data={content.why_choose_us} onSaved={(d) => handleSectionSaved('why_choose_us', d)} />;
-      case 'features':
-        return <FeaturesEditor data={content.features} onSaved={(d) => handleSectionSaved('features', d)} />;
       default:
         return null;
     }

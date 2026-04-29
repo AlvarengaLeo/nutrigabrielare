@@ -163,6 +163,41 @@ export async function getProductBySlug(slug) {
 }
 
 /**
+ * Fetch featured active products ordered by featured_order then created_at.
+ */
+export async function getFeaturedProducts(limit = 5) {
+  const { data, error } = await supabase
+    .from('products')
+    .select(PRODUCT_SELECT)
+    .eq('active', true)
+    .eq('featured', true)
+    .order('featured_order', { ascending: true })
+    .order('created_at', { ascending: false })
+    .limit(limit);
+
+  if (error) throw error;
+  return data.map(transformProduct);
+}
+
+/**
+ * Fetch related products of the same kind, excluding a given id.
+ */
+export async function getRelatedProducts({ excludeId, kind, limit = 5 }) {
+  let query = supabase
+    .from('products')
+    .select(PRODUCT_SELECT)
+    .eq('active', true)
+    .limit(limit);
+
+  if (kind) query = query.eq('kind', kind);
+  if (excludeId) query = query.neq('id', excludeId);
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return data.map(transformProduct);
+}
+
+/**
  * Fetch all active products of a given kind (digital | physical | service).
  */
 export async function getProductsByKind(kind) {

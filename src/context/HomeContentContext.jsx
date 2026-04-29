@@ -54,19 +54,6 @@ export const DEFAULT_HOME = {
     ],
     plateImage: '/media/healthy_plate.png',
   },
-  features: {
-    badge: 'Catálogo',
-    titleLine1: 'Mis Servicios—',
-    titleLine2: 'Tu Salud, Mi Prioridad',
-    services: [
-      { num: '01', title: 'Consulta Presencial', description: 'Te recibo en Santa Ana para una evaluación integral: composición corporal, salud hormonal y un plan que conecte con tu estilo de vida real.', price: '$35.00', isVip: false },
-      { num: '02', title: 'Consulta Online Nacional', description: 'Desde cualquier punto de El Salvador. Trabajamos juntas tu balance hormonal, alimentación y bienestar a través de mi app de seguimiento.', price: '$30.00', isVip: false },
-      { num: '03', title: 'Consulta Online Internacional', description: 'Donde sea que estés en el mundo, te acompaño con un enfoque holístico adaptado a tu contexto, cultura alimentaria y objetivos.', price: '$40.00', isVip: false },
-      { num: '04', title: 'Consulta en Pareja', description: 'Metas compartidas, resultados potenciados. Diseño un plan para dos personas que quieren transformar su salud juntas.', price: '$60.00', isVip: false },
-      { num: '05', title: 'Paquete Familiar', description: 'Bienestar integral para tu hogar. Asesoría personalizada para 3 miembros de la familia con objetivos individuales.', price: '$90.00', isVip: false },
-      { num: 'VIP', title: 'Consulta Empresarial', description: 'Llevo el bienestar a tu oficina. Charlas de salud hormonal, nutrición preventiva y hábitos para equipos de trabajo.', price: 'Cotizar', isVip: true },
-    ],
-  },
 };
 
 // ─── Context ─────────────────────────────────────────────────────────────────
@@ -88,7 +75,6 @@ export function HomeContentProvider({ children }) {
             hero: { ...DEFAULT_HOME.hero, ...(data.hero || {}) },
             philosophy: { ...DEFAULT_HOME.philosophy, ...(data.philosophy || {}) },
             why_choose_us: { ...DEFAULT_HOME.why_choose_us, ...(data.why_choose_us || {}) },
-            features: { ...DEFAULT_HOME.features, ...(data.features || {}) },
           });
         }
       })
