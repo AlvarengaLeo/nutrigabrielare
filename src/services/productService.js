@@ -408,6 +408,34 @@ export async function uploadProductImage(productId, file) {
 }
 
 /**
+ * Upload a digital product file to the private bucket.
+ * Returns the storage path stored on products.digital_file_path.
+ */
+export async function uploadDigitalFile(productId, file) {
+  const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const path = `${productId}/${Date.now()}-${safeName}`;
+
+  const { error } = await supabase.storage
+    .from('digital-products')
+    .upload(path, file, { upsert: false });
+
+  if (error) throw error;
+
+  await updateProduct(productId, { digitalFilePath: path });
+  return path;
+}
+
+/**
+ * Remove a digital product file from storage and clear the path on the product.
+ */
+export async function removeDigitalFile(productId, path) {
+  if (path) {
+    await supabase.storage.from('digital-products').remove([path]);
+  }
+  await updateProduct(productId, { digitalFilePath: null });
+}
+
+/**
  * Delete a product image from Storage and database.
  */
 export async function deleteProductImage(imageId, url) {

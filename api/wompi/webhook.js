@@ -160,7 +160,9 @@ async function sendOrderConfirmation(supabase, orderId) {
 
   const { data: items } = await supabase
     .from('order_items')
-    .select('product_name, size, color, price, quantity, products ( kind )')
+    .select(
+      'product_id, product_name, size, color, price, quantity, products ( kind, digital_file_path )'
+    )
     .eq('order_id', orderId);
 
   const itemsArray = items ?? [];
@@ -191,13 +193,17 @@ async function sendOrderConfirmation(supabase, orderId) {
     itemsArray.every((it) => it.products?.kind === 'digital');
 
   if (allDigital) {
-    // Fase 6 will populate downloadLinks with signed URLs; for now
-    // the template renders a "we will send your links" placeholder.
+    const { downloadLinks, expiresAt } = await provisionDigitalDownloads(
+      supabase,
+      order,
+      itemsArray
+    );
+
     await sendDigitalDownloadEmail({
       order,
       items: itemsArray,
       customer,
-      downloadLinks: [],
+      downloadLinks: downloadLinks.map((link) => ({ ...link, expiresAt })),
     });
   } else {
     await sendPurchaseConfirmationEmail({
@@ -206,4 +212,61 @@ async function sendOrderConfirmation(supabase, orderId) {
       customer,
     });
   }
+}
+
+const SIGNED_URL_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
+
+/**
+ * For each digital item in the order, register the purchase in
+ * user_purchases and create a 7-day signed URL the buyer can use
+ * to download the file. Returns the links and shared expiry.
+ */
+async function provisionDigitalDownloads(supabase, order, items) {
+  const expiresAtIso = new Date(
+    Date.now() + SIGNED_URL_TTL_SECONDS * 1000
+  ).toISOString();
+  const links = [];
+
+  for (const item of items) {
+    const path = item.products?.digital_file_path;
+    if (!path) {
+      console.warn(
+        `Order ${order.id}: digital product ${item.product_id} has no digital_file_path; skipping link`
+      );
+      continue;
+    }
+
+    if (order.user_id) {
+      const { error: purchaseErr } = await supabase
+        .from('user_purchases')
+        .upsert(
+          {
+            user_id: order.user_id,
+            product_id: item.product_id,
+            order_id: order.id,
+            expires_at: expiresAtIso,
+          },
+          { onConflict: 'user_id,product_id,order_id', ignoreDuplicates: false }
+        );
+      if (purchaseErr) {
+        console.error('user_purchases upsert failed:', purchaseErr);
+      }
+    }
+
+    const { data: signed, error: signErr } = await supabase.storage
+      .from('digital-products')
+      .createSignedUrl(path, SIGNED_URL_TTL_SECONDS);
+
+    if (signErr || !signed?.signedUrl) {
+      console.error(
+        `Order ${order.id}: signed URL failed for ${path}:`,
+        signErr
+      );
+      continue;
+    }
+
+    links.push({ name: item.product_name, url: signed.signedUrl });
+  }
+
+  return { downloadLinks: links, expiresAt: expiresAtIso };
 }
