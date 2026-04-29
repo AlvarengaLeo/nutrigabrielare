@@ -10,6 +10,8 @@ import {
   createVariant,
   uploadProductImage,
   deleteProductImage,
+  uploadDigitalFile,
+  removeDigitalFile,
 } from '../../services/productService';
 import { supabase } from '../../lib/supabase';
 
@@ -41,6 +43,8 @@ export default function AdminProductoForm() {
   const [featuredOrder, setFeaturedOrder] = useState('0');
   const [stock, setStock] = useState('0');
   const [images, setImages] = useState([]);
+  const [digitalFilePath, setDigitalFilePath] = useState(null);
+  const [digitalUploading, setDigitalUploading] = useState(false);
   // Pending files for new products (not yet saved to DB)
   const [pendingFiles, setPendingFiles] = useState([]);
 
@@ -55,7 +59,7 @@ export default function AdminProductoForm() {
             .from('products')
             .select(`
               id, slug, name, category_id, kind, price, description, description_long,
-              active, featured, featured_order,
+              active, featured, featured_order, digital_file_path,
               product_images ( id, url, sort_order ),
               product_variants ( id, size, color_name, color_hex, stock, active )
             `)
@@ -74,6 +78,7 @@ export default function AdminProductoForm() {
           setActive(product.active);
           setFeatured(product.featured);
           setFeaturedOrder(String(product.featured_order ?? 0));
+          setDigitalFilePath(product.digital_file_path ?? null);
 
           // Calculate total stock from variants
           const totalStock = (product.product_variants ?? [])
@@ -200,6 +205,34 @@ export default function AdminProductoForm() {
     setPendingFiles((prev) => prev.filter((_, i) => i !== index));
   }
 
+  async function handleDigitalUpload(file) {
+    if (!isEdit) return;
+    setDigitalUploading(true);
+    setError('');
+    try {
+      const path = await uploadDigitalFile(id, file);
+      setDigitalFilePath(path);
+    } catch (err) {
+      setError(err.message || 'No se pudo subir el archivo digital.');
+    } finally {
+      setDigitalUploading(false);
+    }
+  }
+
+  async function handleDigitalRemove() {
+    if (!isEdit) return;
+    setDigitalUploading(true);
+    setError('');
+    try {
+      await removeDigitalFile(id, digitalFilePath);
+      setDigitalFilePath(null);
+    } catch (err) {
+      setError(err.message || 'No se pudo eliminar el archivo.');
+    } finally {
+      setDigitalUploading(false);
+    }
+  }
+
   const inputClass = 'bg-[#f8f6f3] rounded-xl px-4 py-3 text-sm text-primary placeholder:text-primary/40 outline-none focus:ring-2 focus:ring-accent/40 w-full';
 
   if (loading) {
@@ -297,6 +330,77 @@ export default function AdminProductoForm() {
               </div>
             )}
           </div>
+
+          {/* Digital file (only for kind=digital) */}
+          {kind === 'digital' && (
+            <div className="form-el">
+              <h3 className="font-heading font-bold text-lg text-primary mb-3">Archivo digital</h3>
+              {!isEdit ? (
+                <div className="rounded-2xl border border-dashed border-primary/20 p-6 text-center">
+                  <p className="font-body text-sm text-primary/50">
+                    Guardá el producto primero para poder subir el archivo descargable.
+                  </p>
+                </div>
+              ) : digitalFilePath ? (
+                <div className="rounded-2xl border border-primary/10 bg-[#f8f6f3] p-5 flex items-center justify-between gap-4">
+                  <div className="min-w-0">
+                    <div className="font-heading font-bold text-sm text-primary">Archivo cargado</div>
+                    <div className="font-body text-xs text-primary/50 truncate" title={digitalFilePath}>
+                      {digitalFilePath.split('/').pop()}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <label className="cursor-pointer text-xs font-heading font-bold text-accent hover:underline">
+                      Reemplazar
+                      <input
+                        type="file"
+                        className="hidden"
+                        disabled={digitalUploading}
+                        onChange={async (e) => {
+                          const f = e.target.files?.[0];
+                          if (!f) return;
+                          await handleDigitalRemove();
+                          await handleDigitalUpload(f);
+                        }}
+                      />
+                    </label>
+                    <button
+                      type="button"
+                      disabled={digitalUploading}
+                      onClick={handleDigitalRemove}
+                      className="text-xs font-heading font-bold text-red-500 hover:underline disabled:opacity-50"
+                    >
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <label
+                  className={`block rounded-2xl border-2 border-dashed p-8 text-center cursor-pointer transition-colors ${
+                    digitalUploading ? 'border-primary/10 opacity-60 cursor-wait' : 'border-primary/20 hover:border-primary/40'
+                  }`}
+                >
+                  <input
+                    type="file"
+                    className="hidden"
+                    disabled={digitalUploading}
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) handleDigitalUpload(f);
+                    }}
+                  />
+                  <div className="flex flex-col items-center gap-2">
+                    <span className="font-body text-sm text-primary/60">
+                      {digitalUploading ? 'Subiendo…' : 'Haz click para subir el archivo descargable'}
+                    </span>
+                    <span className="font-body text-xs text-primary/30">
+                      Se almacena en un bucket privado. Los compradores reciben un enlace firmado por correo.
+                    </span>
+                  </div>
+                </label>
+              )}
+            </div>
+          )}
 
           {/* Images */}
           <div className="form-el">
