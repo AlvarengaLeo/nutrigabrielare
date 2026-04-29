@@ -4,7 +4,6 @@ import Hero from '../components/Hero';
 import Philosophy from '../components/Philosophy';
 import WhyChooseUs from '../components/WhyChooseUs';
 import Features from '../components/Features';
-import Protocol from '../components/Protocol';
 
 export default function HomePage() {
   return (
@@ -13,7 +12,6 @@ export default function HomePage() {
       <Philosophy />
       <WhyChooseUs />
       <Features />
-      <Protocol />
     </HomeContentProvider>
   );
 }
