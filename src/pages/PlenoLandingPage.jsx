@@ -44,14 +44,18 @@ export default function PlenoLandingPage() {
         ease: 'power3.out',
         delay: 0.1,
       });
-      gsap.from('.pleno-card', {
-        scrollTrigger: { trigger: gridRef.current, start: 'top 85%' },
-        y: 50,
-        opacity: 0,
-        duration: 0.9,
-        stagger: 0.12,
-        ease: 'power3.out',
-      });
+      gsap.fromTo('.pleno-card',
+        { y: 50, opacity: 0 },
+        {
+          scrollTrigger: { trigger: gridRef.current, start: 'top 85%' },
+          y: 0,
+          opacity: 1,
+          duration: 0.9,
+          stagger: 0.12,
+          ease: 'power3.out',
+          clearProps: 'all',
+        }
+      );
     });
     return () => ctx.revert();
   }, []);

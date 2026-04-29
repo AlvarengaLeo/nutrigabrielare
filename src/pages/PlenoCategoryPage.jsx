@@ -125,9 +125,9 @@ export default function PlenoCategoryPage() {
               <div className="w-8 h-8 border-2 border-primary/20 border-t-accent rounded-full animate-spin" />
             </div>
           ) : products.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 border-t border-l border-primary/10">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
               {products.map((product) => (
-                <div key={product.id} className="product-card p-6 md:p-10 border-r border-b border-primary/10">
+                <div key={product.id} className="product-card">
                   <ProductCard product={product} />
                 </div>
               ))}
