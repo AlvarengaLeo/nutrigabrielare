@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { Home, Sparkles, Heart, Shield, Activity, Calendar, ExternalLink, Clock } from 'lucide-react';
+import { Home, Sparkles, Heart, Shield, Activity, ExternalLink, Clock } from 'lucide-react';
 import AdminLayout from '../components/AdminLayout';
 import { getHomeContent } from '../../services/homeContentService';
 import { DEFAULT_HOME } from '../../context/HomeContentContext';
@@ -8,14 +8,12 @@ import HeroEditor from '../components/home/HeroEditor';
 import PhilosophyEditor from '../components/home/PhilosophyEditor';
 import WhyChooseUsEditor from '../components/home/WhyChooseUsEditor';
 import FeaturesEditor from '../components/home/FeaturesEditor';
-import ProtocolEditor from '../components/home/ProtocolEditor';
 
 const TABS = [
   { id: 'hero', label: 'Hero', icon: Sparkles },
   { id: 'philosophy', label: 'Filosofía', icon: Heart },
   { id: 'why_choose_us', label: 'Diferenciador', icon: Shield },
   { id: 'features', label: 'Servicios', icon: Activity },
-  { id: 'protocol', label: 'Reservas', icon: Calendar },
 ];
 
 export default function AdminHomePage() {
@@ -34,7 +32,6 @@ export default function AdminHomePage() {
             philosophy: { ...DEFAULT_HOME.philosophy, ...(data.philosophy || {}) },
             why_choose_us: { ...DEFAULT_HOME.why_choose_us, ...(data.why_choose_us || {}) },
             features: { ...DEFAULT_HOME.features, ...(data.features || {}) },
-            protocol: { ...DEFAULT_HOME.protocol, ...(data.protocol || {}) },
           });
           setUpdatedAt(data.updated_at);
         } else {
@@ -86,8 +83,6 @@ export default function AdminHomePage() {
         return <WhyChooseUsEditor data={content.why_choose_us} onSaved={(d) => handleSectionSaved('why_choose_us', d)} />;
       case 'features':
         return <FeaturesEditor data={content.features} onSaved={(d) => handleSectionSaved('features', d)} />;
-      case 'protocol':
-        return <ProtocolEditor data={content.protocol} onSaved={(d) => handleSectionSaved('protocol', d)} />;
       default:
         return null;
     }

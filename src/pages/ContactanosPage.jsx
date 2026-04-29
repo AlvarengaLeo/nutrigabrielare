@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ChevronDown, Send } from 'lucide-react';
+import { ChevronDown, Send, Clock } from 'lucide-react';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -11,6 +11,13 @@ const subjectOptions = [
   'Colaboraciones',
   'Propuesta comercial',
   'Solo quiero saludar',
+];
+
+const schedule = [
+  { day: 'Martes y Jueves', hours: '9:00 am – 5:30 pm' },
+  { day: 'Miércoles', hours: '7:00 am – 3:30 pm' },
+  { day: 'Viernes', hours: '1:00 pm – 7:00 pm' },
+  { day: 'Sábado', hours: '8:00 am – 5:00 pm' },
 ];
 
 const faqs = [
@@ -43,6 +50,7 @@ const faqs = [
 export default function ContactanosPage() {
   const heroRef = useRef(null);
   const formRef = useRef(null);
+  const scheduleRef = useRef(null);
   const faqRef = useRef(null);
 
   const [formData, setFormData] = useState({ nombre: '', correo: '', asunto: '', mensaje: '' });
@@ -64,6 +72,15 @@ export default function ContactanosPage() {
         y: 30,
         opacity: 0,
         duration: 0.9,
+        stagger: 0.08,
+        ease: 'power3.out',
+      });
+
+      gsap.from('.schedule-el', {
+        scrollTrigger: { trigger: scheduleRef.current, start: 'top 80%' },
+        y: 20,
+        opacity: 0,
+        duration: 0.7,
         stagger: 0.08,
         ease: 'power3.out',
       });
@@ -181,6 +198,39 @@ export default function ContactanosPage() {
               </button>
             </div>
           </form>
+        </div>
+      </section>
+
+      {/* ── Horarios y políticas ── */}
+      <section ref={scheduleRef} className="py-24 bg-background relative z-10 w-full overflow-hidden">
+        <div className="container mx-auto px-6 max-w-3xl">
+          <div className="schedule-el flex items-center gap-3 mb-10">
+            <div className="w-10 h-10 rounded-xl bg-accent/10 flex items-center justify-center">
+              <Clock className="w-5 h-5 text-accent" />
+            </div>
+            <h2 className="text-3xl md:text-4xl font-heading font-extrabold text-primary tracking-tighter">
+              Horarios y políticas
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-8">
+            {schedule.map((s) => (
+              <div
+                key={s.day}
+                className="schedule-el flex items-baseline justify-between px-6 py-5 rounded-2xl bg-white border border-primary/10"
+              >
+                <span className="font-heading font-bold text-primary">{s.day}</span>
+                <span className="font-body text-primary/70 text-sm">{s.hours}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="schedule-el px-6 py-5 rounded-2xl bg-white border border-primary/10">
+            <p className="font-body text-primary/70 leading-relaxed">
+              <span className="font-heading font-bold text-primary">Política de cancelación: </span>
+              Si cancelás con 48 horas de anticipación, tu anticipo se devuelve completo.
+            </p>
+          </div>
         </div>
       </section>
 

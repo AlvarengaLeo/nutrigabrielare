@@ -67,16 +67,6 @@ export const DEFAULT_HOME = {
       { num: 'VIP', title: 'Consulta Empresarial', description: 'Llevo el bienestar a tu oficina. Charlas de salud hormonal, nutrición preventiva y hábitos para equipos de trabajo.', price: 'Cotizar', isVip: true },
     ],
   },
-  protocol: {
-    badge: 'Reservas',
-    titleLine1: 'Agenda tu Cita—',
-    titleLine2: 'Tu Transformación Inicia Aquí',
-    steps: [
-      { num: '01', title: 'Conversemos', description: 'Escríbeme por WhatsApp al 7628-4719. Platiquemos sobre tus metas, cómo te sientes y qué esperas de este proceso. Juntas encontramos el mejor horario para ti.' },
-      { num: '02', title: 'Reserva tu espacio', description: 'Asegura tu cita con una transferencia de $10.00. El resto se cancela el día de la consulta. Tu compromiso me permite darte la atención y el tiempo que mereces.' },
-      { num: '03', title: 'Horarios y Políticas', description: 'Horarios: Mar y Jue (9:00am a 5:30pm), Mié (7:00am a 3:30pm), Vie (1:00pm a 7:00pm), Sáb (8:00am a 5:00pm). Si cancelas con 48h de anticipación, tu anticipo se devuelve completo.' },
-    ],
-  },
 };
 
 // ─── Context ─────────────────────────────────────────────────────────────────
@@ -99,7 +89,6 @@ export function HomeContentProvider({ children }) {
             philosophy: { ...DEFAULT_HOME.philosophy, ...(data.philosophy || {}) },
             why_choose_us: { ...DEFAULT_HOME.why_choose_us, ...(data.why_choose_us || {}) },
             features: { ...DEFAULT_HOME.features, ...(data.features || {}) },
-            protocol: { ...DEFAULT_HOME.protocol, ...(data.protocol || {}) },
           });
         }
       })
