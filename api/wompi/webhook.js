@@ -4,6 +4,10 @@ import {
   loadServerRuntimeConfig,
   sendServerConfigError,
 } from '../_lib/runtimeConfig.js';
+import {
+  sendPurchaseConfirmationEmail,
+  sendDigitalDownloadEmail,
+} from '../_lib/email.js';
 
 const WEBHOOK_SCOPE = 'wompi/webhook';
 const REQUIRED_ENV = [
@@ -131,5 +135,75 @@ export default async function handler(req, res) {
     `Webhook: Payment ${payment.id} -> ${newPaymentStatus}, Order ${orderId} -> ${newOrderStatus}`
   );
 
+  // Notify customer — never block the webhook on email delivery.
+  if (isApproved) {
+    try {
+      await sendOrderConfirmation(supabase, orderId);
+    } catch (err) {
+      console.error('Email notification failed (non-blocking):', err);
+    }
+  }
+
   return res.status(200).json({ message: 'Processed' });
+}
+
+async function sendOrderConfirmation(supabase, orderId) {
+  const { data: order } = await supabase
+    .from('orders')
+    .select(
+      'id, tracking_code, subtotal, shipping_cost, total, contact_name, contact_email, user_id'
+    )
+    .eq('id', orderId)
+    .single();
+
+  if (!order) return;
+
+  const { data: items } = await supabase
+    .from('order_items')
+    .select('product_name, size, color, price, quantity, products ( kind )')
+    .eq('order_id', orderId);
+
+  const itemsArray = items ?? [];
+
+  let customer = {
+    email: order.contact_email,
+    firstName: (order.contact_name || '').split(' ')[0] || '',
+    lastName: (order.contact_name || '').split(' ').slice(1).join(' '),
+  };
+
+  if (order.user_id) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('first_name, last_name, email')
+      .eq('id', order.user_id)
+      .single();
+    if (profile) {
+      customer = {
+        email: profile.email || order.contact_email,
+        firstName: profile.first_name || customer.firstName,
+        lastName: profile.last_name || customer.lastName,
+      };
+    }
+  }
+
+  const allDigital =
+    itemsArray.length > 0 &&
+    itemsArray.every((it) => it.products?.kind === 'digital');
+
+  if (allDigital) {
+    // Fase 6 will populate downloadLinks with signed URLs; for now
+    // the template renders a "we will send your links" placeholder.
+    await sendDigitalDownloadEmail({
+      order,
+      items: itemsArray,
+      customer,
+      downloadLinks: [],
+    });
+  } else {
+    await sendPurchaseConfirmationEmail({
+      order,
+      items: itemsArray,
+      customer,
+    });
+  }
 }
