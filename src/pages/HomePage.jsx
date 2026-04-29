@@ -3,7 +3,7 @@ import { HomeContentProvider } from '../context/HomeContentContext';
 import Hero from '../components/Hero';
 import Philosophy from '../components/Philosophy';
 import WhyChooseUs from '../components/WhyChooseUs';
-import Features from '../components/Features';
+import Featured from '../components/Featured';
 
 export default function HomePage() {
   return (
@@ -11,7 +11,7 @@ export default function HomePage() {
       <Hero />
       <Philosophy />
       <WhyChooseUs />
-      <Features />
+      <Featured />
     </HomeContentProvider>
   );
 }

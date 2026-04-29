@@ -2,10 +2,11 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ArrowLeft } from 'lucide-react';
-import { getProductBySlug, getCategoryById, KIND_TO_SLUG } from '../services/productService';
+import { getProductBySlug, getCategoryById, getRelatedProducts, KIND_TO_SLUG } from '../services/productService';
 import { ColorSelector, SizeSelector } from '../components/VariantSelector';
 import { useCart } from '../context/CartContext';
 import MarkdownRenderer from '../components/MarkdownRenderer';
+import ProductCarousel from '../components/ProductCarousel';
 
 const WHATSAPP_NUMBER = '50376284719';
 
@@ -16,6 +17,7 @@ export default function ProductoPage() {
 
   const [product, setProduct] = useState(null);
   const [category, setCategory] = useState(null);
+  const [related, setRelated] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedColor, setSelectedColor] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
@@ -29,8 +31,9 @@ export default function ProductoPage() {
     setSelectedSize(null);
     setSelectedImage(0);
     setQuantity(1);
+    setRelated([]);
     getProductBySlug(slug)
-      .then((p) => {
+      .then(async (p) => {
         setProduct(p);
         if (p?.variants?.colors?.[0]) {
           setSelectedColor(p.variants.colors[0].name);
@@ -38,9 +41,18 @@ export default function ProductoPage() {
         if (p?.variants?.sizes?.[0]) {
           setSelectedSize(p.variants.sizes[0]);
         }
+        const tasks = [];
         if (p?.category) {
-          return getCategoryById(p.category).then(setCategory);
+          tasks.push(getCategoryById(p.category).then(setCategory));
         }
+        if (p?.id) {
+          tasks.push(
+            getRelatedProducts({ excludeId: p.id, kind: p.kind, limit: 5 })
+              .then(setRelated)
+              .catch(() => setRelated([]))
+          );
+        }
+        await Promise.all(tasks);
       })
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -329,6 +341,18 @@ export default function ProductoPage() {
           </div>
         </div>
       </div>
+
+      {/* Related products */}
+      {related.length > 0 && (
+        <ProductCarousel
+          eyebrow="También te puede interesar"
+          titleLine1="Otros que te"
+          titleLine2="podrían gustar."
+          products={related}
+          ctaLabel="Ver más"
+          ctaTo={`/pleno/${kindSlug}`}
+        />
+      )}
     </div>
   );
 }

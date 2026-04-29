@@ -32,11 +32,13 @@ export default function AdminProductoForm() {
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [categoryId, setCategoryId] = useState('');
+  const [kind, setKind] = useState('physical');
   const [price, setPrice] = useState('');
   const [description, setDescription] = useState('');
   const [descriptionLong, setDescriptionLong] = useState('');
   const [active, setActive] = useState(true);
   const [featured, setFeatured] = useState(false);
+  const [featuredOrder, setFeaturedOrder] = useState('0');
   const [stock, setStock] = useState('0');
   const [images, setImages] = useState([]);
   // Pending files for new products (not yet saved to DB)
@@ -52,7 +54,8 @@ export default function AdminProductoForm() {
           const { data: product, error: fetchErr } = await supabase
             .from('products')
             .select(`
-              id, slug, name, category_id, price, description, description_long, active, featured,
+              id, slug, name, category_id, kind, price, description, description_long,
+              active, featured, featured_order,
               product_images ( id, url, sort_order ),
               product_variants ( id, size, color_name, color_hex, stock, active )
             `)
@@ -64,11 +67,13 @@ export default function AdminProductoForm() {
           setName(product.name);
           setSlug(product.slug);
           setCategoryId(product.category_id);
+          setKind(product.kind ?? 'physical');
           setPrice(String(product.price));
           setDescription(product.description || '');
           setDescriptionLong(product.description_long || '');
           setActive(product.active);
           setFeatured(product.featured);
+          setFeaturedOrder(String(product.featured_order ?? 0));
 
           // Calculate total stock from variants
           const totalStock = (product.product_variants ?? [])
@@ -115,8 +120,9 @@ export default function AdminProductoForm() {
       if (isEdit) {
         // Update product fields
         await updateProduct(id, {
-          name, slug, categoryId, price: parseFloat(price),
+          name, slug, categoryId, kind, price: parseFloat(price),
           description, descriptionLong, active, featured,
+          featuredOrder: parseInt(featuredOrder) || 0,
         });
 
         // Update stock: find existing default variant or create one
@@ -146,8 +152,9 @@ export default function AdminProductoForm() {
       } else {
         // Create product
         const created = await createProduct({
-          name, slug, categoryId, price: parseFloat(price),
+          name, slug, categoryId, kind, price: parseFloat(price),
           description, descriptionLong, active, featured,
+          featuredOrder: parseInt(featuredOrder) || 0,
         });
 
         // Create a default variant with stock
@@ -223,7 +230,15 @@ export default function AdminProductoForm() {
             </div>
           </div>
 
-          <div className="form-el grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="form-el grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-1 block">Tipo</label>
+              <select className={inputClass} value={kind} onChange={(e) => setKind(e.target.value)} required>
+                <option value="physical">Suplemento (físico)</option>
+                <option value="digital">Producto digital</option>
+                <option value="service">Servicio</option>
+              </select>
+            </div>
             <div>
               <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-1 block">Categoría</label>
               <select className={inputClass} value={categoryId} onChange={(e) => setCategoryId(e.target.value)} required>
@@ -231,14 +246,22 @@ export default function AdminProductoForm() {
                 {categories.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
               </select>
             </div>
+          </div>
+
+          <div className="form-el grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-1 block">Precio ($)</label>
               <input className={inputClass} type="number" step="0.01" min="0" value={price} onChange={(e) => setPrice(e.target.value)} required />
+              {kind === 'service' && parseFloat(price) === 0 && (
+                <p className="mt-1.5 font-body text-[11px] text-primary/40">Si el precio es 0, el servicio se mostrará como "Cotizar".</p>
+              )}
             </div>
-            <div>
-              <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-1 block">Stock</label>
-              <input className={inputClass} type="number" min="0" value={stock} onChange={(e) => setStock(e.target.value)} />
-            </div>
+            {kind === 'physical' && (
+              <div>
+                <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-1 block">Stock</label>
+                <input className={inputClass} type="number" min="0" value={stock} onChange={(e) => setStock(e.target.value)} />
+              </div>
+            )}
           </div>
 
           <div className="form-el">
@@ -249,7 +272,7 @@ export default function AdminProductoForm() {
             </p>
           </div>
 
-          <div className="form-el flex items-center gap-6">
+          <div className="form-el flex flex-wrap items-center gap-6">
             <label className="flex items-center gap-2 font-body text-sm text-primary cursor-pointer">
               <input type="checkbox" checked={active} onChange={(e) => setActive(e.target.checked)} className="accent-accent w-4 h-4" />
               Activo
@@ -258,6 +281,21 @@ export default function AdminProductoForm() {
               <input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} className="accent-accent w-4 h-4" />
               Destacado
             </label>
+            {featured && (
+              <div className="flex items-center gap-2">
+                <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest">
+                  Orden
+                </label>
+                <input
+                  className="bg-[#f8f6f3] rounded-xl px-3 py-2 text-sm text-primary outline-none focus:ring-2 focus:ring-accent/40 w-20"
+                  type="number"
+                  min="0"
+                  value={featuredOrder}
+                  onChange={(e) => setFeaturedOrder(e.target.value)}
+                  title="Menor número aparece primero en la home"
+                />
+              </div>
+            )}
           </div>
 
           {/* Images */}
