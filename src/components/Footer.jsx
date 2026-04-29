@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const navItems = [
   { label: 'Inicio', path: '/' },
-  { label: 'Tienda', path: '/tienda' },
+  { label: 'Pleno', path: '/pleno' },
   { label: 'Nutrición con Alma', path: '/nutricion-con-alma' },
 ];
 

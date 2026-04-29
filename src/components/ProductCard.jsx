@@ -2,14 +2,20 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 
+const KIND_BADGE = {
+  digital: { label: 'Digital', className: 'bg-accent/10 text-accent' },
+  service: { label: 'Servicio', className: 'bg-rose-100 text-rose-700' },
+};
+
 /**
  * Reusable product card for grids.
  * @param {{ product: import('../data/products').PRODUCTS[number] }} props
  */
 export default function ProductCard({ product }) {
-  const { slug, name, price = 0, variants, images, featured } = product;
+  const { slug, name, price = 0, kind = 'physical', variants, images } = product;
   const swatchColor = variants?.colors?.[0]?.hex ?? '#1A1A1A';
   const hasImage = images && images.length > 0;
+  const badge = KIND_BADGE[kind];
 
   return (
     <Link
@@ -44,10 +50,16 @@ export default function ProductCard({ product }) {
 
       {/* Info Content Centered */}
       <div className="flex flex-col items-center px-2 text-center">
-        {/* NEW tag */}
-        <div className="mb-3 px-3 py-1 bg-primary/5 text-primary/60 text-[10px] font-heading font-extrabold tracking-widest uppercase rounded-full">
-          New
-        </div>
+        {/* Kind badge (digital / servicio) — physical shows a neutral "New" pill */}
+        {badge ? (
+          <div className={`mb-3 px-3 py-1 text-[10px] font-heading font-extrabold tracking-widest uppercase rounded-full ${badge.className}`}>
+            {badge.label}
+          </div>
+        ) : (
+          <div className="mb-3 px-3 py-1 bg-primary/5 text-primary/60 text-[10px] font-heading font-extrabold tracking-widest uppercase rounded-full">
+            New
+          </div>
+        )}
         
         {/* Title */}
         <h3 className="font-body text-base md:text-lg text-primary/90 mb-1 leading-tight max-w-[90%]">
