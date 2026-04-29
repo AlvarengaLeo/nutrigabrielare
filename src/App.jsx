@@ -20,6 +20,7 @@ import NutricionConAlmaPage from './pages/NutricionConAlmaPage';
 import ContactanosPage from './pages/ContactanosPage';
 import ComunidadPage from './pages/ComunidadPage';
 import ProductoPage from './pages/ProductoPage';
+import ReservarPage from './pages/ReservarPage';
 import CarritoPage from './pages/CarritoPage';
 import LoginPage from './pages/LoginPage';
 import RegistroPage from './pages/RegistroPage';
@@ -39,6 +40,7 @@ const AdminProductoForm = React.lazy(() => import('./admin/pages/AdminProductoFo
 const AdminCategorias = React.lazy(() => import('./admin/pages/AdminCategorias'));
 const AdminOrdenes = React.lazy(() => import('./admin/pages/AdminOrdenes'));
 const AdminOrdenDetalle = React.lazy(() => import('./admin/pages/AdminOrdenDetalle'));
+const AdminReservas = React.lazy(() => import('./admin/pages/AdminReservas'));
 const AdminUsuarios = React.lazy(() => import('./admin/pages/AdminUsuarios'));
 const AdminHomePage = React.lazy(() => import('./admin/pages/AdminHomePage'));
 const AdminRoute = React.lazy(() => import('./admin/components/AdminRoute'));
@@ -98,6 +100,7 @@ function AppContent() {
           <Route path="/comunidad" element={<ComunidadPage />} />
           <Route path="/contactanos" element={<ContactanosPage />} />
           <Route path="/producto/:slug" element={<ProductoPage />} />
+          <Route path="/reservar/:slug" element={<ProtectedRoute><ReservarPage /></ProtectedRoute>} />
           <Route path="/carrito" element={<CarritoPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/registro" element={<RegistroPage />} />
@@ -117,6 +120,7 @@ function AppContent() {
           <Route path="/admin/categorias" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','editor']}><AdminCategorias /></AdminRoute></Suspense>} />
           <Route path="/admin/ordenes" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','gestor']}><AdminOrdenes /></AdminRoute></Suspense>} />
           <Route path="/admin/ordenes/:id" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','gestor']}><AdminOrdenDetalle /></AdminRoute></Suspense>} />
+          <Route path="/admin/reservas" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','gestor']}><AdminReservas /></AdminRoute></Suspense>} />
           <Route path="/admin/usuarios" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin']}><AdminUsuarios /></AdminRoute></Suspense>} />
 
           <Route path="*" element={<NotFoundPage />} />
