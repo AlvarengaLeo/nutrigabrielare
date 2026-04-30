@@ -6,6 +6,7 @@ import {
   Tags,
   ShoppingBag,
   Calendar,
+  Truck,
   Users,
   LogOut,
   ExternalLink,
@@ -24,6 +25,7 @@ const allItems = [
   { icon: Tags,            label: 'Categorías',        path: '/admin/categorias', roles: ['admin', 'editor'] },
   { icon: ShoppingBag,     label: 'Órdenes',           path: '/admin/ordenes',    roles: ['admin', 'gestor'] },
   { icon: Calendar,        label: 'Reservas',          path: '/admin/reservas',   roles: ['admin', 'gestor'] },
+  { icon: Truck,           label: 'Envíos',            path: '/admin/envios',     roles: ['admin', 'gestor'] },
   { icon: Users,           label: 'Usuarios',          path: '/admin/usuarios',   roles: ['admin'] },
 ];
 

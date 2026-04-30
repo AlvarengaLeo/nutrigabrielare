@@ -5,11 +5,11 @@ import CheckoutAuthPanel from '../components/CheckoutAuthPanel';
 import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { createPaymentLink } from '../services/paymentService';
+import { getActiveZones, calculateShippingCost } from '../services/shippingService';
 import { supabase } from '../lib/supabase';
 
 const CHECKOUT_DRAFT_KEY = 'nutri-checkout-draft';
 const PENDING_ORDER_KEY = 'nutri-pending-order';
-const SHIPPING_COST = 5;
 
 const EMPTY_DRAFT = {
   name: '',
@@ -19,6 +19,7 @@ const EMPTY_DRAFT = {
   city: '',
   department: '',
   notes: '',
+  shippingZoneId: '',
 };
 
 function loadDraft() {
@@ -64,12 +65,38 @@ export default function CheckoutPage() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  const [zones, setZones] = useState([]);
+  const [zonesLoading, setZonesLoading] = useState(true);
 
   useEffect(() => {
     if (items.length === 0) {
       navigate('/carrito');
     }
   }, [items.length, navigate]);
+
+  useEffect(() => {
+    let cancelled = false;
+    getActiveZones()
+      .then((data) => {
+        if (cancelled) return;
+        setZones(data);
+        setDraft((prev) => {
+          if (prev.shippingZoneId && data.some((z) => z.id === prev.shippingZoneId)) {
+            return prev;
+          }
+          return { ...prev, shippingZoneId: data[0]?.id ?? '' };
+        });
+      })
+      .catch(() => {
+        if (!cancelled) setZones([]);
+      })
+      .finally(() => {
+        if (!cancelled) setZonesLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -107,7 +134,9 @@ export default function CheckoutPage() {
     }
   }, [draft]);
 
-  const shippingCost = SHIPPING_COST;
+  const selectedZone =
+    zones.find((z) => z.id === draft.shippingZoneId) ?? null;
+  const shippingCost = calculateShippingCost(selectedZone, subtotal);
   const total = subtotal + shippingCost;
 
   function updateDraftField(field, value) {
@@ -127,6 +156,7 @@ export default function CheckoutPage() {
     if (!draft.address.trim()) nextErrors.address = true;
     if (!draft.city.trim()) nextErrors.city = true;
     if (!draft.department.trim()) nextErrors.department = true;
+    if (!draft.shippingZoneId) nextErrors.shippingZoneId = true;
 
     const emailPattern = /\S+@\S+\.\S+/;
     if (draft.email.trim() && !emailPattern.test(draft.email.trim())) {
@@ -172,6 +202,7 @@ export default function CheckoutPage() {
           city: draft.city.trim(),
           department: draft.department.trim(),
           notes: draft.notes.trim(),
+          zoneId: draft.shippingZoneId,
         },
       };
 
@@ -278,6 +309,47 @@ export default function CheckoutPage() {
                 Envio a domicilio
               </span>
 
+              {zonesLoading ? (
+                <div className="mb-4 h-12 rounded-xl bg-[#f8f6f3] animate-pulse" />
+              ) : zones.length === 0 ? (
+                <p className="mb-4 rounded-xl bg-amber-50 px-4 py-3 font-body text-xs text-amber-700">
+                  No hay zonas de envío disponibles. Contactanos para coordinar la entrega.
+                </p>
+              ) : (
+                <div className="mb-4">
+                  <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-2 block">
+                    Zona de envío
+                  </label>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {zones.map((zone) => {
+                      const cost = calculateShippingCost(zone, subtotal);
+                      const isFree = cost === 0 && zone.freeThreshold != null;
+                      const isSelected = draft.shippingZoneId === zone.id;
+                      return (
+                        <button
+                          type="button"
+                          key={zone.id}
+                          onClick={() => updateDraftField('shippingZoneId', zone.id)}
+                          className={`rounded-xl px-4 py-3 text-left transition-colors ${
+                            isSelected
+                              ? 'bg-primary text-background'
+                              : 'bg-[#f8f6f3] text-primary hover:bg-primary/5'
+                          } ${errors.shippingZoneId && !isSelected ? 'ring-1 ring-red-400' : ''}`}
+                        >
+                          <p className="font-heading text-sm font-bold">{zone.name}</p>
+                          <p className={`mt-1 font-body text-xs ${isSelected ? 'text-background/70' : 'text-primary/50'}`}>
+                            {isFree ? 'Envío gratis' : `$${cost.toFixed(2)}`}
+                            {zone.freeThreshold != null && !isFree
+                              ? ` · gratis sobre $${Number(zone.freeThreshold).toFixed(2)}`
+                              : ''}
+                          </p>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <input
                   type="text"
@@ -350,8 +422,14 @@ export default function CheckoutPage() {
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-primary/60">
-                  <span>Envio</span>
-                  <span>${shippingCost.toFixed(2)}</span>
+                  <span>
+                    Envio{selectedZone ? ` · ${selectedZone.name}` : ''}
+                  </span>
+                  <span>
+                    {shippingCost === 0 && selectedZone?.freeThreshold != null
+                      ? 'Gratis'
+                      : `$${shippingCost.toFixed(2)}`}
+                  </span>
                 </div>
                 <div className="flex justify-between border-t border-primary/10 pt-2 text-lg font-bold text-primary">
                   <span>Total</span>

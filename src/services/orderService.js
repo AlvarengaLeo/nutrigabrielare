@@ -27,6 +27,12 @@ export function transformOrder(row, items = [], statusHistory = []) {
       city: row.shipping_city,
       department: row.shipping_department,
       notes: row.shipping_notes,
+      zoneId: row.shipping_zone_id ?? null,
+      zoneName: row.shipping_zone_name ?? null,
+    },
+    courier: {
+      name: row.courier_name ?? '',
+      trackingCode: row.courier_tracking_code ?? '',
     },
     subtotal: row.subtotal,
     shippingCost: row.shipping_cost,
@@ -243,6 +249,29 @@ export async function updateOrderStatus(orderId, status) {
     .insert({ order_id: orderId, status });
 
   if (historyError) throw new Error(`Failed to insert status history entry: ${historyError.message}`);
+
+  return getOrderById(orderId);
+}
+
+/**
+ * Updates the courier name + tracking code for an order. Used by the admin
+ * detail screen when the nutritionist hands off the parcel.
+ *
+ * @param {string} orderId
+ * @param {{ name?: string, trackingCode?: string }} courier
+ * @returns {Object} updated UI-shaped order
+ */
+export async function updateOrderCourier(orderId, courier) {
+  const { error } = await supabase
+    .from('orders')
+    .update({
+      courier_name: courier.name?.trim() || null,
+      courier_tracking_code: courier.trackingCode?.trim() || null,
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', orderId);
+
+  if (error) throw new Error(`Failed to update courier info: ${error.message}`);
 
   return getOrderById(orderId);
 }

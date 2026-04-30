@@ -239,6 +239,24 @@ export default function TrackingPage() {
                 );
               })}
             </div>
+
+            {(order.courier?.name || order.courier?.trackingCode) && (
+              <div className="mt-8 pt-6 border-t border-primary/5">
+                <p className="font-heading font-bold text-xs text-primary/50 uppercase tracking-widest mb-3">
+                  Información de despacho
+                </p>
+                {order.courier?.name && (
+                  <p className="font-body text-sm text-primary">
+                    Mensajería: <span className="font-bold">{order.courier.name}</span>
+                  </p>
+                )}
+                {order.courier?.trackingCode && (
+                  <p className="font-body text-sm text-primary mt-1">
+                    Código de rastreo: <span className="font-mono text-accent">{order.courier.trackingCode}</span>
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
