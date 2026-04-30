@@ -8,7 +8,6 @@ import { useCart } from '../context/CartContext';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import ProductCarousel from '../components/ProductCarousel';
 
-const WHATSAPP_NUMBER = '50376284719';
 
 export default function ProductoPage() {
   const { slug } = useParams();
@@ -301,14 +300,12 @@ export default function ProductoPage() {
 
             {/* CTA — kind-aware */}
             {isService ? (
-              <a
-                href={`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(`Hola, me interesa reservar: ${product.name}`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
+              <Link
+                to={`/reservar/${product.slug}`}
                 className="producto-el w-full py-4 rounded-xl font-heading font-bold text-center transition-all duration-200 bg-primary text-background hover:opacity-90"
               >
                 Reservar consulta
-              </a>
+              </Link>
             ) : isDigital ? (
               <button
                 type="button"

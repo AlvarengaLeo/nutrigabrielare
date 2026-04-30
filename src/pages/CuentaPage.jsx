@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useAuth } from '../context/AuthContext';
 import { getOrdersByUser } from '../services/orderService';
+import { getReservationsByUser } from '../services/reservationService';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,6 +13,14 @@ const STATUS_CONFIG = {
   preparing: { label: '● Preparando', className: 'text-accent' },
   shipped: { label: '● En camino', className: 'text-accent' },
   delivered: { label: '● Entregado', className: 'text-green-500' },
+};
+
+const RESERVATION_STATUS_CONFIG = {
+  pendiente: { label: '● Pendiente', className: 'text-amber-500' },
+  contactado: { label: '● Contactado', className: 'text-accent' },
+  confirmado: { label: '● Confirmado', className: 'text-accent' },
+  completado: { label: '● Completado', className: 'text-green-500' },
+  cancelado: { label: '● Cancelado', className: 'text-red-500' },
 };
 
 function formatDate(iso) {
@@ -28,14 +37,20 @@ export default function CuentaPage() {
   const navigate = useNavigate();
   const containerRef = useRef(null);
   const [orders, setOrders] = useState([]);
+  const [reservations, setReservations] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
 
   useEffect(() => {
     if (!user) return;
     setLoadingOrders(true);
-    getOrdersByUser(user.id)
-      .then(setOrders)
-      .catch(console.error)
+    Promise.all([
+      getOrdersByUser(user.id).catch(() => []),
+      getReservationsByUser(user.id).catch(() => []),
+    ])
+      .then(([ordersData, reservationsData]) => {
+        setOrders(ordersData);
+        setReservations(reservationsData);
+      })
       .finally(() => setLoadingOrders(false));
   }, [user]);
 
@@ -96,13 +111,13 @@ export default function CuentaPage() {
 
         {/* Orders section */}
         <div className="orders-section">
-          {orders.length === 0 ? (
+          {orders.length === 0 && reservations.length === 0 ? (
             <div className="text-center py-20">
               <h2 className="font-heading font-bold text-xl text-primary mb-2">
-                Aún no tenés pedidos
+                Aún no tenés actividad
               </h2>
               <p className="font-body text-primary/50 mb-6">
-                Cuando hagas tu primera compra, aparecerá acá.
+                Cuando hagas tu primera compra o reserva, aparecerá acá.
               </p>
               <Link
                 to="/pleno"
@@ -113,12 +128,14 @@ export default function CuentaPage() {
             </div>
           ) : (
             <>
-              <h2 className="font-heading font-bold text-lg text-primary mb-4">
-                Mis pedidos
-              </h2>
+              {orders.length > 0 && (
+                <>
+                  <h2 className="font-heading font-bold text-lg text-primary mb-4">
+                    Mis pedidos
+                  </h2>
 
-              <div className="space-y-4">
-                {orders.map((order) => {
+                  <div className="space-y-4">
+                    {orders.map((order) => {
                   const statusCfg = STATUS_CONFIG[order.status] ?? STATUS_CONFIG.confirmed;
                   const itemCount = order.items?.reduce((sum, item) => sum + (item.quantity ?? 1), 0) ?? 0;
 
@@ -157,8 +174,54 @@ export default function CuentaPage() {
                       </div>
                     </Link>
                   );
-                })}
-              </div>
+                    })}
+                  </div>
+                </>
+              )}
+
+              {reservations.length > 0 && (
+                <div className={orders.length > 0 ? 'mt-12' : ''}>
+                  <h2 className="font-heading font-bold text-lg text-primary mb-4">
+                    Mis reservas
+                  </h2>
+                  <div className="space-y-4">
+                    {reservations.map((r) => {
+                      const cfg = RESERVATION_STATUS_CONFIG[r.status] ?? RESERVATION_STATUS_CONFIG.pendiente;
+                      return (
+                        <div
+                          key={r.id}
+                          className="order-card block bg-white rounded-2xl p-5"
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-4">
+                              <div className="w-12 h-12 rounded-xl bg-rose-400/80 flex-shrink-0" />
+                              <div>
+                                <p className="font-heading font-bold text-sm text-primary">
+                                  {r.productName || 'Reserva'}
+                                </p>
+                                <p className="text-xs text-primary/40 font-body mt-0.5">
+                                  Solicitada el {formatDate(r.createdAt)}
+                                </p>
+                                {r.preferredDate && (
+                                  <p className="text-xs text-primary/40 font-body">
+                                    Fecha preferida: {formatDate(r.preferredDate)}
+                                    {r.preferredTime ? ` · ${r.preferredTime}` : ''}
+                                  </p>
+                                )}
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className={`text-sm font-body font-medium ${cfg.className}`}>
+                                {cfg.label}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>
