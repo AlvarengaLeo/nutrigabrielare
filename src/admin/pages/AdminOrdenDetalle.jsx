@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import gsap from 'gsap';
 import AdminLayout from '../components/AdminLayout';
 import StatusBadge from '../components/StatusBadge';
-import { getOrderById, updateOrderStatus } from '../../services/orderService';
+import { getOrderById, updateOrderStatus, updateOrderCourier } from '../../services/orderService';
 
 const STATUSES = ['confirmed', 'preparing', 'shipped', 'delivered', 'cancelled'];
 
@@ -14,6 +14,9 @@ export default function AdminOrdenDetalle() {
   const [loading, setLoading] = useState(true);
   const [newStatus, setNewStatus] = useState('');
   const [updating, setUpdating] = useState(false);
+  const [courierName, setCourierName] = useState('');
+  const [courierTracking, setCourierTracking] = useState('');
+  const [savingCourier, setSavingCourier] = useState(false);
 
   async function loadOrder() {
     setLoading(true);
@@ -21,6 +24,8 @@ export default function AdminOrdenDetalle() {
       const o = await getOrderById(id);
       setOrder(o);
       setNewStatus(o.status);
+      setCourierName(o.courier?.name ?? '');
+      setCourierTracking(o.courier?.trackingCode ?? '');
     } catch {} finally { setLoading(false); }
   }
 
@@ -45,6 +50,23 @@ export default function AdminOrdenDetalle() {
     } catch (err) { alert(err.message || 'Error'); }
     finally { setUpdating(false); }
   }
+
+  async function handleCourierSave() {
+    setSavingCourier(true);
+    try {
+      await updateOrderCourier(id, {
+        name: courierName,
+        trackingCode: courierTracking,
+      });
+      await loadOrder();
+    } catch (err) { alert(err.message || 'Error'); }
+    finally { setSavingCourier(false); }
+  }
+
+  const courierDirty =
+    order &&
+    ((courierName ?? '') !== (order.courier?.name ?? '') ||
+      (courierTracking ?? '') !== (order.courier?.trackingCode ?? ''));
 
   if (loading) {
     return (
@@ -80,17 +102,20 @@ export default function AdminOrdenDetalle() {
           {/* Client info */}
           <div className="det-el bg-white rounded-2xl border border-primary/5 p-5">
             <h3 className="font-heading font-bold text-sm text-primary mb-3">Cliente</h3>
-            <p className="font-body text-sm text-primary">{order.contactName}</p>
-            <p className="font-body text-sm text-primary/60">{order.contactEmail}</p>
-            <p className="font-body text-sm text-primary/60">{order.contactPhone}</p>
+            <p className="font-body text-sm text-primary">{order.contact?.name}</p>
+            <p className="font-body text-sm text-primary/60">{order.contact?.email}</p>
+            <p className="font-body text-sm text-primary/60">{order.contact?.phone}</p>
           </div>
 
           {/* Shipping */}
           <div className="det-el bg-white rounded-2xl border border-primary/5 p-5">
             <h3 className="font-heading font-bold text-sm text-primary mb-3">Envío</h3>
-            <p className="font-body text-sm text-primary">{order.shippingAddress}</p>
-            <p className="font-body text-sm text-primary/60">{order.shippingCity}, {order.shippingDepartment}</p>
-            {order.shippingNotes && <p className="font-body text-sm text-primary/40 mt-1 italic">{order.shippingNotes}</p>}
+            <p className="font-body text-sm text-primary">{order.shipping?.address}</p>
+            <p className="font-body text-sm text-primary/60">{order.shipping?.city}, {order.shipping?.department}</p>
+            {order.shipping?.zoneName && (
+              <p className="font-body text-xs text-primary/50 mt-1">Zona: {order.shipping.zoneName}</p>
+            )}
+            {order.shipping?.notes && <p className="font-body text-sm text-primary/40 mt-1 italic">{order.shipping.notes}</p>}
           </div>
         </div>
 
@@ -113,7 +138,7 @@ export default function AdminOrdenDetalle() {
             <tbody>
               {(order.items ?? []).map((item, i) => (
                 <tr key={i} className="border-b border-primary/5 last:border-0">
-                  <td className="px-5 py-3 font-heading font-semibold text-primary">{item.productName}</td>
+                  <td className="px-5 py-3 font-heading font-semibold text-primary">{item.name}</td>
                   <td className="px-5 py-3 font-body text-primary/60">{item.size}</td>
                   <td className="px-5 py-3 font-body text-primary/60">{item.color}</td>
                   <td className="px-5 py-3 font-body">{item.quantity}</td>
@@ -142,13 +167,54 @@ export default function AdminOrdenDetalle() {
                   <div className="w-2 h-2 rounded-full bg-accent flex-shrink-0" />
                   <StatusBadge status={entry.status} />
                   <span className="font-body text-xs text-primary/40">
-                    {new Date(entry.createdAt).toLocaleString('es-SV')}
+                    {new Date(entry.timestamp).toLocaleString('es-SV')}
                   </span>
                 </div>
               ))}
             </div>
           </div>
         )}
+
+        {/* Courier / tracking */}
+        <div className="det-el bg-white rounded-2xl border border-primary/5 p-5 mb-6">
+          <h3 className="font-heading font-bold text-sm text-primary mb-3">Despacho</h3>
+          <p className="font-body text-xs text-primary/50 mb-3">
+            Llená estos datos cuando entregues el paquete a la mensajería.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+            <div>
+              <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-1 block">
+                Mensajería
+              </label>
+              <input
+                type="text"
+                value={courierName}
+                onChange={(e) => setCourierName(e.target.value)}
+                className="bg-[#f8f6f3] rounded-xl px-4 py-2.5 text-sm text-primary outline-none focus:ring-2 focus:ring-accent/40 w-full"
+                placeholder="Ej: Urbano, DHL, Pony Express"
+              />
+            </div>
+            <div>
+              <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-1 block">
+                Código de rastreo del courier
+              </label>
+              <input
+                type="text"
+                value={courierTracking}
+                onChange={(e) => setCourierTracking(e.target.value)}
+                className="bg-[#f8f6f3] rounded-xl px-4 py-2.5 text-sm text-primary outline-none focus:ring-2 focus:ring-accent/40 w-full"
+                placeholder="Ej: ABC123456789"
+              />
+            </div>
+          </div>
+          <button
+            onClick={handleCourierSave}
+            disabled={savingCourier || !courierDirty}
+            className={`bg-primary text-background px-6 py-2.5 rounded-xl font-heading font-bold text-sm transition-opacity ${savingCourier || !courierDirty ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'}`}
+          >
+            {savingCourier ? 'Guardando...' : 'Guardar despacho'}
+          </button>
+        </div>
 
         {/* Status update */}
         <div className="det-el bg-white rounded-2xl border border-primary/5 p-5">

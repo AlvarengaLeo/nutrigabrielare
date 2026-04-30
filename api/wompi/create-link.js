@@ -13,7 +13,6 @@ const REQUIRED_ENV = [
   'WOMPI_APP_ID',
   'WOMPI_API_SECRET',
 ];
-const SHIPPING_COST = 5;
 
 function getSupabaseAdminClient(serverConfig) {
   return createClient(
@@ -70,6 +69,7 @@ function normalizeCheckout(checkout) {
       city: checkout?.shipping?.city?.trim() || '',
       department: checkout?.shipping?.department?.trim() || '',
       notes: checkout?.shipping?.notes?.trim() || '',
+      zoneId: checkout?.shipping?.zoneId?.trim() || '',
     },
   };
 }
@@ -86,6 +86,7 @@ function validateCheckout(checkout) {
     checkout.shipping.address,
     checkout.shipping.city,
     checkout.shipping.department,
+    checkout.shipping.zoneId,
   ];
 
   if (requiredFields.some((value) => !value)) {
@@ -170,7 +171,23 @@ async function createOrderFromCheckout(supabase, checkout, userId = null) {
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
-  const total = subtotal + SHIPPING_COST;
+
+  const { data: zone, error: zoneError } = await supabase
+    .from('shipping_zones')
+    .select('id, name, cost, free_threshold, active')
+    .eq('id', checkout.shipping.zoneId)
+    .single();
+
+  if (zoneError || !zone || !zone.active) {
+    throw new Error('La zona de envío seleccionada no está disponible.');
+  }
+
+  const zoneCost = Number(zone.cost) || 0;
+  const freeThreshold =
+    zone.free_threshold == null ? null : Number(zone.free_threshold);
+  const shippingCost =
+    freeThreshold != null && subtotal >= freeThreshold ? 0 : zoneCost;
+  const total = subtotal + shippingCost;
 
   const { data: generatedId, error: idError } = await supabase.rpc(
     'generate_order_id',
@@ -197,8 +214,10 @@ async function createOrderFromCheckout(supabase, checkout, userId = null) {
       shipping_city: checkout.shipping.city,
       shipping_department: checkout.shipping.department,
       shipping_notes: checkout.shipping.notes || null,
+      shipping_zone_id: zone.id,
+      shipping_zone_name: zone.name,
       subtotal,
-      shipping_cost: SHIPPING_COST,
+      shipping_cost: shippingCost,
       total,
       status: orderStatus,
     })
