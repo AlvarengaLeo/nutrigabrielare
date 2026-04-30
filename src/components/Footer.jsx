@@ -9,7 +9,7 @@ const navItems = [
 
 const communityLinks = [
   { name: 'Instagram', url: 'https://www.instagram.com/nutrigabrielare/' },
-  { name: 'Comunidad', url: '/comunidad' },
+  { name: 'Fluir Femenino', url: '/fluir-femenino' },
   { name: 'Términos y Condiciones', url: '#' },
 ];
 
@@ -31,7 +31,7 @@ export default function Footer() {
           </div>
           
           <div className="md:col-span-3">
-            <h4 className="font-heading font-bold mb-6 text-white/50 uppercase tracking-widest text-sm">Sitio & Comunidad</h4>
+            <h4 className="font-heading font-bold mb-6 text-white/50 uppercase tracking-widest text-sm">Sitio & Fluir Femenino</h4>
             <ul className="space-y-4 font-body mb-8">
               {navItems.map((item) => (
                 <li key={item.label}>

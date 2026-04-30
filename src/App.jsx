@@ -18,7 +18,7 @@ import PlenoLandingPage from './pages/PlenoLandingPage';
 import PlenoCategoryPage from './pages/PlenoCategoryPage';
 import NutricionConAlmaPage from './pages/NutricionConAlmaPage';
 import ContactanosPage from './pages/ContactanosPage';
-import ComunidadPage from './pages/ComunidadPage';
+import FluirFemeninoPage from './pages/FluirFemeninoPage';
 import ProductoPage from './pages/ProductoPage';
 import ReservarPage from './pages/ReservarPage';
 import CarritoPage from './pages/CarritoPage';
@@ -98,7 +98,8 @@ function AppContent() {
             path="/nutricion-con-alma"
             element={<NutricionConAlmaPage />}
           />
-          <Route path="/comunidad" element={<ComunidadPage />} />
+          <Route path="/fluir-femenino" element={<FluirFemeninoPage />} />
+          <Route path="/comunidad" element={<Navigate to="/fluir-femenino" replace />} />
           <Route path="/contactanos" element={<ContactanosPage />} />
           <Route path="/producto/:slug" element={<ProductoPage />} />
           <Route path="/reservar/:slug" element={<ProtectedRoute><ReservarPage /></ProtectedRoute>} />

@@ -43,8 +43,8 @@ export default function Membership() {
 
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-stretch">
           
-          {/* Block 1: Planes & Comunidad */}
-          <Link to="/comunidad" className="entry-block md:col-span-6 flex flex-col justify-between p-10 md:p-12 rounded-[2.5rem] bg-white border border-primary/5 hover:border-primary/10 hover:-translate-y-3 hover:shadow-2xl transition-transform duration-700 ease-out group">
+          {/* Block 1: Guías & Fluir Femenino */}
+          <Link to="/fluir-femenino" className="entry-block md:col-span-6 flex flex-col justify-between p-10 md:p-12 rounded-[2.5rem] bg-white border border-primary/5 hover:border-primary/10 hover:-translate-y-3 hover:shadow-2xl transition-transform duration-700 ease-out group">
             <div>
               <div className="font-drama italic text-xl text-accent mb-6">01</div>
               <h3 className="font-heading font-bold text-3xl text-primary mb-4 tracking-tight">Guías y Recetarios</h3>
@@ -60,7 +60,7 @@ export default function Membership() {
               </div>
             </div>
             <span className="inline-flex items-center text-primary font-bold font-body group-hover:text-accent transition-colors w-fit">
-              Unirse a la comunidad <ArrowUpRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+              Entrar a Fluir Femenino <ArrowUpRight className="ml-2 w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
             </span>
           </Link>
 
