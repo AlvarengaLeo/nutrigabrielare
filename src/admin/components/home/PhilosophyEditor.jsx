@@ -47,17 +47,30 @@ export default function PhilosophyEditor({ data, onSaved }) {
   }
 
   async function handleDecorativeUpload(slot, file) {
-    const url = await uploadHomeImage(file, 'philosophy', slot);
-    updateDecImg(slot, url);
+    try {
+      const url = await uploadHomeImage(file, 'philosophy', slot);
+      updateDecImg(slot, url);
+      setToast({ type: 'success', msg: 'Imagen subida. No olvides guardar.' });
+      setTimeout(() => setToast(null), 3000);
+    } catch (err) {
+      setToast({ type: 'error', msg: err?.message || 'Error al subir la imagen' });
+      setTimeout(() => setToast(null), 4000);
+      throw err;
+    }
   }
 
   async function handleDecorativeDelete(slot) {
-    const currentUrl = form.decorativeImages?.[slot];
-    if (currentUrl && !currentUrl.startsWith('/media/')) {
-      await deleteHomeImage(currentUrl);
+    try {
+      const currentUrl = form.decorativeImages?.[slot];
+      if (currentUrl && !currentUrl.startsWith('/media/')) {
+        await deleteHomeImage(currentUrl);
+      }
+      const defaults = { topLeft: '/media/ora.png', midLeft: '/media/pom.png', topRight: '/media/tom.png', midRight: '/media/broc.png' };
+      updateDecImg(slot, defaults[slot]);
+    } catch (err) {
+      setToast({ type: 'error', msg: err?.message || 'Error al eliminar la imagen' });
+      setTimeout(() => setToast(null), 4000);
     }
-    const defaults = { topLeft: '/media/ora.png', midLeft: '/media/pom.png', topRight: '/media/tom.png', midRight: '/media/broc.png' };
-    updateDecImg(slot, defaults[slot]);
   }
 
   const values = form.values || [];

@@ -37,15 +37,28 @@ export default function WhyChooseUsEditor({ data, onSaved }) {
   }
 
   async function handlePlateUpload(file) {
-    const url = await uploadHomeImage(file, 'why-choose-us', 'plate');
-    set('plateImage', url);
+    try {
+      const url = await uploadHomeImage(file, 'why-choose-us', 'plate');
+      set('plateImage', url);
+      setToast({ type: 'success', msg: 'Imagen subida. No olvides guardar.' });
+      setTimeout(() => setToast(null), 3000);
+    } catch (err) {
+      setToast({ type: 'error', msg: err?.message || 'Error al subir la imagen' });
+      setTimeout(() => setToast(null), 4000);
+      throw err;
+    }
   }
 
   async function handlePlateDelete() {
-    if (form.plateImage && !form.plateImage.startsWith('/media/')) {
-      await deleteHomeImage(form.plateImage);
+    try {
+      if (form.plateImage && !form.plateImage.startsWith('/media/')) {
+        await deleteHomeImage(form.plateImage);
+      }
+      set('plateImage', '/media/healthy_plate.png');
+    } catch (err) {
+      setToast({ type: 'error', msg: err?.message || 'Error al eliminar la imagen' });
+      setTimeout(() => setToast(null), 4000);
     }
-    set('plateImage', '/media/healthy_plate.png');
   }
 
   const reasons = form.reasons || [];

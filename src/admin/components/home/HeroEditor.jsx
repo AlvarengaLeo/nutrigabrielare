@@ -32,15 +32,29 @@ export default function HeroEditor({ data, onSaved }) {
   }
 
   async function handleImageUpload(file) {
-    const url = await uploadHomeImage(file, 'hero', 'hero_model');
-    set('heroImage', url);
+    try {
+      const url = await uploadHomeImage(file, 'hero', 'hero_model');
+      set('heroImage', url);
+      setToast({ type: 'success', msg: 'Imagen subida. No olvides guardar.' });
+      setTimeout(() => setToast(null), 3000);
+    } catch (err) {
+      const msg = err?.message || 'Error al subir la imagen';
+      setToast({ type: 'error', msg });
+      setTimeout(() => setToast(null), 4000);
+      throw err;
+    }
   }
 
   async function handleImageDelete() {
-    if (form.heroImage && !form.heroImage.startsWith('/media/')) {
-      await deleteHomeImage(form.heroImage);
+    try {
+      if (form.heroImage && !form.heroImage.startsWith('/media/')) {
+        await deleteHomeImage(form.heroImage);
+      }
+      set('heroImage', '/media/hero_model.png');
+    } catch (err) {
+      setToast({ type: 'error', msg: err?.message || 'Error al eliminar la imagen' });
+      setTimeout(() => setToast(null), 4000);
     }
-    set('heroImage', '/media/hero_model.png');
   }
 
   return (

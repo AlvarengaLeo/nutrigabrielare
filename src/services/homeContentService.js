@@ -59,7 +59,7 @@ export async function uploadHomeImage(file, folder, fileName) {
 
   const { error } = await supabase.storage
     .from(BUCKET)
-    .upload(path, file, { upsert: true });
+    .upload(path, file, { upsert: true, contentType: file.type });
 
   if (error) {
     console.error('[homeContent] upload error:', error.message);
@@ -70,7 +70,10 @@ export async function uploadHomeImage(file, folder, fileName) {
     .from(BUCKET)
     .getPublicUrl(path);
 
-  return urlData.publicUrl;
+  // Cache-bust: stable filenames upsert to the same URL, so browsers/CDNs
+  // serve the previous image. Append a version query so each save renders
+  // the freshly uploaded file.
+  return `${urlData.publicUrl}?v=${Date.now()}`;
 }
 
 /**
@@ -78,11 +81,11 @@ export async function uploadHomeImage(file, folder, fileName) {
  * @param {string} fullUrl — the full public URL
  */
 export async function deleteHomeImage(fullUrl) {
-  // Extract path from URL: ...home-images/folder/file.png → folder/file.png
+  // Extract path from URL: ...home-images/folder/file.png?v=... → folder/file.png
   const marker = `${BUCKET}/`;
   const idx = fullUrl.indexOf(marker);
   if (idx === -1) return;
-  const path = fullUrl.substring(idx + marker.length);
+  const path = fullUrl.substring(idx + marker.length).split('?')[0];
 
   const { error } = await supabase.storage
     .from(BUCKET)
