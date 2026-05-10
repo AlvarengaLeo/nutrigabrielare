@@ -83,13 +83,7 @@ export default function Hero() {
         )}
         
         <div className="max-w-2xl xl:max-w-3xl relative z-20">
-          
-          {/* Badge */}
-          <div className="hero-element inline-flex items-center gap-2 px-4 py-1.5 bg-health/10 text-health border border-health/20 rounded-full mb-8 relative">
-            <Leaf className="w-4 h-4 fill-current opacity-80" />
-            <span className="text-xs font-bold font-body uppercase tracking-wider text-primary">{d.badge}</span>
-          </div>
-          
+
           {/* Headline */}
           <h1 className="hero-element font-drama italic text-5xl md:text-6xl lg:text-[5rem] xl:text-[5.5rem] tracking-tight text-primary leading-[1.05] mb-6">
             {d.titleLine1} <span className="font-heading not-italic">{d.titleHighlight1}</span>{' '}

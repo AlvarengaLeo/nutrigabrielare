@@ -30,7 +30,6 @@ export default function Featured() {
   return (
     <ProductCarousel
       id="destacados"
-      eyebrow="Destacados"
       titleLine1="Lo que querés"
       titleLine2="ver primero."
       products={products}

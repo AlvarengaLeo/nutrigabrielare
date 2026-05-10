@@ -72,10 +72,6 @@ export default function WhyChooseUs() {
         
         {/* Header Block */}
         <div className="flex flex-col items-center lg:items-end text-center lg:text-right w-full max-w-4xl mb-16 lg:pr-10">
-          <div className="wcu-header inline-flex items-center gap-2 px-4 py-1.5 bg-health/10 text-health border border-health/20 rounded-full mb-6 relative">
-            <Leaf className="w-4 h-4 fill-current opacity-80" />
-            <span className="text-xs font-bold font-body uppercase tracking-wider text-primary">{d.badge}</span>
-          </div>
           <h2 className="wcu-header font-drama italic text-4xl md:text-5xl lg:text-[4rem] text-primary tracking-tight leading-[1.1]">
             {d.titleLine1} <span className="font-heading not-italic whitespace-nowrap">{d.titleHighlight1}</span><br/>
             {d.titleLine2} <span className="font-heading not-italic text-accent">{d.titleHighlight2}</span>

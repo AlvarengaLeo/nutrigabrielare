@@ -117,12 +117,6 @@ export default function Philosophy() {
         </div>
 
         <div className="flex flex-col items-center text-center relative z-20 mb-20">
-          {/* Badge */}
-          <div className="philo-element inline-flex items-center gap-2 px-4 py-1.5 bg-health/10 text-health border border-health/20 rounded-full mb-6 relative">
-            <Heart className="w-4 h-4 fill-current opacity-80" />
-            <span className="text-xs font-bold font-body uppercase tracking-wider text-primary">{d.badge}</span>
-          </div>
-
           <h2 className="philo-element font-drama italic text-4xl md:text-5xl lg:text-[4rem] text-primary tracking-tight leading-[1.1] mb-12 max-w-3xl mx-auto">
             {d.titleLine1} <span className="font-heading not-italic">{d.titleHighlight1}</span><br/>
             {d.titleLine2} <span className="font-heading not-italic text-accent">{d.titleHighlight2}</span>
