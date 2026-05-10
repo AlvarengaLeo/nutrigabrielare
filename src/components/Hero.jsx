@@ -69,18 +69,20 @@ export default function Hero() {
   };
 
   return (
-    <section ref={containerRef} className="relative min-h-[95vh] w-full flex flex-col lg:flex-row overflow-hidden">
-      
-      {/* Light Section (Left) */}
-      <div className="w-full lg:w-[60%] bg-[#F2FCFA] pt-40 lg:pt-48 pb-20 lg:pb-24 px-6 md:px-12 lg:pl-[10%] flex items-center relative z-10">
-        
-        {/* Subtle Leaf Decor */}
-        {d.showDecorativeLeaves !== false && (
-          <>
-            <Leaf className="floating-leaf absolute top-20 left-10 w-24 h-24 text-primary/5 pointer-events-none hidden md:block" />
-            <Leaf className="floating-leaf-alt absolute bottom-20 left-1/3 w-16 h-16 text-primary/5 pointer-events-none hidden lg:block" />
-          </>
-        )}
+    <section ref={containerRef} className="relative min-h-[95vh] w-full flex flex-col lg:flex-row overflow-hidden bg-[#F2FCFA]">
+
+      {/* Subtle Leaf Decor */}
+      {d.showDecorativeLeaves !== false && (
+        <>
+          <Leaf className="floating-leaf absolute top-20 left-10 w-24 h-24 text-primary/5 pointer-events-none hidden md:block" />
+          <Leaf className="floating-leaf-alt absolute bottom-20 left-1/3 w-16 h-16 text-primary/5 pointer-events-none hidden lg:block" />
+          <Leaf className="floating-leaf absolute top-32 right-20 w-32 h-32 text-primary/5 pointer-events-none hidden lg:block" />
+          <Leaf className="floating-leaf-alt absolute bottom-32 left-[55%] w-24 h-24 text-primary/5 pointer-events-none hidden lg:block" />
+        </>
+      )}
+
+      {/* Content (Left) */}
+      <div className="w-full lg:w-[60%] pt-40 lg:pt-48 pb-20 lg:pb-24 px-6 md:px-12 lg:pl-[10%] flex items-center relative z-10">
         
         <div className="max-w-2xl xl:max-w-3xl relative z-20">
 
@@ -115,16 +117,6 @@ export default function Hero() {
         </div>
       </div>
       
-      {/* Dark Section (Right) */}
-      <div className="hidden lg:block lg:w-[40%] bg-primary relative z-0">
-        {d.showDecorativeLeaves !== false && (
-          <>
-            <Leaf className="floating-leaf absolute top-32 right-20 w-32 h-32 text-white/5 pointer-events-none" />
-            <Leaf className="floating-leaf-alt absolute bottom-32 -left-10 w-24 h-24 text-white/5 pointer-events-none" />
-          </>
-        )}
-      </div>
-
       {/* Main Image Layering */}
       {!loading && (
         <div className="hidden lg:flex absolute bottom-0 right-0 lg:w-[45%] lg:h-[85%] pointer-events-none z-20 justify-end items-end lg:pr-24 xl:pr-48">
