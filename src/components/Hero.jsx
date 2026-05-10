@@ -129,7 +129,11 @@ export default function Hero() {
               onError={(e) => {
                 e.target.src = '/media/model_placeholder.png';
               }}
-              className="hero-image h-full w-auto object-contain object-bottom drop-shadow-2xl origin-bottom"
+              style={{
+                filter:
+                  'drop-shadow(0 6px 8px rgba(20, 40, 30, 0.18)) drop-shadow(0 22px 28px rgba(20, 40, 30, 0.18)) drop-shadow(0 60px 80px rgba(20, 40, 30, 0.22))',
+              }}
+              className="hero-image h-full w-auto object-contain object-bottom origin-bottom"
             />
           </div>
         </div>
