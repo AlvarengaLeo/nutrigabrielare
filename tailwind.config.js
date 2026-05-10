@@ -42,12 +42,20 @@ export default {
           '0%, 100%': { transform: 'scale(1)', opacity: '0.6' },
           '50%': { transform: 'scale(1.05)', opacity: '0.85' },
         },
+        'marquee': {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
       },
       animation: {
         'spin-slow': 'spin-slow 60s linear infinite',
         'float-soft': 'float-soft 6s ease-in-out infinite',
         'float-soft-rev': 'float-soft-rev 7s ease-in-out infinite',
         'breathe': 'breathe 8s ease-in-out infinite',
+        'marquee': 'marquee 28s linear infinite',
+      },
+      screens: {
+        xs: '420px',
       },
     },
   },
