@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
-import { Leaf } from 'lucide-react';
 import { useHomeContent } from '../context/HomeContentContext';
 
 export default function Hero() {
@@ -71,13 +70,13 @@ export default function Hero() {
   return (
     <section ref={containerRef} className="relative min-h-[95vh] w-full flex flex-col lg:flex-row overflow-hidden bg-[#F2FCFA]">
 
-      {/* Subtle Leaf Decor */}
+      {/* Decorative Fluir Femenino icons */}
       {d.showDecorativeLeaves !== false && (
         <>
-          <Leaf className="floating-leaf absolute top-20 left-10 w-24 h-24 text-primary/5 pointer-events-none hidden md:block" />
-          <Leaf className="floating-leaf-alt absolute bottom-20 left-1/3 w-16 h-16 text-primary/5 pointer-events-none hidden lg:block" />
-          <Leaf className="floating-leaf absolute top-32 right-20 w-32 h-32 text-primary/5 pointer-events-none hidden lg:block" />
-          <Leaf className="floating-leaf-alt absolute bottom-32 left-[55%] w-24 h-24 text-primary/5 pointer-events-none hidden lg:block" />
+          <img src="/media/fluir-icons/loto.png" alt="" aria-hidden="true" className="floating-leaf absolute top-20 left-10 w-24 h-24 opacity-30 pointer-events-none hidden md:block select-none" />
+          <img src="/media/fluir-icons/espiral.png" alt="" aria-hidden="true" className="floating-leaf-alt absolute bottom-20 left-[28%] w-20 h-20 opacity-30 pointer-events-none hidden lg:block select-none" />
+          <img src="/media/fluir-icons/mandala.png" alt="" aria-hidden="true" className="floating-leaf absolute top-32 right-20 w-32 h-32 opacity-25 pointer-events-none hidden lg:block select-none" />
+          <img src="/media/fluir-icons/luna.png" alt="" aria-hidden="true" className="floating-leaf-alt absolute bottom-32 left-[55%] w-24 h-24 opacity-30 pointer-events-none hidden lg:block select-none" />
         </>
       )}
 
