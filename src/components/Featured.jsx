@@ -30,8 +30,8 @@ export default function Featured() {
   return (
     <ProductCarousel
       id="destacados"
-      titleLine1="Lo que querés"
-      titleLine2="ver primero."
+      titleLine1="Pleno"
+      titleLine2="Market."
       products={products}
       ctaLabel="Ver todo"
       ctaTo="/pleno"
