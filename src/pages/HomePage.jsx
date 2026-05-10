@@ -12,6 +12,10 @@ export default function HomePage() {
       <Philosophy />
       <Featured />
       <WhyChooseUs />
+      {/* White extender that fills the footer's rounded-corner cut so it
+          matches the white bg of the section above instead of revealing
+          the page background. */}
+      <div aria-hidden="true" className="relative z-10 -mb-16 h-16 w-full bg-white" />
     </HomeContentProvider>
   );
 }
