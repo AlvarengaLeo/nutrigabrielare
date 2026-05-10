@@ -152,7 +152,8 @@ export default function TrackingPage() {
             />
             <button
               onClick={handleSearch}
-              className="bg-primary text-background px-6 py-3 rounded-xl font-heading font-bold text-sm hover:bg-primary/90 transition-colors"
+              style={{ backgroundColor: '#196b41' }}
+              className="text-white px-6 py-3 rounded-xl font-heading font-bold text-sm hover:opacity-90 transition-opacity"
             >
               Buscar
             </button>
@@ -172,7 +173,7 @@ export default function TrackingPage() {
             {/* Order header */}
             <div className="order-header flex items-center justify-between mb-8">
               <span className="font-heading font-bold text-primary">{order.id}</span>
-              <span className="font-mono text-accent text-sm">{order.trackingCode}</span>
+              <span className="font-mono text-pleno-green text-sm">{order.trackingCode}</span>
             </div>
 
             {/* Vertical timeline */}
@@ -191,9 +192,9 @@ export default function TrackingPage() {
                   dotStyle = { backgroundColor: '#4ade80' };
                   labelClass = 'text-primary font-heading font-bold text-sm';
                 } else if (isActive) {
-                  dotClass = 'rounded-full w-4 h-4 ring-2 ring-accent/30';
-                  dotStyle = { backgroundColor: '#9fc2ff' };
-                  labelClass = 'text-accent font-heading font-bold text-sm';
+                  dotClass = 'rounded-full w-4 h-4 ring-2 ring-pleno-green/30';
+                  dotStyle = { backgroundColor: '#196b41' };
+                  labelClass = 'text-pleno-green font-heading font-bold text-sm';
                 } else {
                   dotClass = 'rounded-full w-4 h-4 bg-primary/10';
                   labelClass = 'text-primary/30 font-heading font-bold text-sm';
@@ -224,7 +225,7 @@ export default function TrackingPage() {
                             {formatTimestamp(timestamp)}
                           </p>
                         )}
-                        <p className="font-body text-xs text-accent/80 mt-1">
+                        <p className="font-body text-xs text-pleno-green/80 mt-1">
                           {step.description}
                         </p>
                       </>
@@ -252,7 +253,7 @@ export default function TrackingPage() {
                 )}
                 {order.courier?.trackingCode && (
                   <p className="font-body text-sm text-primary mt-1">
-                    Código de rastreo: <span className="font-mono text-accent">{order.courier.trackingCode}</span>
+                    Código de rastreo: <span className="font-mono text-pleno-green">{order.courier.trackingCode}</span>
                   </p>
                 )}
               </div>

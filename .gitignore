@@ -3,3 +3,7 @@ dist
 .DS_Store
 *.local
 .env
+
+# Design references (kept locally, not committed)
+Pleno Ecommerce*.html
+resources/

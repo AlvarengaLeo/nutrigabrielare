@@ -201,7 +201,8 @@ export default function CartDrawer() {
             <Link
               to="/checkout"
               onClick={close}
-              className="magnetic-btn w-full flex items-center justify-center py-3.5 px-6 rounded-2xl bg-primary text-background font-heading font-semibold text-sm hover:bg-dark transition-colors duration-200 focus:outline-none"
+              style={{ backgroundColor: '#196b41' }}
+              className="magnetic-btn w-full flex items-center justify-center py-3.5 px-6 rounded-2xl text-white font-heading font-semibold text-sm hover:opacity-90 transition-opacity duration-200 focus:outline-none"
             >
               Ir al checkout
             </Link>

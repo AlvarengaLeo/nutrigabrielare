@@ -4,37 +4,26 @@
 
 @layer base {
   body {
-    @apply font-body bg-background text-primary antialiased selection:bg-highlight selection:text-primary;
+    @apply font-body bg-background text-primary antialiased;
     overflow-x: hidden;
   }
-  
+
+  ::selection {
+    background-color: theme('colors.pleno.soft');
+    color: theme('colors.pleno.deep');
+  }
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-heading tracking-tight;
   }
 }
 
 .magnetic-btn {
-  @apply relative overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)];
+  @apply relative transition-all duration-500 ease-[cubic-bezier(0.25,0.46,0.45,0.94)];
 }
 
 .magnetic-btn:hover {
   transform: scale(1.03);
-}
-
-.magnetic-btn::before {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: theme('colors.accent');
-  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  z-index: -1;
-}
-
-.magnetic-btn:hover::before {
-  transform: translateY(-100%);
 }
 
 .hover-lift {

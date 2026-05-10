@@ -330,14 +330,15 @@ export default function CheckoutPage() {
                           type="button"
                           key={zone.id}
                           onClick={() => updateDraftField('shippingZoneId', zone.id)}
+                          style={isSelected ? { backgroundColor: '#196b41' } : undefined}
                           className={`rounded-xl px-4 py-3 text-left transition-colors ${
                             isSelected
-                              ? 'bg-primary text-background'
+                              ? 'text-white'
                               : 'bg-[#f8f6f3] text-primary hover:bg-primary/5'
                           } ${errors.shippingZoneId && !isSelected ? 'ring-1 ring-red-400' : ''}`}
                         >
                           <p className="font-heading text-sm font-bold">{zone.name}</p>
-                          <p className={`mt-1 font-body text-xs ${isSelected ? 'text-background/70' : 'text-primary/50'}`}>
+                          <p className={`mt-1 font-body text-xs ${isSelected ? 'text-white/80' : 'text-primary/50'}`}>
                             {isFree ? 'Envío gratis' : `$${cost.toFixed(2)}`}
                             {zone.freeThreshold != null && !isFree
                               ? ` · gratis sobre $${Number(zone.freeThreshold).toFixed(2)}`
@@ -446,7 +447,8 @@ export default function CheckoutPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className={`mt-6 w-full rounded-xl bg-primary py-3.5 font-heading text-sm font-bold text-background transition-opacity ${
+                style={{ backgroundColor: '#196b41' }}
+                className={`mt-6 w-full rounded-xl py-3.5 font-heading text-sm font-bold text-white transition-opacity ${
                   submitting ? 'cursor-not-allowed opacity-50' : 'hover:opacity-90'
                 }`}
               >

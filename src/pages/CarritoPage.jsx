@@ -54,7 +54,8 @@ export default function CarritoPage() {
         </p>
         <Link
           to="/pleno"
-          className="bg-primary text-background px-8 py-3.5 rounded-xl font-heading font-bold hover:opacity-90 transition-opacity"
+          style={{ backgroundColor: '#196b41' }}
+          className="text-white px-8 py-3.5 rounded-xl font-heading font-bold hover:opacity-90 transition-opacity"
         >
           Ir a la tienda
         </Link>
@@ -184,7 +185,8 @@ export default function CarritoPage() {
               {/* Checkout button */}
               <Link
                 to="/checkout"
-                className="block w-full bg-primary text-background text-center rounded-xl py-3.5 font-heading font-bold hover:opacity-90 transition-opacity"
+                style={{ backgroundColor: '#196b41' }}
+                className="block w-full text-white text-center rounded-xl py-3.5 font-heading font-bold hover:opacity-90 transition-opacity"
               >
                 Proceder al checkout
               </Link>
@@ -192,7 +194,7 @@ export default function CarritoPage() {
               {/* Continue shopping */}
               <Link
                 to="/pleno"
-                className="block text-center text-accent text-sm font-body hover:underline"
+                className="block text-center text-pleno-green text-sm font-body hover:underline"
               >
                 Seguir comprando
               </Link>

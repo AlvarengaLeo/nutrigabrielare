@@ -10,15 +10,15 @@ gsap.registerPlugin(ScrollTrigger);
 
 const STATUS_CONFIG = {
   confirmed: { label: '● Pendiente', className: 'text-amber-500' },
-  preparing: { label: '● Preparando', className: 'text-accent' },
-  shipped: { label: '● En camino', className: 'text-accent' },
+  preparing: { label: '● Preparando', className: 'text-pleno-green' },
+  shipped: { label: '● En camino', className: 'text-pleno-green' },
   delivered: { label: '● Entregado', className: 'text-green-500' },
 };
 
 const RESERVATION_STATUS_CONFIG = {
   pendiente: { label: '● Pendiente', className: 'text-amber-500' },
-  contactado: { label: '● Contactado', className: 'text-accent' },
-  confirmado: { label: '● Confirmado', className: 'text-accent' },
+  contactado: { label: '● Contactado', className: 'text-pleno-green' },
+  confirmado: { label: '● Confirmado', className: 'text-pleno-green' },
   completado: { label: '● Completado', className: 'text-green-500' },
   cancelado: { label: '● Cancelado', className: 'text-red-500' },
 };
@@ -121,7 +121,8 @@ export default function CuentaPage() {
               </p>
               <Link
                 to="/pleno"
-                className="inline-block bg-primary text-background px-6 py-3 rounded-xl font-heading font-bold text-sm hover:bg-primary/90 transition-colors"
+                style={{ backgroundColor: '#196b41' }}
+                className="inline-block text-white px-6 py-3 rounded-xl font-heading font-bold text-sm hover:opacity-90 transition-opacity"
               >
                 Ir a la tienda
               </Link>

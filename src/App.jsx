@@ -11,6 +11,7 @@ import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import PlenoFooter from './components/PlenoFooter';
 import CartDrawer from './components/CartDrawer';
 import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
@@ -66,6 +67,10 @@ function ScrollToTop() {
 function AppContent() {
   const { pathname } = useLocation();
   const isAdminRoute = pathname.startsWith('/admin');
+  const PLENO_FLOW_PATHS = ['/pleno', '/producto', '/carrito', '/checkout', '/gracias', '/tracking', '/cuenta'];
+  const isPlenoRoute = PLENO_FLOW_PATHS.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`)
+  );
 
   return (
     <>
@@ -76,13 +81,14 @@ function AppContent() {
         <rect width="100%" height="100%" filter="url(#noiseFilter)"/>
       </svg>
 
-      <main className="min-h-screen bg-background relative selection:bg-accent selection:text-white">
+      <main className="min-h-screen bg-background relative">
         {!isAdminRoute && <Navbar />}
         <ScrollToTop />
         <Routes>
           {/* ── Public routes ── */}
           <Route path="/" element={<HomePage />} />
           <Route path="/pleno" element={<PlenoLandingPage />} />
+          <Route path="/pleno/suplementos" element={<Navigate to="/pleno" replace />} />
           <Route path="/pleno/:kindSlug" element={<PlenoCategoryPage />} />
           <Route path="/tienda" element={<Navigate to="/pleno" replace />} />
           <Route path="/tienda/*" element={<Navigate to="/pleno" replace />} />
@@ -128,7 +134,7 @@ function AppContent() {
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
-        {!isAdminRoute && <Footer />}
+        {!isAdminRoute && (isPlenoRoute ? <PlenoFooter /> : <Footer />)}
         {!isAdminRoute && <CartDrawer />}
       </main>
     </>

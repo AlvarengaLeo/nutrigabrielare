@@ -90,7 +90,7 @@ export default function ProductoPage() {
         </h1>
         <Link
           to="/pleno"
-          className="font-heading font-bold text-accent hover:underline"
+          className="font-heading font-bold text-pleno-green hover:underline"
         >
           Volver a la tienda
         </Link>
@@ -149,17 +149,17 @@ export default function ProductoPage() {
         <div className="producto-el mb-10 flex flex-col gap-3">
           <Link
             to={`/pleno/${kindSlug}`}
-            className="inline-flex items-center gap-2 text-sm font-body text-primary/50 hover:text-accent transition-colors w-fit"
+            className="inline-flex items-center gap-2 text-sm font-body text-primary/50 hover:text-pleno-green transition-colors w-fit"
           >
             <ArrowLeft size={16} strokeWidth={2} />
             Volver
           </Link>
           <nav className="flex items-center gap-2 text-sm font-body text-primary/50">
-            <Link to="/pleno" className="hover:text-accent transition-colors">
+            <Link to="/pleno" className="hover:text-pleno-green transition-colors">
               Pleno
             </Link>
             <span>/</span>
-            <Link to={`/pleno/${kindSlug}`} className="hover:text-accent transition-colors capitalize">
+            <Link to={`/pleno/${kindSlug}`} className="hover:text-pleno-green transition-colors capitalize">
               {kindSlug}
             </Link>
             <span>/</span>
@@ -214,7 +214,10 @@ export default function ProductoPage() {
 
           {/* Details (right) */}
           <div className="flex-1 flex flex-col gap-6">
-            <span className="producto-el uppercase text-xs tracking-widest text-accent font-body font-semibold">
+            <span
+              style={{ color: '#196b41' }}
+              className="producto-el uppercase text-xs tracking-widest font-body font-semibold"
+            >
               {category?.title}
             </span>
 
@@ -302,7 +305,8 @@ export default function ProductoPage() {
             {isService ? (
               <Link
                 to={`/reservar/${product.slug}`}
-                className="producto-el w-full py-4 rounded-xl font-heading font-bold text-center transition-all duration-200 bg-primary text-background hover:opacity-90"
+                style={{ backgroundColor: '#196b41' }}
+                className="producto-el w-full py-4 rounded-xl font-heading font-bold text-center transition-all duration-200 text-background hover:opacity-90"
               >
                 Reservar consulta
               </Link>
@@ -310,7 +314,8 @@ export default function ProductoPage() {
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className="producto-el w-full py-4 rounded-xl font-heading font-bold text-center transition-all duration-200 bg-primary text-background hover:opacity-90 cursor-pointer"
+                style={{ backgroundColor: '#196b41' }}
+                className="producto-el w-full py-4 rounded-xl font-heading font-bold text-center transition-all duration-200 text-background hover:opacity-90 cursor-pointer"
               >
                 Comprar y descargar
               </button>
@@ -319,10 +324,11 @@ export default function ProductoPage() {
                 type="button"
                 onClick={handleAddToCart}
                 disabled={!canAdd}
+                style={canAdd ? { backgroundColor: '#196b41' } : undefined}
                 className={[
                   'producto-el w-full py-4 rounded-xl font-heading font-bold text-center transition-all duration-200',
                   canAdd
-                    ? 'bg-primary text-background hover:opacity-90 cursor-pointer'
+                    ? 'text-background hover:opacity-90 cursor-pointer'
                     : 'bg-primary/30 text-background/60 cursor-not-allowed',
                 ].join(' ')}
               >
@@ -342,9 +348,8 @@ export default function ProductoPage() {
       {/* Related products */}
       {related.length > 0 && (
         <ProductCarousel
-          eyebrow="También te puede interesar"
-          titleLine1="Otros que te"
-          titleLine2="podrían gustar."
+          variant="pleno"
+          titleLine1="Recomendados"
           products={related}
           ctaLabel="Ver más"
           ctaTo={`/pleno/${kindSlug}`}

@@ -28,7 +28,7 @@ export default function ProductCard({ product }) {
     images,
   } = product;
 
-  const swatchColor = variants?.colors?.[0]?.hex ?? '#1A1A1A';
+  const swatchColor = variants?.colors?.[0]?.hex ?? '#1c3328';
   const hasImage = images && images.length > 0;
   const kindLabel = KIND_LABEL[kind];
   const ctaLabel = CTA_LABEL[kind] ?? 'Comprar';
@@ -81,7 +81,10 @@ export default function ProductCard({ product }) {
       {/* Info */}
       <div className="flex flex-col px-1 mb-5">
         {kindLabel && (
-          <span className="font-body text-xs font-semibold text-rose-500 mb-1.5">
+          <span
+            className="font-body text-xs font-semibold mb-1.5"
+            style={{ color: '#196b41' }}
+          >
             {kindLabel}
           </span>
         )}
@@ -94,7 +97,10 @@ export default function ProductCard({ product }) {
       </div>
 
       {/* CTA */}
-      <div className="bg-primary text-background py-3 rounded-full text-center font-heading font-bold text-sm tracking-wide group-hover/product:opacity-90 transition-opacity">
+      <div
+        className="text-background py-3 rounded-full text-center font-heading font-bold text-sm tracking-wide group-hover/product:opacity-90 transition-opacity"
+        style={{ backgroundColor: '#196b41' }}
+      >
         {ctaLabel}
       </div>
     </Link>

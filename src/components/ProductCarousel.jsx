@@ -29,7 +29,18 @@ export default function ProductCarousel({
   ctaTo,
   bg = 'bg-background',
   id,
+  variant = 'brand',
 }) {
+  const isPleno = variant === 'pleno';
+  const titleColorClass = isPleno ? 'text-pleno-green' : 'text-primary';
+  const accentColorClass = isPleno ? 'text-pleno-green' : 'text-accent';
+  const ctaStyle = isPleno ? { backgroundColor: '#196b41' } : undefined;
+  const ctaClass = isPleno
+    ? 'text-white hover:opacity-90'
+    : 'bg-primary text-background hover:opacity-90';
+  const arrowHoverClass = isPleno
+    ? 'hover:bg-pleno-green hover:text-white'
+    : 'hover:bg-primary hover:text-background';
   const sectionRef = useRef(null);
   const trackRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -92,9 +103,9 @@ export default function ProductCarousel({
               </div>
             )}
             {(titleLine1 || titleLine2) && (
-              <h2 className="carousel-el font-heading not-italic text-4xl md:text-5xl lg:text-[3.5rem] text-primary tracking-tight leading-[1.05] max-w-2xl">
+              <h2 className={`carousel-el font-heading not-italic text-4xl md:text-5xl lg:text-[3.5rem] ${titleColorClass} tracking-tight leading-[1.05] max-w-2xl`}>
                 {titleLine1}{titleLine2 && <br />}
-                {titleLine2 && <span className="font-drama italic text-accent">{titleLine2}</span>}
+                {titleLine2 && <span className={`font-drama italic ${accentColorClass}`}>{titleLine2}</span>}
               </h2>
             )}
           </div>
@@ -104,7 +115,8 @@ export default function ProductCarousel({
             {ctaTo && (
               <Link
                 to={ctaTo}
-                className="hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-background font-heading font-bold text-sm hover:opacity-90 transition-opacity"
+                style={ctaStyle}
+                className={`hidden md:inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-heading font-bold text-sm transition-opacity ${ctaClass}`}
               >
                 {ctaLabel ?? 'Ver todo'}
                 <ArrowUpRight className="w-4 h-4" />
@@ -117,7 +129,7 @@ export default function ProductCarousel({
                 disabled={!canScrollLeft}
                 aria-label="Anterior"
                 className={`w-10 h-10 rounded-full border border-primary/15 flex items-center justify-center transition-all ${
-                  canScrollLeft ? 'text-primary hover:bg-primary hover:text-background' : 'text-primary/20 cursor-not-allowed'
+                  canScrollLeft ? `text-primary ${arrowHoverClass}` : 'text-primary/20 cursor-not-allowed'
                 }`}
               >
                 <ChevronLeft className="w-5 h-5" />
@@ -128,7 +140,7 @@ export default function ProductCarousel({
                 disabled={!canScrollRight}
                 aria-label="Siguiente"
                 className={`w-10 h-10 rounded-full border border-primary/15 flex items-center justify-center transition-all ${
-                  canScrollRight ? 'text-primary hover:bg-primary hover:text-background' : 'text-primary/20 cursor-not-allowed'
+                  canScrollRight ? `text-primary ${arrowHoverClass}` : 'text-primary/20 cursor-not-allowed'
                 }`}
               >
                 <ChevronRight className="w-5 h-5" />
@@ -158,7 +170,8 @@ export default function ProductCarousel({
           <div className="carousel-el md:hidden mt-8 flex justify-center">
             <Link
               to={ctaTo}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-primary text-background font-heading font-bold text-sm hover:opacity-90 transition-opacity"
+              style={ctaStyle}
+              className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full font-heading font-bold text-sm transition-opacity ${ctaClass}`}
             >
               {ctaLabel ?? 'Ver todo'}
               <ArrowUpRight className="w-4 h-4" />

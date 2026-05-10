@@ -165,7 +165,8 @@ export default function GraciasPage() {
           </p>
           <Link
             to="/pleno"
-            className="gracias-el inline-block rounded-xl bg-primary px-6 py-3 text-sm font-bold text-background"
+            style={{ backgroundColor: '#196b41' }}
+            className="gracias-el inline-block rounded-xl px-6 py-3 text-sm font-bold text-white"
           >
             Ir a la tienda
           </Link>
@@ -208,7 +209,8 @@ export default function GraciasPage() {
           <div className="gracias-el mt-8 flex justify-center gap-3">
             <Link
               to={`/tracking/${order.trackingCode}`}
-              className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-background"
+              style={{ backgroundColor: '#196b41' }}
+              className="rounded-xl px-6 py-3 text-sm font-bold text-white"
             >
               Ver seguimiento
             </Link>
@@ -239,7 +241,8 @@ export default function GraciasPage() {
           <div className="gracias-el mt-8 flex justify-center gap-3">
             <Link
               to="/checkout"
-              className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-background"
+              style={{ backgroundColor: '#196b41' }}
+              className="rounded-xl px-6 py-3 text-sm font-bold text-white"
             >
               Volver al checkout
             </Link>
@@ -316,12 +319,13 @@ export default function GraciasPage() {
           <p className="mb-2 text-xs uppercase tracking-widest text-white/40">
             Tu numero de tracking
           </p>
-          <p className="font-mono text-2xl font-bold tracking-wider text-accent">
+          <p className="font-mono text-2xl font-bold tracking-wider" style={{ color: '#9bd1a8' }}>
             {order.trackingCode}
           </p>
           <Link
             to={`/tracking/${order.trackingCode}`}
-            className="mt-4 inline-block rounded-xl bg-accent px-6 py-3 text-sm font-bold text-primary"
+            style={{ backgroundColor: '#196b41' }}
+            className="mt-4 inline-block rounded-xl px-6 py-3 text-sm font-bold text-white"
           >
             Rastrear mi pedido
           </Link>
@@ -333,7 +337,8 @@ export default function GraciasPage() {
         <div className="gracias-el mt-6 flex gap-3">
           <Link
             to="/pleno"
-            className="flex-1 rounded-xl bg-primary px-6 py-3 text-center text-sm font-bold text-background"
+            style={{ backgroundColor: '#196b41' }}
+            className="flex-1 rounded-xl px-6 py-3 text-center text-sm font-bold text-white"
           >
             Volver a la tienda
           </Link>

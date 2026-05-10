@@ -93,9 +93,10 @@ export default function CheckoutAuthPanel({ defaultEmail = '' }) {
           <button
             type="button"
             onClick={() => setMode('login')}
+            style={mode === 'login' ? { backgroundColor: '#196b41' } : undefined}
             className={`rounded-lg px-3 py-2 font-body text-xs transition-colors ${
               mode === 'login'
-                ? 'bg-primary text-background'
+                ? 'text-white'
                 : 'text-primary/60 hover:text-primary'
             }`}
           >
@@ -104,9 +105,10 @@ export default function CheckoutAuthPanel({ defaultEmail = '' }) {
           <button
             type="button"
             onClick={() => setMode('register')}
+            style={mode === 'register' ? { backgroundColor: '#196b41' } : undefined}
             className={`rounded-lg px-3 py-2 font-body text-xs transition-colors ${
               mode === 'register'
-                ? 'bg-primary text-background'
+                ? 'text-white'
                 : 'text-primary/60 hover:text-primary'
             }`}
           >
@@ -170,7 +172,8 @@ export default function CheckoutAuthPanel({ defaultEmail = '' }) {
           <button
             type="submit"
             disabled={submitting}
-            className={`rounded-xl bg-primary py-3.5 font-heading text-sm font-bold text-background transition-opacity ${
+            style={{ backgroundColor: '#196b41' }}
+            className={`rounded-xl py-3.5 font-heading text-sm font-bold text-white transition-opacity ${
               submitting ? 'cursor-not-allowed opacity-50' : 'hover:opacity-90'
             }`}
           >
@@ -216,7 +219,8 @@ export default function CheckoutAuthPanel({ defaultEmail = '' }) {
           <button
             type="submit"
             disabled={submitting}
-            className={`rounded-xl bg-primary py-3.5 font-heading text-sm font-bold text-background transition-opacity ${
+            style={{ backgroundColor: '#196b41' }}
+            className={`rounded-xl py-3.5 font-heading text-sm font-bold text-white transition-opacity ${
               submitting ? 'cursor-not-allowed opacity-50' : 'hover:opacity-90'
             }`}
           >
