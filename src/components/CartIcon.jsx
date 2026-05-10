@@ -2,7 +2,7 @@ import React from 'react';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 
-export default function CartIcon({ isLight = false }) {
+export default function CartIcon() {
   const { itemCount, setDrawerOpen } = useCart();
 
   return (
@@ -10,9 +10,7 @@ export default function CartIcon({ isLight = false }) {
       type="button"
       onClick={() => setDrawerOpen(true)}
       aria-label={`Carrito — ${itemCount} ${itemCount === 1 ? 'artículo' : 'artículos'}`}
-      className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-colors duration-150 focus:outline-none ${
-        isLight ? 'text-background hover:text-white' : 'text-primary hover:text-accent'
-      }`}
+      className="relative flex items-center justify-center w-10 h-10 rounded-xl text-primary focus:outline-none"
     >
       <ShoppingBag size={22} strokeWidth={1.75} />
 

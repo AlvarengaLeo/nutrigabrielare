@@ -50,7 +50,7 @@ export default function Navbar() {
 
       {/* Right Actions */}
       <div className="hidden md:flex items-center justify-end md:flex-1 gap-6">
-        <CartIcon isLight={!scrolled && location.pathname === '/'} />
+        <CartIcon />
         <a 
           href="https://wa.me/50376284719" 
           target="_blank" 
