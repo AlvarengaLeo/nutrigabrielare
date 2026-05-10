@@ -5,9 +5,9 @@ import { useHomeContent } from '../context/HomeContentContext';
 
 export default function Hero() {
   const containerRef = useRef(null);
-  const { content } = useHomeContent();
+  const { content, loading } = useHomeContent();
   const d = content.hero;
-  
+
   useEffect(() => {
     let ctx = gsap.context(() => {
       gsap.from('.hero-element', {
@@ -18,18 +18,7 @@ export default function Hero() {
         ease: 'power3.out',
         delay: 0.2
       });
-      
-      // Premium cinematic entrance for the model
-      gsap.from('.hero-image', {
-        x: 100,
-        scale: 1.05,
-        opacity: 0,
-        duration: 2,
-        ease: 'expo.out',
-        delay: 0.6,
-        clearProps: 'transform,scale'
-      });
-      
+
       // Floating animation for decorative leaves
       gsap.to('.floating-leaf', {
         y: -20,
@@ -39,7 +28,7 @@ export default function Hero() {
         yoyo: true,
         ease: "sine.inOut"
       });
-      
+
       gsap.to('.floating-leaf-alt', {
         y: 15,
         rotate: -10,
@@ -51,9 +40,26 @@ export default function Hero() {
       });
 
     }, containerRef);
-    
+
     return () => ctx.revert();
   }, []);
+
+  // Premium cinematic entrance for the model — runs once the image element is mounted
+  useEffect(() => {
+    if (loading) return;
+    let ctx = gsap.context(() => {
+      gsap.from('.hero-image', {
+        x: 100,
+        scale: 1.05,
+        opacity: 0,
+        duration: 2,
+        ease: 'expo.out',
+        delay: 0.2,
+        clearProps: 'transform,scale'
+      });
+    }, containerRef);
+    return () => ctx.revert();
+  }, [loading]);
 
   const handleCtaClick = (e, href) => {
     if (href?.startsWith('#')) {
@@ -126,18 +132,22 @@ export default function Hero() {
       </div>
 
       {/* Main Image Layering */}
-      <div className="hidden lg:flex absolute bottom-0 right-0 lg:w-[45%] lg:h-[85%] pointer-events-auto z-20 justify-end items-end lg:pr-24 xl:pr-48">
-        <div className="model-wrapper relative w-full h-full flex justify-end items-end origin-bottom">
-          <img 
-            src={d.heroImage || '/media/hero_model.png'}
-            alt="Gabriela Retana" 
-            onError={(e) => {
-              e.target.src = '/media/model_placeholder.png';
-            }}
-            className="hero-image h-full w-auto object-contain object-bottom drop-shadow-2xl hover:scale-[1.03] hover:-rotate-1 transition-transform duration-1000 ease-out cursor-pointer origin-bottom" 
-          />
+      {!loading && (
+        <div className="hidden lg:flex absolute bottom-0 right-0 lg:w-[45%] lg:h-[85%] pointer-events-none z-20 justify-end items-end lg:pr-24 xl:pr-48">
+          <div className="model-wrapper relative w-full h-full flex justify-end items-end origin-bottom">
+            <img
+              src={d.heroImage || '/media/hero_model.png'}
+              alt="Gabriela Retana"
+              fetchpriority="high"
+              decoding="async"
+              onError={(e) => {
+                e.target.src = '/media/model_placeholder.png';
+              }}
+              className="hero-image h-full w-auto object-contain object-bottom drop-shadow-2xl origin-bottom"
+            />
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }
