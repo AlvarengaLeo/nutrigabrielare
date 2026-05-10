@@ -10,8 +10,8 @@ export default function HomePage() {
     <HomeContentProvider>
       <Hero />
       <Philosophy />
-      <WhyChooseUs />
       <Featured />
+      <WhyChooseUs />
     </HomeContentProvider>
   );
 }
