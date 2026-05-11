@@ -4,6 +4,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowUpRight } from 'lucide-react';
 import { getLatestPosts } from '../services/blogService';
+import DigitalResources from '../components/DigitalResources';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -487,6 +488,16 @@ export default function FluirFemeninoPage() {
           </div>
         </section>
       )}
+
+      {/* ─── RECURSOS DIGITALES (ebooks/cursos/guías) ─── */}
+      <DigitalResources
+        eyebrow="· Para profundizar ·"
+        titleLine1="Lo que la lectura"
+        titleLine2="no alcanza a cubrir."
+        subtitle="Ebooks, cursos y guías diseñados por Gabriela para acompañarte más allá del artículo."
+        limit={4}
+        bg="cream"
+      />
 
       {/* ─── FINAL CTA ─── */}
       <section className="relative py-16 sm:py-24 md:py-32 bg-white overflow-hidden">
