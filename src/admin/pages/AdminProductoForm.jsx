@@ -44,6 +44,7 @@ export default function AdminProductoForm() {
   const [stock, setStock] = useState('0');
   const [images, setImages] = useState([]);
   const [digitalFilePath, setDigitalFilePath] = useState(null);
+  const [digitalSubtype, setDigitalSubtype] = useState('');
   const [digitalUploading, setDigitalUploading] = useState(false);
   // Pending files for new products (not yet saved to DB)
   const [pendingFiles, setPendingFiles] = useState([]);
@@ -59,7 +60,7 @@ export default function AdminProductoForm() {
             .from('products')
             .select(`
               id, slug, name, category_id, kind, price, description, description_long,
-              active, featured, featured_order, digital_file_path,
+              active, featured, featured_order, digital_file_path, digital_subtype,
               product_images ( id, url, sort_order ),
               product_variants ( id, size, color_name, color_hex, stock, active )
             `)
@@ -79,6 +80,7 @@ export default function AdminProductoForm() {
           setFeatured(product.featured);
           setFeaturedOrder(String(product.featured_order ?? 0));
           setDigitalFilePath(product.digital_file_path ?? null);
+          setDigitalSubtype(product.digital_subtype ?? '');
 
           // Calculate total stock from variants
           const totalStock = (product.product_variants ?? [])
@@ -128,6 +130,7 @@ export default function AdminProductoForm() {
           name, slug, categoryId, kind, price: parseFloat(price),
           description, descriptionLong, active, featured,
           featuredOrder: parseInt(featuredOrder) || 0,
+          digitalSubtype: kind === 'digital' ? (digitalSubtype || null) : null,
         });
 
         // Update stock: find existing default variant or create one
@@ -160,6 +163,7 @@ export default function AdminProductoForm() {
           name, slug, categoryId, kind, price: parseFloat(price),
           description, descriptionLong, active, featured,
           featuredOrder: parseInt(featuredOrder) || 0,
+          digitalSubtype: kind === 'digital' ? (digitalSubtype || null) : null,
         });
 
         // Create a default variant with stock
@@ -331,10 +335,34 @@ export default function AdminProductoForm() {
             )}
           </div>
 
-          {/* Digital file (only for kind=digital) */}
+          {/* Digital subtype + file (only for kind=digital) */}
           {kind === 'digital' && (
             <div className="form-el">
-              <h3 className="font-heading font-bold text-lg text-primary mb-3">Archivo digital</h3>
+              <h3 className="font-heading font-bold text-lg text-primary mb-3">Producto digital</h3>
+
+              <div className="mb-5">
+                <label className="block font-heading font-semibold text-sm text-primary mb-1.5">
+                  Tipo de recurso
+                </label>
+                <select
+                  value={digitalSubtype}
+                  onChange={(e) => setDigitalSubtype(e.target.value)}
+                  className="w-full px-4 py-2.5 border border-primary/10 rounded-xl font-body text-sm focus:outline-none focus:border-accent/50"
+                >
+                  <option value="">— Sin especificar —</option>
+                  <option value="ebook">Ebook</option>
+                  <option value="curso">Curso</option>
+                  <option value="guia">Guía descargable</option>
+                  <option value="evento_grabado">Evento grabado</option>
+                  <option value="programa">Programa digital</option>
+                  <option value="contenido">Contenido educativo</option>
+                </select>
+                <p className="font-body text-xs text-primary/40 mt-1.5">
+                  Aparece como etiqueta en la card del producto y permite filtrar en /pleno/digitales.
+                </p>
+              </div>
+
+              <h4 className="font-heading font-bold text-sm text-primary mb-3">Archivo descargable</h4>
               {!isEdit ? (
                 <div className="rounded-2xl border border-dashed border-primary/20 p-6 text-center">
                   <p className="font-body text-sm text-primary/50">

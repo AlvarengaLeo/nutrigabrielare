@@ -47,6 +47,7 @@ const AdminOrdenDetalle = React.lazy(() => import('./admin/pages/AdminOrdenDetal
 const AdminReservas = React.lazy(() => import('./admin/pages/AdminReservas'));
 const AdminEnvios = React.lazy(() => import('./admin/pages/AdminEnvios'));
 const AdminUsuarios = React.lazy(() => import('./admin/pages/AdminUsuarios'));
+const AdminEmails = React.lazy(() => import('./admin/pages/AdminEmails'));
 const AdminHomePage = React.lazy(() => import('./admin/pages/AdminHomePage'));
 const AdminBlog = React.lazy(() => import('./admin/pages/AdminBlog'));
 const AdminBlogForm = React.lazy(() => import('./admin/pages/AdminBlogForm'));
@@ -140,6 +141,7 @@ function AppContent() {
           <Route path="/admin/reservas" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','gestor']}><AdminReservas /></AdminRoute></Suspense>} />
           <Route path="/admin/envios" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','gestor']}><AdminEnvios /></AdminRoute></Suspense>} />
           <Route path="/admin/usuarios" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin']}><AdminUsuarios /></AdminRoute></Suspense>} />
+          <Route path="/admin/emails" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin']}><AdminEmails /></AdminRoute></Suspense>} />
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>

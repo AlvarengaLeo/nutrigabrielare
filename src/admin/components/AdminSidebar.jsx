@@ -16,6 +16,7 @@ import {
   X,
   Home,
   BookOpen,
+  Mail,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -28,6 +29,7 @@ const allItems = [
   { icon: ShoppingBag,     label: 'Órdenes',           path: '/admin/ordenes',        roles: ['admin', 'gestor'] },
   { icon: Calendar,        label: 'Reservas',          path: '/admin/reservas',       roles: ['admin', 'gestor'] },
   { icon: Truck,           label: 'Envíos',            path: '/admin/envios',         roles: ['admin', 'gestor'] },
+  { icon: Mail,            label: 'Email Logs',        path: '/admin/emails',         roles: ['admin'] },
   { icon: Users,           label: 'Usuarios',          path: '/admin/usuarios',       roles: ['admin'] },
 ];
 

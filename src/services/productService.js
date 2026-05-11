@@ -2,7 +2,7 @@ import { supabase } from '../lib/supabase.js';
 
 const PRODUCT_SELECT = `
   id, slug, name, category_id, kind, price, description, description_long,
-  active, featured, featured_order, digital_file_path,
+  active, featured, featured_order, digital_file_path, digital_subtype,
   product_images ( url, sort_order ),
   product_variants ( size, color_name, color_hex, stock, active )
 `.trim();
@@ -17,6 +17,15 @@ export const SLUG_TO_KIND = {
   digitales: 'digital',
   suplementos: 'physical',
   servicios: 'service',
+};
+
+export const DIGITAL_SUBTYPES = {
+  ebook: 'Ebook',
+  curso: 'Curso',
+  guia: 'Guía',
+  evento_grabado: 'Evento grabado',
+  programa: 'Programa',
+  contenido: 'Contenido',
 };
 
 /**
@@ -75,6 +84,7 @@ function transformProduct(row) {
     featured: row.featured,
     featuredOrder: row.featured_order ?? 0,
     digitalFilePath: row.digital_file_path ?? null,
+    digitalSubtype: row.digital_subtype ?? null,
     images,
     variants: {
       sizes,
@@ -253,6 +263,7 @@ export async function createProduct({
   featured = false,
   featuredOrder = 0,
   digitalFilePath = null,
+  digitalSubtype = null,
 }) {
   const { data, error } = await supabase
     .from('products')
@@ -269,6 +280,7 @@ export async function createProduct({
       featured,
       featured_order: featuredOrder,
       digital_file_path: digitalFilePath,
+      digital_subtype: digitalSubtype,
     })
     .select()
     .single();
@@ -293,6 +305,7 @@ export async function updateProduct(id, updates) {
   if (updates.kind !== undefined) row.kind = updates.kind;
   if (updates.featuredOrder !== undefined) row.featured_order = updates.featuredOrder;
   if (updates.digitalFilePath !== undefined) row.digital_file_path = updates.digitalFilePath;
+  if (updates.digitalSubtype !== undefined) row.digital_subtype = updates.digitalSubtype;
 
   const { data, error } = await supabase
     .from('products')

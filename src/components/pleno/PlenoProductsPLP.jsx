@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { Minus, Plus, Check, ChevronDown, SlidersHorizontal, X } from 'lucide-react';
-import { getProductsByKind } from '../../services/productService';
+import { getProductsByKind, DIGITAL_SUBTYPES } from '../../services/productService';
 import ProductCard from '../ProductCard';
 
 const SORT_OPTIONS = [
@@ -157,6 +157,7 @@ export default function PlenoProductsPLP({
   const [sort, setSort] = useState('recommended');
   const [priceFilters, setPriceFilters] = useState([]);
   const [featuredOnly, setFeaturedOnly] = useState(false);
+  const [subtypeFilters, setSubtypeFilters] = useState([]);
 
   useEffect(() => {
     if (!kind) return;
@@ -178,10 +179,23 @@ export default function PlenoProductsPLP({
     };
   }, [kind]);
 
+  const availableSubtypes = useMemo(() => {
+    if (kind !== 'digital') return [];
+    const present = new Set();
+    for (const p of products) {
+      if (p.digitalSubtype) present.add(p.digitalSubtype);
+    }
+    return Object.entries(DIGITAL_SUBTYPES).filter(([id]) => present.has(id));
+  }, [products, kind]);
+
   const filteredProducts = useMemo(() => {
     let list = [...products];
 
     if (featuredOnly) list = list.filter((p) => p.featured);
+
+    if (subtypeFilters.length) {
+      list = list.filter((p) => p.digitalSubtype && subtypeFilters.includes(p.digitalSubtype));
+    }
 
     if (priceFilters.length) {
       list = list.filter((p) =>
@@ -204,7 +218,7 @@ export default function PlenoProductsPLP({
     }
 
     return list;
-  }, [products, sort, priceFilters, featuredOnly]);
+  }, [products, sort, priceFilters, featuredOnly, subtypeFilters]);
 
   useEffect(() => {
     if (loading || filteredProducts.length === 0) return;
@@ -221,8 +235,14 @@ export default function PlenoProductsPLP({
     );
   };
 
+  const toggleSubtypeFilter = (id) => {
+    setSubtypeFilters((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const activeFilterCount = priceFilters.length + (featuredOnly ? 1 : 0);
+  const activeFilterCount = priceFilters.length + subtypeFilters.length + (featuredOnly ? 1 : 0);
 
   // Lock body scroll while the mobile drawer is open
   useEffect(() => {
@@ -256,6 +276,20 @@ export default function PlenoProductsPLP({
         </CheckboxLabel>
       </FilterGroup>
 
+      {availableSubtypes.length > 0 && (
+        <FilterGroup title="Tipo de recurso">
+          {availableSubtypes.map(([id, label]) => (
+            <CheckboxLabel
+              key={id}
+              checked={subtypeFilters.includes(id)}
+              onChange={() => toggleSubtypeFilter(id)}
+            >
+              {label}
+            </CheckboxLabel>
+          ))}
+        </FilterGroup>
+      )}
+
       <FilterGroup title="Precio">
         {PRICE_BUCKETS.map((b) => (
           <CheckboxLabel
@@ -268,10 +302,11 @@ export default function PlenoProductsPLP({
         ))}
       </FilterGroup>
 
-      {(featuredOnly || priceFilters.length > 0 || sort !== 'recommended') && (
+      {(featuredOnly || priceFilters.length > 0 || subtypeFilters.length > 0 || sort !== 'recommended') && (
         <button
           onClick={() => {
             setPriceFilters([]);
+            setSubtypeFilters([]);
             setFeaturedOnly(false);
             setSort('recommended');
           }}

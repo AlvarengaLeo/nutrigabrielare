@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { DIGITAL_SUBTYPES } from '../services/productService';
 
 const KIND_LABEL = {
   physical: 'Suplemento',
@@ -26,11 +27,13 @@ export default function ProductCard({ product }) {
     featured = false,
     variants,
     images,
+    digitalSubtype = null,
   } = product;
 
   const swatchColor = variants?.colors?.[0]?.hex ?? '#1c3328';
   const hasImage = images && images.length > 0;
-  const kindLabel = KIND_LABEL[kind];
+  const subtypeLabel = digitalSubtype ? DIGITAL_SUBTYPES[digitalSubtype] : null;
+  const kindLabel = subtypeLabel || KIND_LABEL[kind];
   const ctaLabel = CTA_LABEL[kind] ?? 'Comprar';
   const showQuote = kind === 'service' && price === 0;
   const dotCount = Math.min(images?.length ?? 0, 3);
