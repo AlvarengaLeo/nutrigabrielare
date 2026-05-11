@@ -6,7 +6,7 @@ import CartIcon from './CartIcon';
 const navItems = [
   { label: 'Inicio', path: '/' },
   { label: 'Pleno', path: '/pleno' },
-  { label: 'Nutrición con Alma', path: '/nutricion-con-alma' },
+  { label: 'Fluir Femenino', path: '/fluir-femenino' },
 ];
 
 const PLENO_NAV_BG = '#16693d';

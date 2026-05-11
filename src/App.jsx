@@ -1,5 +1,7 @@
 import React, { Suspense, useEffect } from 'react';
 import { Navigate, Routes, Route, useLocation } from 'react-router-dom';
+import { HelmetProvider } from 'react-helmet-async';
+import { Analytics } from '@vercel/analytics/react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ConfigurationErrorScreen from './components/ConfigurationErrorScreen';
@@ -17,9 +19,10 @@ import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import PlenoLandingPage from './pages/PlenoLandingPage';
 import PlenoCategoryPage from './pages/PlenoCategoryPage';
-import NutricionConAlmaPage from './pages/NutricionConAlmaPage';
 import ContactanosPage from './pages/ContactanosPage';
 import FluirFemeninoPage from './pages/FluirFemeninoPage';
+const FluirFemeninoArchivePage = React.lazy(() => import('./pages/FluirFemeninoArchivePage'));
+const FluirFemeninoPostPage = React.lazy(() => import('./pages/FluirFemeninoPostPage'));
 import ProductoPage from './pages/ProductoPage';
 import ReservarPage from './pages/ReservarPage';
 import CarritoPage from './pages/CarritoPage';
@@ -45,12 +48,22 @@ const AdminReservas = React.lazy(() => import('./admin/pages/AdminReservas'));
 const AdminEnvios = React.lazy(() => import('./admin/pages/AdminEnvios'));
 const AdminUsuarios = React.lazy(() => import('./admin/pages/AdminUsuarios'));
 const AdminHomePage = React.lazy(() => import('./admin/pages/AdminHomePage'));
+const AdminBlog = React.lazy(() => import('./admin/pages/AdminBlog'));
+const AdminBlogForm = React.lazy(() => import('./admin/pages/AdminBlogForm'));
 const AdminRoute = React.lazy(() => import('./admin/components/AdminRoute'));
 
 function AdminSpinner() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="w-8 h-8 border-2 border-primary/20 border-t-accent rounded-full animate-spin" />
+    </div>
+  );
+}
+
+function PageSpinner() {
+  return (
+    <div className="min-h-screen bg-fluir-mist flex items-center justify-center">
+      <div className="w-8 h-8 border-2 border-fluir-magenta/20 border-t-fluir-magenta rounded-full animate-spin" />
     </div>
   );
 }
@@ -92,19 +105,12 @@ function AppContent() {
           <Route path="/pleno/:kindSlug" element={<PlenoCategoryPage />} />
           <Route path="/tienda" element={<Navigate to="/pleno" replace />} />
           <Route path="/tienda/*" element={<Navigate to="/pleno" replace />} />
-          <Route
-            path="/donacion"
-            element={<Navigate to="/nutricion-con-alma" replace />}
-          />
-          <Route
-            path="/proyecto-banquita"
-            element={<Navigate to="/nutricion-con-alma" replace />}
-          />
-          <Route
-            path="/nutricion-con-alma"
-            element={<NutricionConAlmaPage />}
-          />
+          <Route path="/donacion" element={<Navigate to="/fluir-femenino" replace />} />
+          <Route path="/proyecto-banquita" element={<Navigate to="/fluir-femenino" replace />} />
+          <Route path="/nutricion-con-alma" element={<Navigate to="/fluir-femenino" replace />} />
           <Route path="/fluir-femenino" element={<FluirFemeninoPage />} />
+          <Route path="/fluir-femenino/articulos" element={<Suspense fallback={<PageSpinner />}><FluirFemeninoArchivePage /></Suspense>} />
+          <Route path="/fluir-femenino/articulos/:slug" element={<Suspense fallback={<PageSpinner />}><FluirFemeninoPostPage /></Suspense>} />
           <Route path="/comunidad" element={<Navigate to="/fluir-femenino" replace />} />
           <Route path="/contactanos" element={<ContactanosPage />} />
           <Route path="/producto/:slug" element={<ProductoPage />} />
@@ -122,6 +128,9 @@ function AppContent() {
           <Route path="/admin/login" element={<Suspense fallback={<AdminSpinner />}><AdminLoginPage /></Suspense>} />
           <Route path="/admin" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','editor','gestor']}><AdminDashboard /></AdminRoute></Suspense>} />
           <Route path="/admin/home" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','editor']}><AdminHomePage /></AdminRoute></Suspense>} />
+          <Route path="/admin/fluir-femenino" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','editor']}><AdminBlog /></AdminRoute></Suspense>} />
+          <Route path="/admin/fluir-femenino/nuevo" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','editor']}><AdminBlogForm /></AdminRoute></Suspense>} />
+          <Route path="/admin/fluir-femenino/:id" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','editor']}><AdminBlogForm /></AdminRoute></Suspense>} />
           <Route path="/admin/productos" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','editor']}><AdminProductos /></AdminRoute></Suspense>} />
           <Route path="/admin/productos/nuevo" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','editor']}><AdminProductoForm /></AdminRoute></Suspense>} />
           <Route path="/admin/productos/:id" element={<Suspense fallback={<AdminSpinner />}><AdminRoute allowedRoles={['admin','editor']}><AdminProductoForm /></AdminRoute></Suspense>} />
@@ -149,10 +158,13 @@ export default function App() {
   }
 
   return (
-    <AuthProvider>
-      <CartProvider>
-        <AppContent />
-      </CartProvider>
-    </AuthProvider>
+    <HelmetProvider>
+      <AuthProvider>
+        <CartProvider>
+          <AppContent />
+          <Analytics />
+        </CartProvider>
+      </AuthProvider>
+    </HelmetProvider>
   );
 }

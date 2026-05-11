@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useAuth } from '../context/AuthContext';
 import { getOrdersByUser } from '../services/orderService';
 import { getReservationsByUser } from '../services/reservationService';
+import { getUserDigitalLibrary, refreshDownloadUrl } from '../services/libraryService';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -38,7 +39,10 @@ export default function CuentaPage() {
   const containerRef = useRef(null);
   const [orders, setOrders] = useState([]);
   const [reservations, setReservations] = useState([]);
+  const [library, setLibrary] = useState([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
+  const [refreshingProductId, setRefreshingProductId] = useState(null);
+  const [downloadError, setDownloadError] = useState(null);
 
   useEffect(() => {
     if (!user) return;
@@ -46,13 +50,29 @@ export default function CuentaPage() {
     Promise.all([
       getOrdersByUser(user.id).catch(() => []),
       getReservationsByUser(user.id).catch(() => []),
+      getUserDigitalLibrary(user.id).catch(() => []),
     ])
-      .then(([ordersData, reservationsData]) => {
+      .then(([ordersData, reservationsData, libraryData]) => {
         setOrders(ordersData);
         setReservations(reservationsData);
+        setLibrary(libraryData);
       })
       .finally(() => setLoadingOrders(false));
   }, [user]);
+
+  async function handleRedownload(productId) {
+    setDownloadError(null);
+    setRefreshingProductId(productId);
+    try {
+      const { url } = await refreshDownloadUrl(productId);
+      // Trigger download / open
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } catch (err) {
+      setDownloadError(err?.message || 'No se pudo descargar el producto');
+    } finally {
+      setRefreshingProductId(null);
+    }
+  }
 
   useEffect(() => {
     if (loadingOrders) return;
@@ -111,7 +131,7 @@ export default function CuentaPage() {
 
         {/* Orders section */}
         <div className="orders-section">
-          {orders.length === 0 && reservations.length === 0 ? (
+          {orders.length === 0 && reservations.length === 0 && library.length === 0 ? (
             <div className="text-center py-20">
               <h2 className="font-heading font-bold text-xl text-primary mb-2">
                 Aún no tenés actividad
@@ -129,6 +149,53 @@ export default function CuentaPage() {
             </div>
           ) : (
             <>
+              {library.length > 0 && (
+                <div className="mb-12">
+                  <h2 className="font-heading font-bold text-lg text-primary mb-4">
+                    Mi biblioteca
+                  </h2>
+                  {downloadError && (
+                    <div className="mb-4 px-4 py-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm font-body">
+                      {downloadError}
+                    </div>
+                  )}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {library.map((item) => {
+                      const isRefreshing = refreshingProductId === item.productId;
+                      return (
+                        <div
+                          key={item.productId}
+                          className="order-card bg-white rounded-2xl p-5 flex items-center gap-4"
+                        >
+                          <div className="w-14 h-14 rounded-xl bg-primary/10 flex-shrink-0 overflow-hidden">
+                            {item.cover ? (
+                              <img src={item.cover} alt="" className="w-full h-full object-cover" />
+                            ) : null}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-heading font-bold text-sm text-primary truncate">
+                              {item.name}
+                            </p>
+                            <p className="text-xs text-primary/40 font-body mt-0.5">
+                              Comprado el {formatDate(item.purchasedAt)}
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => handleRedownload(item.productId)}
+                              disabled={isRefreshing}
+                              style={{ backgroundColor: '#196b41' }}
+                              className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-white font-heading font-bold text-xs hover:opacity-90 transition-opacity disabled:opacity-60"
+                            >
+                              {isRefreshing ? 'Generando enlace…' : 'Descargar'}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {orders.length > 0 && (
                 <>
                   <h2 className="font-heading font-bold text-lg text-primary mb-4">
