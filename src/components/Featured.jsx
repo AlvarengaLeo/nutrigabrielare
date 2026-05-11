@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { getFeaturedProducts } from '../services/productService';
 import ProductCarousel from './ProductCarousel';
+import { useHomeContent } from '../context/HomeContentContext';
 
 export default function Featured() {
+  const { content } = useHomeContent();
+  const cfg = content.featured;
+  const limit = Number.isFinite(cfg?.productLimit) ? cfg.productLimit : 5;
+
   const [products, setProducts] = useState([]);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    getFeaturedProducts(5)
+    getFeaturedProducts(limit)
       .then((rows) => {
         if (!cancelled) setProducts(rows);
       })
@@ -22,19 +27,18 @@ export default function Featured() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [limit]);
 
-  // Hide section entirely if nothing to show after load
   if (loaded && products.length === 0) return null;
 
   return (
     <ProductCarousel
       id="destacados"
-      titleLine1="Pleno"
-      titleLine2="Market."
+      titleLine1={cfg.titleLine1}
+      titleLine2={cfg.titleLine2}
       products={products}
-      ctaLabel="Ver todo"
-      ctaTo="/pleno"
+      ctaLabel={cfg.ctaLabel}
+      ctaTo={cfg.ctaTo}
     />
   );
 }

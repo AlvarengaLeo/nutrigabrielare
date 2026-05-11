@@ -135,6 +135,20 @@ export default async function handler(req, res) {
     `Webhook: Payment ${payment.id} -> ${newPaymentStatus}, Order ${orderId} -> ${newOrderStatus}`
   );
 
+  // Decrement stock for physical items — never block the webhook on this.
+  if (isApproved) {
+    try {
+      const { error: stockErr } = await supabase.rpc('decrement_order_stock', {
+        p_order_id: orderId,
+      });
+      if (stockErr) {
+        console.error('decrement_order_stock RPC failed (non-blocking):', stockErr);
+      }
+    } catch (err) {
+      console.error('decrement_order_stock threw (non-blocking):', err);
+    }
+  }
+
   // Notify customer — never block the webhook on email delivery.
   if (isApproved) {
     try {

@@ -4,12 +4,12 @@ import { Link } from 'react-router-dom';
 const navItems = [
   { label: 'Inicio', path: '/' },
   { label: 'Pleno', path: '/pleno' },
-  { label: 'Nutrición con Alma', path: '/nutricion-con-alma' },
+  { label: 'Fluir Femenino', path: '/fluir-femenino' },
 ];
 
 const communityLinks = [
   { name: 'Instagram', url: 'https://www.instagram.com/nutrigabrielare/' },
-  { name: 'Fluir Femenino', url: '/fluir-femenino' },
+  { name: 'Diario de Fluir', url: '/fluir-femenino/articulos' },
   { name: 'Términos y Condiciones', url: '#' },
 ];
 

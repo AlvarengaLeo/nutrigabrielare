@@ -11,6 +11,7 @@
 // ────────────────────────────────────────────────────────────────
 
 import { Resend } from 'resend';
+import { createClient } from '@supabase/supabase-js';
 
 const BRAND = {
   name: 'Nutrigabriela',
@@ -24,6 +25,7 @@ const BRAND = {
 };
 
 let cachedClient = null;
+let cachedLogsClient = null;
 
 function getResendClient() {
   if (cachedClient) return cachedClient;
@@ -34,6 +36,48 @@ function getResendClient() {
   }
   cachedClient = new Resend(apiKey);
   return cachedClient;
+}
+
+function getLogsClient() {
+  if (cachedLogsClient) return cachedLogsClient;
+  const url = process.env.SUPABASE_URL?.trim();
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+  if (!url || !key) return null;
+  cachedLogsClient = createClient(url, key, {
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+  return cachedLogsClient;
+}
+
+async function recordEmailLog({
+  template,
+  recipientEmail,
+  status,
+  errorMessage = null,
+  providerMessageId = null,
+  relatedOrderId = null,
+  relatedUserId = null,
+}) {
+  try {
+    const supabase = getLogsClient();
+    if (!supabase) return;
+    const { error } = await supabase.from('email_logs').insert({
+      provider: 'resend',
+      template,
+      recipient_email: recipientEmail,
+      status,
+      error_message: errorMessage ? String(errorMessage).slice(0, 1000) : null,
+      provider_message_id: providerMessageId,
+      related_order_id: relatedOrderId,
+      related_user_id: relatedUserId,
+    });
+    if (error) {
+      // Never let a logging failure escape — just emit a console warning.
+      console.warn('[email] log insert failed (non-blocking):', error.message);
+    }
+  } catch (err) {
+    console.warn('[email] log insert threw (non-blocking):', err);
+  }
 }
 
 function resolveFrom() {
@@ -283,11 +327,34 @@ export function reservationConfirmationTemplate({ reservation, service, customer
 
 // ─── Senders ──────────────────────────────────────────────────
 
-async function send({ to, subject, html }) {
+async function send({ to, subject, html, meta }) {
+  const template = meta?.template ?? 'unknown';
+  const relatedOrderId = meta?.relatedOrderId ?? null;
+  const relatedUserId = meta?.relatedUserId ?? null;
+  const recipientForLog = to ?? '(missing)';
+
   const client = getResendClient();
-  if (!client) return { skipped: true };
+  if (!client) {
+    await recordEmailLog({
+      template,
+      recipientEmail: recipientForLog,
+      status: 'skipped',
+      errorMessage: 'RESEND_API_KEY not set',
+      relatedOrderId,
+      relatedUserId,
+    });
+    return { skipped: true };
+  }
   if (!to) {
     console.warn('[email] missing "to" address; skipping');
+    await recordEmailLog({
+      template,
+      recipientEmail: recipientForLog,
+      status: 'skipped',
+      errorMessage: 'Missing recipient address',
+      relatedOrderId,
+      relatedUserId,
+    });
     return { skipped: true };
   }
 
@@ -301,11 +368,35 @@ async function send({ to, subject, html }) {
     });
     if (result.error) {
       console.error('[email] send failed:', result.error);
+      await recordEmailLog({
+        template,
+        recipientEmail: to,
+        status: 'failed',
+        errorMessage: result.error?.message || JSON.stringify(result.error),
+        relatedOrderId,
+        relatedUserId,
+      });
       return { error: result.error };
     }
+    await recordEmailLog({
+      template,
+      recipientEmail: to,
+      status: 'sent',
+      providerMessageId: result.data?.id ?? null,
+      relatedOrderId,
+      relatedUserId,
+    });
     return { id: result.data?.id };
   } catch (err) {
     console.error('[email] send threw:', err);
+    await recordEmailLog({
+      template,
+      recipientEmail: to,
+      status: 'failed',
+      errorMessage: err?.message || String(err),
+      relatedOrderId,
+      relatedUserId,
+    });
     return { error: err };
   }
 }
@@ -315,6 +406,11 @@ export function sendPurchaseConfirmationEmail({ order, items, customer }) {
     to: order.contact_email || customer?.email,
     subject: `Confirmamos tu pedido ${order.id}`,
     html: purchasePhysicalTemplate({ order, items, customer }),
+    meta: {
+      template: 'purchase_confirm',
+      relatedOrderId: order.id,
+      relatedUserId: order.user_id ?? null,
+    },
   });
 }
 
@@ -323,6 +419,11 @@ export function sendDigitalDownloadEmail({ order, items, customer, downloadLinks
     to: order.contact_email || customer?.email,
     subject: `Tus descargas están listas — ${order.id}`,
     html: purchaseDigitalTemplate({ order, items, customer, downloadLinks }),
+    meta: {
+      template: 'digital_download',
+      relatedOrderId: order.id,
+      relatedUserId: order.user_id ?? null,
+    },
   });
 }
 
@@ -331,5 +432,10 @@ export function sendReservationConfirmationEmail({ reservation, service, custome
     to: reservation.contact_email || customer?.email,
     subject: `Recibimos tu reserva: ${service?.name ?? 'consulta'}`,
     html: reservationConfirmationTemplate({ reservation, service, customer }),
+    meta: {
+      template: 'reservation_confirm',
+      relatedOrderId: null,
+      relatedUserId: reservation.user_id ?? null,
+    },
   });
 }

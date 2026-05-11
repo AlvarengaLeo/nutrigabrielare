@@ -54,6 +54,13 @@ export const DEFAULT_HOME = {
     ],
     plateImage: '/media/healthy_plate.png',
   },
+  featured: {
+    titleLine1: 'Pleno',
+    titleLine2: 'Market.',
+    ctaLabel: 'Ver todo',
+    ctaTo: '/pleno',
+    productLimit: 5,
+  },
 };
 
 // ─── Context ─────────────────────────────────────────────────────────────────
@@ -75,6 +82,7 @@ export function HomeContentProvider({ children }) {
             hero: { ...DEFAULT_HOME.hero, ...(data.hero || {}) },
             philosophy: { ...DEFAULT_HOME.philosophy, ...(data.philosophy || {}) },
             why_choose_us: { ...DEFAULT_HOME.why_choose_us, ...(data.why_choose_us || {}) },
+            featured: { ...DEFAULT_HOME.featured, ...(data.featured || {}) },
           });
         }
       })

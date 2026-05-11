@@ -15,18 +15,20 @@ import {
   Menu,
   X,
   Home,
+  BookOpen,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 const allItems = [
-  { icon: LayoutDashboard, label: 'Dashboard',        path: '/admin',            roles: ['admin', 'editor', 'gestor'] },
-  { icon: Home,            label: 'Página Principal',  path: '/admin/home',       roles: ['admin', 'editor'] },
-  { icon: Package,         label: 'Productos',         path: '/admin/productos',  roles: ['admin', 'editor'] },
-  { icon: Tags,            label: 'Categorías',        path: '/admin/categorias', roles: ['admin', 'editor'] },
-  { icon: ShoppingBag,     label: 'Órdenes',           path: '/admin/ordenes',    roles: ['admin', 'gestor'] },
-  { icon: Calendar,        label: 'Reservas',          path: '/admin/reservas',   roles: ['admin', 'gestor'] },
-  { icon: Truck,           label: 'Envíos',            path: '/admin/envios',     roles: ['admin', 'gestor'] },
-  { icon: Users,           label: 'Usuarios',          path: '/admin/usuarios',   roles: ['admin'] },
+  { icon: LayoutDashboard, label: 'Dashboard',        path: '/admin',                roles: ['admin', 'editor', 'gestor'] },
+  { icon: Home,            label: 'Página Principal',  path: '/admin/home',           roles: ['admin', 'editor'] },
+  { icon: BookOpen,        label: 'Fluir Femenino',    path: '/admin/fluir-femenino', roles: ['admin', 'editor'] },
+  { icon: Package,         label: 'Productos',         path: '/admin/productos',      roles: ['admin', 'editor'] },
+  { icon: Tags,            label: 'Categorías',        path: '/admin/categorias',     roles: ['admin', 'editor'] },
+  { icon: ShoppingBag,     label: 'Órdenes',           path: '/admin/ordenes',        roles: ['admin', 'gestor'] },
+  { icon: Calendar,        label: 'Reservas',          path: '/admin/reservas',       roles: ['admin', 'gestor'] },
+  { icon: Truck,           label: 'Envíos',            path: '/admin/envios',         roles: ['admin', 'gestor'] },
+  { icon: Users,           label: 'Usuarios',          path: '/admin/usuarios',       roles: ['admin'] },
 ];
 
 export default function AdminSidebar({ mobileOpen, onMobileClose }) {

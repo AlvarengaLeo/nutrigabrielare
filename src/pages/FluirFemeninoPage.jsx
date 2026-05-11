@@ -1,8 +1,20 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { ArrowUpRight } from 'lucide-react';
+import { getLatestPosts } from '../services/blogService';
 
 gsap.registerPlugin(ScrollTrigger);
+
+function formatPostDate(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleDateString('es-SV', {
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  });
+}
 
 const ASSETS = '/media/fluir-femenino';
 
@@ -58,6 +70,25 @@ const ICON_BG = {
 
 export default function FluirFemeninoPage() {
   const rootRef = useRef(null);
+  const [latestPosts, setLatestPosts] = useState([]);
+  const [postsLoaded, setPostsLoaded] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    getLatestPosts(3)
+      .then((rows) => {
+        if (!cancelled) setLatestPosts(rows);
+      })
+      .catch(() => {
+        if (!cancelled) setLatestPosts([]);
+      })
+      .finally(() => {
+        if (!cancelled) setPostsLoaded(true);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -393,6 +424,69 @@ export default function FluirFemeninoPage() {
           </div>
         </div>
       </section>
+
+      {/* ─── DIARIO (últimos posts del blog) ─── */}
+      {postsLoaded && latestPosts.length > 0 && (
+        <section className="relative py-16 sm:py-24 md:py-32 bg-white overflow-hidden">
+          <div className="container mx-auto px-5 sm:px-6 max-w-7xl">
+            <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 md:mb-14">
+              <div>
+                <span className="font-body text-[11px] sm:text-xs uppercase tracking-[0.28em] text-fluir-magenta inline-flex items-center gap-2">
+                  <Dot className="text-fluir-magenta" />
+                  Diario de Fluir
+                </span>
+                <h2 className="font-display font-light leading-tight text-4xl sm:text-5xl md:text-6xl mt-5 sm:mt-6">
+                  Lecturas <span className="italic text-fluir-magenta">recientes.</span>
+                </h2>
+              </div>
+              <Link
+                to="/fluir-femenino/articulos"
+                className="self-start md:self-end inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-fluir-ink text-white font-heading font-bold text-sm hover:bg-fluir-magenta transition-colors"
+              >
+                Ver todos los artículos
+                <ArrowUpRight className="w-4 h-4" />
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+              {latestPosts.map((post) => (
+                <Link
+                  key={post.id}
+                  to={`/fluir-femenino/articulos/${post.slug}`}
+                  className="group block bg-white rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden border border-fluir-ink/5 hover:border-fluir-magenta/30 transition-colors"
+                >
+                  <div className="aspect-[4/3] bg-fluir-mist relative overflow-hidden">
+                    {post.cover_image_url ? (
+                      <img
+                        src={post.cover_image_url}
+                        alt=""
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-fluir-rose/30" />
+                    )}
+                  </div>
+                  <div className="p-5 md:p-6">
+                    <div className="flex items-center gap-3 text-[11px] font-body uppercase tracking-[0.2em] text-fluir-magenta/80 mb-3">
+                      {post.reading_minutes ? <span>{post.reading_minutes} min</span> : null}
+                      {post.published_at && <span className="text-fluir-ink/40">{formatPostDate(post.published_at)}</span>}
+                    </div>
+                    <h3 className="font-display font-light text-xl md:text-2xl leading-tight text-fluir-ink group-hover:text-fluir-magenta transition-colors">
+                      {post.title}
+                    </h3>
+                    {post.excerpt && (
+                      <p className="font-body text-sm text-fluir-ink/65 mt-2 line-clamp-2">
+                        {post.excerpt}
+                      </p>
+                    )}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ─── FINAL CTA ─── */}
       <section className="relative py-16 sm:py-24 md:py-32 bg-white overflow-hidden">
