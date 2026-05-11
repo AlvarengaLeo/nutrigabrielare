@@ -1,10 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import gsap from 'gsap';
-import { Plus } from 'lucide-react';
+import { Plus, ChevronDown, ChevronRight, Tags, Image as ImageIcon } from 'lucide-react';
 import AdminLayout from '../components/AdminLayout';
-import DataTable from '../components/DataTable';
-import { getAllProductsAdmin, getCategories, deleteProduct } from '../../services/productService';
+import { DIGITAL_SUBTYPES, getAllProductsAdmin, getCategories, deleteProduct } from '../../services/productService';
+
+const KIND_LABEL = {
+  physical: 'Físico',
+  digital: 'Digital',
+  service: 'Servicio',
+};
 
 export default function AdminProductos() {
   const navigate = useNavigate();
@@ -12,8 +17,9 @@ export default function AdminProductos() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [search, setSearch] = useState('');
-  const [catFilter, setCatFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('active');
   const [loading, setLoading] = useState(true);
+  const [collapsedCats, setCollapsedCats] = useState({});
 
   useEffect(() => {
     Promise.all([getAllProductsAdmin(), getCategories()])
@@ -27,16 +33,46 @@ export default function AdminProductos() {
     const els = containerRef.current.querySelectorAll('.prod-el');
     gsap.set(els, { opacity: 1, y: 0 });
     const ctx = gsap.context(() => {
-      gsap.fromTo(els, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.08, ease: 'power3.out' });
+      gsap.fromTo(els, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 0.5, stagger: 0.05, ease: 'power3.out' });
     }, containerRef);
     return () => ctx.revert();
   }, [loading]);
 
-  const filtered = products.filter((p) => {
-    const matchesSearch = !search || p.name.toLowerCase().includes(search.toLowerCase());
-    const matchesCat = !catFilter || p.category === catFilter;
-    return matchesSearch && matchesCat;
-  });
+  // Group products by category, respecting category sort_order, with
+  // optional search + status filter.
+  const groupedProducts = useMemo(() => {
+    const term = search.trim().toLowerCase();
+    const filtered = products.filter((p) => {
+      if (statusFilter === 'active' && !p.active) return false;
+      if (statusFilter === 'inactive' && p.active) return false;
+      if (term && !p.name.toLowerCase().includes(term)) return false;
+      return true;
+    });
+
+    // Sort category order: respect categories array order (already sort_order)
+    const byCat = {};
+    for (const cat of categories) {
+      byCat[cat.id] = { category: cat, items: [] };
+    }
+    // Bucket for products whose category_id no longer exists (orphans)
+    byCat.__orphan__ = { category: { id: '__orphan__', title: 'Sin categoría' }, items: [] };
+
+    for (const p of filtered) {
+      const bucket = byCat[p.category] || byCat.__orphan__;
+      bucket.items.push(p);
+    }
+
+    // Within each category, sort: featured first by featuredOrder, then alphabetical
+    for (const b of Object.values(byCat)) {
+      b.items.sort((a, b) => {
+        if (a.featured !== b.featured) return a.featured ? -1 : 1;
+        if (a.featured && b.featured) return (a.featuredOrder ?? 0) - (b.featuredOrder ?? 0);
+        return (a.name || '').localeCompare(b.name || '');
+      });
+    }
+
+    return Object.values(byCat).filter((b) => b.items.length > 0);
+  }, [products, categories, search, statusFilter]);
 
   async function handleDelete(e, product) {
     e.stopPropagation();
@@ -45,41 +81,9 @@ export default function AdminProductos() {
     setProducts((prev) => prev.map((p) => p.id === product.id ? { ...p, active: false } : p));
   }
 
-  const catMap = Object.fromEntries(categories.map((c) => [c.id, c.title]));
-
-  const columns = [
-    {
-      key: 'image',
-      label: '',
-      render: (_, row) => {
-        const color = row.variants?.colors?.[0]?.hex || '#1A1A1A';
-        const img = row.images?.[0];
-        return img && !img.includes('placeholder') ? (
-          <img src={img} alt="" className="w-10 h-10 rounded-lg object-cover" />
-        ) : (
-          <div className="w-10 h-10 rounded-lg" style={{ backgroundColor: color }} />
-        );
-      },
-    },
-    { key: 'name', label: 'Nombre', render: (v) => <span className="font-heading font-semibold">{v}</span> },
-    { key: 'category', label: 'Categoría', render: (v) => catMap[v] || v },
-    { key: 'price', label: 'Precio', render: (v) => `$${(v ?? 0).toFixed(2)}` },
-    { key: 'stock', label: 'Stock' },
-    {
-      key: 'active',
-      label: 'Activo',
-      render: (v) => <span className={`text-lg ${v ? 'text-green-500' : 'text-red-400'}`}>●</span>,
-    },
-    {
-      key: 'actions',
-      label: '',
-      render: (_, row) => (
-        <button onClick={(e) => handleDelete(e, row)} className="text-red-400 hover:text-red-600 text-xs font-body">
-          Desactivar
-        </button>
-      ),
-    },
-  ];
+  function toggleCat(catId) {
+    setCollapsedCats((prev) => ({ ...prev, [catId]: !prev[catId] }));
+  }
 
   if (loading) {
     return (
@@ -96,7 +100,7 @@ export default function AdminProductos() {
       <div ref={containerRef}>
         {/* Header */}
         <div className="prod-el flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <input
               className="bg-white border border-primary/10 rounded-xl px-4 py-2.5 text-sm text-primary placeholder:text-primary/40 outline-none focus:ring-2 focus:ring-accent/40 w-64"
               placeholder="Buscar producto..."
@@ -105,12 +109,19 @@ export default function AdminProductos() {
             />
             <select
               className="bg-white border border-primary/10 rounded-xl px-4 py-2.5 text-sm text-primary outline-none focus:ring-2 focus:ring-accent/40"
-              value={catFilter}
-              onChange={(e) => setCatFilter(e.target.value)}
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
             >
-              <option value="">Todas las categorías</option>
-              {categories.map((c) => <option key={c.id} value={c.id}>{c.title}</option>)}
+              <option value="active">Solo activos</option>
+              <option value="inactive">Solo inactivos</option>
+              <option value="all">Todos</option>
             </select>
+            <Link
+              to="/admin/categorias"
+              className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl border border-primary/10 bg-white text-sm font-heading font-bold text-primary/70 hover:text-primary hover:border-primary/30 transition-colors"
+            >
+              <Tags size={14} /> Editar categorías
+            </Link>
           </div>
           <button
             onClick={() => navigate('/admin/productos/nuevo')}
@@ -120,14 +131,117 @@ export default function AdminProductos() {
           </button>
         </div>
 
-        {/* Table */}
-        <div className="prod-el bg-white rounded-2xl border border-primary/5 overflow-hidden">
-          <DataTable
-            columns={columns}
-            data={filtered}
-            onRowClick={(row) => navigate(`/admin/productos/${row.id}`)}
-            emptyMessage="No hay productos"
-          />
+        {/* Grouped by category */}
+        <div className="space-y-6">
+          {groupedProducts.length === 0 && (
+            <div className="prod-el bg-white rounded-2xl border border-primary/5 py-16 text-center font-body text-primary/50">
+              No hay productos con esos filtros.
+            </div>
+          )}
+
+          {groupedProducts.map(({ category, items }) => {
+            const collapsed = collapsedCats[category.id];
+            return (
+              <section key={category.id} className="prod-el">
+                {/* Category header */}
+                <header className="flex items-center justify-between mb-3">
+                  <button
+                    type="button"
+                    onClick={() => toggleCat(category.id)}
+                    className="flex items-center gap-2 text-left group"
+                  >
+                    {collapsed
+                      ? <ChevronRight size={18} className="text-primary/40 group-hover:text-primary transition-colors" />
+                      : <ChevronDown size={18} className="text-primary/40 group-hover:text-primary transition-colors" />}
+                    <h3 className="font-heading font-extrabold text-base text-primary">{category.title}</h3>
+                    <span className="text-xs font-body text-primary/40">· {items.length} {items.length === 1 ? 'producto' : 'productos'}</span>
+                  </button>
+                  {category.id !== '__orphan__' && (
+                    <Link
+                      to="/admin/categorias"
+                      className="text-xs font-heading font-bold text-accent hover:underline"
+                    >
+                      Editar categoría →
+                    </Link>
+                  )}
+                </header>
+
+                {/* Products grid */}
+                {!collapsed && (
+                  <div className="bg-white rounded-2xl border border-primary/5 overflow-hidden">
+                    <table className="w-full text-sm">
+                      <thead className="bg-primary/[0.02] text-left text-xs font-heading font-bold uppercase tracking-wider text-primary/40">
+                        <tr>
+                          <th className="p-3 w-14"></th>
+                          <th className="p-3">Producto</th>
+                          <th className="p-3 w-24">Tipo</th>
+                          <th className="p-3 w-20">Precio</th>
+                          <th className="p-3 w-16">Stock</th>
+                          <th className="p-3 w-20">Destacado</th>
+                          <th className="p-3 w-20">Activo</th>
+                          <th className="p-3 w-24"></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {items.map((p) => {
+                          const img = p.images?.[0];
+                          const kindBadge = p.digitalSubtype
+                            ? DIGITAL_SUBTYPES[p.digitalSubtype]
+                            : KIND_LABEL[p.kind];
+                          return (
+                            <tr
+                              key={p.id}
+                              onClick={() => navigate(`/admin/productos/${p.id}`)}
+                              className="border-t border-primary/5 hover:bg-primary/[0.02] cursor-pointer"
+                            >
+                              <td className="p-3">
+                                {img ? (
+                                  <img src={img} alt="" className="w-10 h-10 rounded-lg object-cover" />
+                                ) : (
+                                  <div className="w-10 h-10 rounded-lg bg-primary/5 flex items-center justify-center text-primary/30">
+                                    <ImageIcon size={16} />
+                                  </div>
+                                )}
+                              </td>
+                              <td className="p-3">
+                                <div className="font-heading font-semibold text-primary">{p.name}</div>
+                                <div className="text-xs text-primary/40 font-mono mt-0.5">{p.id}</div>
+                              </td>
+                              <td className="p-3 font-body text-xs text-primary/60">{kindBadge}</td>
+                              <td className="p-3 font-body text-primary/80">${(p.price ?? 0).toFixed(2)}</td>
+                              <td className="p-3 font-body text-primary/60">
+                                {p.kind === 'physical' ? p.stock : '—'}
+                              </td>
+                              <td className="p-3">
+                                {p.featured ? (
+                                  <span className="text-amber-500 text-lg" title="Destacado">★</span>
+                                ) : (
+                                  <span className="text-primary/15">—</span>
+                                )}
+                              </td>
+                              <td className="p-3">
+                                <span className={`text-lg ${p.active ? 'text-green-500' : 'text-red-400'}`}>●</span>
+                              </td>
+                              <td className="p-3">
+                                {p.active && (
+                                  <button
+                                    onClick={(e) => handleDelete(e, p)}
+                                    className="text-red-400 hover:text-red-600 text-xs font-body"
+                                  >
+                                    Desactivar
+                                  </button>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
+              </section>
+            );
+          })}
         </div>
       </div>
     </AdminLayout>
