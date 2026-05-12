@@ -103,6 +103,15 @@ export default function FluirFemeninoPage() {
         );
       }
 
+      const ffheroEls = rootRef.current?.querySelectorAll('.ffhero-el');
+      if (ffheroEls?.length) {
+        gsap.fromTo(
+          ffheroEls,
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.9, ease: 'power3.out', stagger: 0.08, delay: 0.15 }
+        );
+      }
+
       const pillarEls = rootRef.current?.querySelectorAll('.pillar-el');
       if (pillarEls?.length) {
         gsap.set(pillarEls, { opacity: 1, y: 0 });
@@ -148,8 +157,62 @@ export default function FluirFemeninoPage() {
 
   return (
     <div ref={rootRef} className="bg-fluir-mist text-fluir-ink overflow-hidden">
+      {/* ─── HERO ─── */}
+      <section className="relative px-5 sm:px-8 lg:px-12 pt-32 sm:pt-36 lg:pt-40 pb-16 sm:pb-20 lg:pb-24 overflow-hidden">
+        {/* decorative botanical halos */}
+        <img
+          src={`${ASSETS}/mandala.png`}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute -left-24 -top-16 w-[420px] h-[420px] opacity-10 animate-spin-slow"
+        />
+        <img
+          src={`${ASSETS}/flor-loto.png`}
+          alt=""
+          aria-hidden
+          className="pointer-events-none absolute right-4 lg:right-10 top-24 w-32 lg:w-44 opacity-60 animate-float-soft"
+        />
+        <img
+          src={`${ASSETS}/crecimiento.png`}
+          alt=""
+          aria-hidden
+          className="hidden lg:block pointer-events-none absolute right-1/4 -bottom-8 w-28 opacity-50 -rotate-12"
+        />
+
+        <div className="relative mx-auto max-w-[1100px] flex flex-col items-center text-center gap-6 sm:gap-7">
+          <h1 className="ffhero-el font-display font-light leading-[0.95] tracking-tight text-[2.6rem] sm:text-[3.6rem] lg:text-[5rem] m-0 max-w-3xl">
+            Un espacio para fluir <em className="italic text-fluir-magenta">en tu propio tiempo.</em>
+          </h1>
+
+          <p className="ffhero-el font-body text-base sm:text-lg leading-relaxed text-fluir-ink/75 max-w-xl m-0">
+            Lecturas, recursos y una comunidad para acompañar tu salud hormonal,
+            tu mente y tu ciclo — sin prisa, sin pausa forzada.
+          </p>
+
+          <div className="ffhero-el flex flex-wrap items-center justify-center gap-3 mt-2">
+            <a
+              href="#fluir-articulos"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-fluir-magenta text-white text-sm font-heading font-bold hover:bg-fluir-rose hover:text-fluir-ink transition-colors"
+            >
+              Leer el diario
+              <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden>
+                <path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+              </svg>
+            </a>
+            <a
+              href="https://wa.me/50376284719"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-fluir-ink/20 text-fluir-ink text-sm font-heading font-bold hover:bg-fluir-ink hover:text-white transition-colors"
+            >
+              Únete al círculo
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* ─── HERO BENTO ─── */}
-      <section className="px-3 sm:px-5 lg:px-8 pt-20 sm:pt-24 lg:pt-28 pb-10 sm:pb-14">
+      <section className="hidden px-3 sm:px-5 lg:px-8 pt-20 sm:pt-24 lg:pt-28 pb-10 sm:pb-14">
         <div className="mx-auto max-w-[1400px]">
           {/* Top kicker */}
           <div className="hero-tile flex items-center justify-between mb-4 sm:mb-6 px-1">
@@ -327,7 +390,7 @@ export default function FluirFemeninoPage() {
       </section>
 
       {/* ─── PILLARS ─── */}
-      <section id="latidos" className="relative py-16 sm:py-24 md:py-32 bg-white">
+      <section id="latidos" className="hidden relative py-16 sm:py-24 md:py-32 bg-white">
         <div className="container mx-auto px-5 sm:px-6 max-w-7xl">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 mb-12 sm:mb-16 md:mb-20">
             <div className="md:col-span-7">
@@ -371,7 +434,7 @@ export default function FluirFemeninoPage() {
       </section>
 
       {/* ─── FLOW ─── */}
-      <section className="relative py-16 sm:py-24 md:py-32 bg-fluir-mist overflow-hidden">
+      <section className="hidden relative py-16 sm:py-24 md:py-32 bg-fluir-mist overflow-hidden">
         <img
           src={`${ASSETS}/espiral.png`}
           alt=""
@@ -428,15 +491,11 @@ export default function FluirFemeninoPage() {
 
       {/* ─── DIARIO (últimos posts del blog) ─── */}
       {postsLoaded && latestPosts.length > 0 && (
-        <section className="relative py-16 sm:py-24 md:py-32 bg-white overflow-hidden">
+        <section id="fluir-articulos" className="relative py-16 sm:py-24 md:py-32 bg-white overflow-hidden">
           <div className="container mx-auto px-5 sm:px-6 max-w-7xl">
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 md:mb-14">
               <div>
-                <span className="font-body text-[11px] sm:text-xs uppercase tracking-[0.28em] text-fluir-magenta inline-flex items-center gap-2">
-                  <Dot className="text-fluir-magenta" />
-                  Diario de Fluir
-                </span>
-                <h2 className="font-display font-light leading-tight text-4xl sm:text-5xl md:text-6xl mt-5 sm:mt-6">
+                <h2 className="font-display font-light leading-tight text-4xl sm:text-5xl md:text-6xl">
                   Lecturas <span className="italic text-fluir-magenta">recientes.</span>
                 </h2>
               </div>
@@ -491,7 +550,6 @@ export default function FluirFemeninoPage() {
 
       {/* ─── RECURSOS DIGITALES (ebooks/cursos/guías) ─── */}
       <DigitalResources
-        eyebrow="· Para profundizar ·"
         titleLine1="Lo que la lectura"
         titleLine2="no alcanza a cubrir."
         subtitle="Ebooks, cursos y guías diseñados por Gabriela para acompañarte más allá del artículo."
@@ -500,7 +558,7 @@ export default function FluirFemeninoPage() {
       />
 
       {/* ─── FINAL CTA ─── */}
-      <section className="relative py-16 sm:py-24 md:py-32 bg-white overflow-hidden">
+      <section className="hidden relative py-16 sm:py-24 md:py-32 bg-white overflow-hidden">
         <img
           src={`${ASSETS}/mandala.png`}
           alt=""
