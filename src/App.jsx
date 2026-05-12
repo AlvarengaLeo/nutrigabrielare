@@ -21,6 +21,7 @@ import PlenoLandingPage from './pages/PlenoLandingPage';
 import PlenoCategoryPage from './pages/PlenoCategoryPage';
 import ContactanosPage from './pages/ContactanosPage';
 import FluirFemeninoPage from './pages/FluirFemeninoPage';
+const FluirFemeninoV2Page = React.lazy(() => import('./pages/FluirFemeninoV2Page'));
 const FluirFemeninoArchivePage = React.lazy(() => import('./pages/FluirFemeninoArchivePage'));
 const FluirFemeninoPostPage = React.lazy(() => import('./pages/FluirFemeninoPostPage'));
 import ProductoPage from './pages/ProductoPage';
@@ -110,6 +111,7 @@ function AppContent() {
           <Route path="/proyecto-banquita" element={<Navigate to="/fluir-femenino" replace />} />
           <Route path="/nutricion-con-alma" element={<Navigate to="/fluir-femenino" replace />} />
           <Route path="/fluir-femenino" element={<FluirFemeninoPage />} />
+          <Route path="/fluir-femenino-v2" element={<Suspense fallback={<PageSpinner />}><FluirFemeninoV2Page /></Suspense>} />
           <Route path="/fluir-femenino/articulos" element={<Suspense fallback={<PageSpinner />}><FluirFemeninoArchivePage /></Suspense>} />
           <Route path="/fluir-femenino/articulos/:slug" element={<Suspense fallback={<PageSpinner />}><FluirFemeninoPostPage /></Suspense>} />
           <Route path="/comunidad" element={<Navigate to="/fluir-femenino" replace />} />

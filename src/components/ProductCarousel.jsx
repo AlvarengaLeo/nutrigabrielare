@@ -30,10 +30,11 @@ export default function ProductCarousel({
   bg = 'bg-background',
   id,
   variant = 'brand',
+  accentClass,
 }) {
   const isPleno = variant === 'pleno';
   const titleColorClass = isPleno ? 'text-pleno-green' : 'text-primary';
-  const accentColorClass = isPleno ? 'text-pleno-green' : 'text-accent';
+  const accentColorClass = accentClass ?? (isPleno ? 'text-pleno-green' : 'text-accent');
   const ctaStyle = isPleno ? { backgroundColor: '#196b41' } : undefined;
   const ctaClass = isPleno
     ? 'text-white hover:opacity-90'
@@ -103,9 +104,14 @@ export default function ProductCarousel({
               </div>
             )}
             {(titleLine1 || titleLine2) && (
-              <h2 className={`carousel-el font-heading not-italic text-4xl md:text-5xl lg:text-[3.5rem] ${titleColorClass} tracking-tight leading-[1.05] max-w-2xl`}>
-                {titleLine1}{titleLine2 && <br />}
-                {titleLine2 && <span className={`font-drama italic ${accentColorClass}`}>{titleLine2}</span>}
+              <h2 className={`carousel-el font-heading not-italic text-4xl md:text-5xl lg:text-[3.5rem] ${titleColorClass} tracking-tight leading-[1.05] max-w-3xl`}>
+                {titleLine1}
+                {titleLine2 && (
+                  <>
+                    {' '}
+                    <span className={`font-drama italic ${accentColorClass}`}>{titleLine2}</span>
+                  </>
+                )}
               </h2>
             )}
           </div>
@@ -158,7 +164,7 @@ export default function ProductCarousel({
             <div
               key={product.id}
               data-carousel-card
-              className="snap-start shrink-0 w-[78%] sm:w-[48%] lg:w-[31%] xl:w-[23%]"
+              className="snap-start shrink-0 w-[78%] sm:w-[48%] lg:w-[31%] xl:w-[23%] h-full"
             >
               <ProductCard product={product} />
             </div>

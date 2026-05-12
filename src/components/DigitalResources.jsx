@@ -23,7 +23,7 @@ gsap.registerPlugin(ScrollTrigger);
  * }} props
  */
 export default function DigitalResources({
-  eyebrow = 'Recursos',
+  eyebrow,
   titleLine1 = 'Recursos para',
   titleLine2 = 'profundizar.',
   subtitle = 'Ebooks, cursos y guías para llevarte la conversación a casa. Compralos una vez, consultalos cuando quieras.',
@@ -98,11 +98,14 @@ export default function DigitalResources({
               className="resource-el font-drama not-italic text-4xl md:text-5xl lg:text-[3.25rem] tracking-tight leading-[1.05]"
               style={{ color: '#1A1410' }}
             >
-              {titleLine1}{titleLine2 && <br />}
+              {titleLine1}
               {titleLine2 && (
-                <span className="italic" style={{ color: '#7A1838' }}>
-                  {titleLine2}
-                </span>
+                <>
+                  {' '}
+                  <span className="italic" style={{ color: '#7A1838' }}>
+                    {titleLine2}
+                  </span>
+                </>
               )}
             </h2>
             {subtitle && (
@@ -116,7 +119,7 @@ export default function DigitalResources({
           </div>
 
           <Link
-            to="/pleno/digitales"
+            to="/pleno?categoria=digital#pleno-catalogo"
             className="resource-el self-start md:self-end inline-flex items-center gap-2 font-heading font-bold text-sm hover:opacity-70 transition-opacity"
             style={{ color: '#7A1838' }}
           >

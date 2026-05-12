@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import gsap from 'gsap';
 import { Minus, Plus, Check, ChevronDown, SlidersHorizontal, X } from 'lucide-react';
-import { getProductsByKind, DIGITAL_SUBTYPES } from '../../services/productService';
+import { getProductsByKind, getAllProducts, DIGITAL_SUBTYPES } from '../../services/productService';
 import ProductCard from '../ProductCard';
 
 const SORT_OPTIONS = [
@@ -139,31 +140,77 @@ function SortDropdown({ value, onChange }) {
 /**
  * Reusable Pleno PLP body (toolbar + sidebar filters + product grid).
  *
+ * Supports either a single kind (`kind` + `categoryLabel`) or a unified
+ * multi-kind catalog via `kinds` ([{ kind, label }, ...]). When `kinds`
+ * is provided, the "Categoría" filter renders one checkbox per kind.
+ *
  * @param {{
- *   kind: 'physical' | 'digital' | 'service',
- *   categoryLabel: string,           // shown in the "Categoría" filter checkbox
+ *   kind?: 'physical' | 'digital' | 'service',
+ *   categoryLabel?: string,
+ *   kinds?: Array<{ kind: 'physical' | 'digital' | 'service', label: string }>,
  *   emptyMessage?: string,
- *   anchorId?: string,               // optional id for in-page links
+ *   anchorId?: string,
  * }} props
  */
 export default function PlenoProductsPLP({
   kind,
   categoryLabel,
+  kinds,
   emptyMessage = 'Pronto vas a encontrar productos disponibles aquí.',
   anchorId,
 }) {
+  // Normalize: either multi-kind (`kinds`) or single-kind (`kind` + `categoryLabel`)
+  const kindList = useMemo(() => {
+    if (kinds && kinds.length) return kinds;
+    if (kind) return [{ kind, label: categoryLabel ?? kind }];
+    return [];
+  }, [kinds, kind, categoryLabel]);
+
+  const multiKind = kindList.length > 1;
+  const kindKeys = useMemo(() => kindList.map((k) => k.kind), [kindList]);
+  const kindKeysSerialized = kindKeys.join(',');
+
+  // Allow ?categoria=digital|physical|service to preselect a kind
+  const [searchParams] = useSearchParams();
+  const requestedKind = searchParams.get('categoria');
+  const initialKindFilters = useMemo(() => {
+    if (requestedKind && kindKeys.includes(requestedKind)) return [requestedKind];
+    return kindKeys; // default: all kinds checked → all visible
+  }, [requestedKind, kindKeysSerialized]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState('recommended');
   const [priceFilters, setPriceFilters] = useState([]);
   const [featuredOnly, setFeaturedOnly] = useState(false);
   const [subtypeFilters, setSubtypeFilters] = useState([]);
+  const [kindFilters, setKindFilters] = useState(initialKindFilters);
+
+  // Sync kindFilters when the kindList / URL param changes
+  useEffect(() => {
+    setKindFilters(initialKindFilters);
+  }, [initialKindFilters]);
+
+  // Scroll to the catalog when arriving from a deep-link like ?categoria=digital
+  useEffect(() => {
+    if (!requestedKind || !anchorId) return;
+    const t = setTimeout(() => {
+      const el = document.getElementById(anchorId);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 150);
+    return () => clearTimeout(t);
+  }, [requestedKind, anchorId]);
 
   useEffect(() => {
-    if (!kind) return;
+    if (!kindList.length) return;
     let cancelled = false;
     setLoading(true);
-    getProductsByKind(kind)
+
+    const loader = multiKind
+      ? getAllProducts().then((rows) => rows.filter((p) => kindKeys.includes(p.kind)))
+      : getProductsByKind(kindKeys[0]);
+
+    loader
       .then((rows) => {
         if (!cancelled) setProducts(rows);
       })
@@ -177,19 +224,24 @@ export default function PlenoProductsPLP({
     return () => {
       cancelled = true;
     };
-  }, [kind]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [kindKeysSerialized, multiKind]);
 
   const availableSubtypes = useMemo(() => {
-    if (kind !== 'digital') return [];
+    if (!kindKeys.includes('digital')) return [];
     const present = new Set();
     for (const p of products) {
       if (p.digitalSubtype) present.add(p.digitalSubtype);
     }
     return Object.entries(DIGITAL_SUBTYPES).filter(([id]) => present.has(id));
-  }, [products, kind]);
+  }, [products, kindKeys]);
 
   const filteredProducts = useMemo(() => {
     let list = [...products];
+
+    if (kindList.length) {
+      list = list.filter((p) => kindFilters.includes(p.kind));
+    }
 
     if (featuredOnly) list = list.filter((p) => p.featured);
 
@@ -218,7 +270,7 @@ export default function PlenoProductsPLP({
     }
 
     return list;
-  }, [products, sort, priceFilters, featuredOnly, subtypeFilters]);
+  }, [products, sort, priceFilters, featuredOnly, subtypeFilters, kindFilters, kindList.length]);
 
   useEffect(() => {
     if (loading || filteredProducts.length === 0) return;
@@ -241,8 +293,19 @@ export default function PlenoProductsPLP({
     );
   };
 
+  const toggleKindFilter = (id) => {
+    setKindFilters((prev) =>
+      prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]
+    );
+  };
+
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const activeFilterCount = priceFilters.length + subtypeFilters.length + (featuredOnly ? 1 : 0);
+  const kindFilterActive = multiKind && kindFilters.length < kindKeys.length;
+  const activeFilterCount =
+    priceFilters.length +
+    subtypeFilters.length +
+    (kindFilterActive ? 1 : 0) +
+    (featuredOnly ? 1 : 0);
 
   // Lock body scroll while the mobile drawer is open
   useEffect(() => {
@@ -262,9 +325,21 @@ export default function PlenoProductsPLP({
   const filtersContent = (
     <>
       <FilterGroup title="Categoría">
-        <CheckboxLabel checked={true} onChange={() => {}}>
-          {categoryLabel}
-        </CheckboxLabel>
+        {multiKind ? (
+          kindList.map((k) => (
+            <CheckboxLabel
+              key={k.kind}
+              checked={kindFilters.includes(k.kind)}
+              onChange={() => toggleKindFilter(k.kind)}
+            >
+              {k.label}
+            </CheckboxLabel>
+          ))
+        ) : (
+          <CheckboxLabel checked={true} onChange={() => {}}>
+            {kindList[0]?.label}
+          </CheckboxLabel>
+        )}
       </FilterGroup>
 
       <FilterGroup title="Beneficio">
@@ -302,11 +377,16 @@ export default function PlenoProductsPLP({
         ))}
       </FilterGroup>
 
-      {(featuredOnly || priceFilters.length > 0 || subtypeFilters.length > 0 || sort !== 'recommended') && (
+      {(featuredOnly ||
+        priceFilters.length > 0 ||
+        subtypeFilters.length > 0 ||
+        kindFilterActive ||
+        sort !== 'recommended') && (
         <button
           onClick={() => {
             setPriceFilters([]);
             setSubtypeFilters([]);
+            setKindFilters(kindKeys);
             setFeaturedOnly(false);
             setSort('recommended');
           }}
@@ -364,9 +444,9 @@ export default function PlenoProductsPLP({
                 <div className="w-8 h-8 border-2 border-pleno-line border-t-pleno-green rounded-full animate-spin" />
               </div>
             ) : filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 gap-y-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 gap-y-12 items-stretch">
                 {filteredProducts.map((product) => (
-                  <div key={product.id} className="pleno-plp-card">
+                  <div key={product.id} className="pleno-plp-card h-full">
                     <ProductCard product={product} />
                   </div>
                 ))}
