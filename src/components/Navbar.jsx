@@ -20,6 +20,9 @@ export default function Navbar() {
   const isPleno = PLENO_FLOW_PATHS.some(
     (p) => location.pathname === p || location.pathname.startsWith(`${p}/`)
   );
+  const isFluir =
+    location.pathname === '/fluir-femenino' ||
+    location.pathname.startsWith('/fluir-femenino/');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -49,8 +52,14 @@ export default function Navbar() {
     ? scrolled
       ? '/media/pleno/logo-pleno-light.png'
       : '/media/pleno/logo-pleno-dark.png'
-    : '/media/logo-header.png';
-  const logoAlt = isPleno ? 'Pleno' : 'Gabriela Retana Logo';
+    : isFluir
+      ? '/media/fluir-femenino/logo-fluir-rosado.png'
+      : '/media/logo-header.png';
+  const logoAlt = isPleno
+    ? 'Pleno'
+    : isFluir
+      ? 'Fluir Femenino'
+      : 'Gabriela Retana Logo';
 
   return (
     <nav
