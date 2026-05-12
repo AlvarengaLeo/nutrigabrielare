@@ -41,7 +41,7 @@ export default function ProductCard({ product }) {
   return (
     <Link
       to={`/producto/${slug}`}
-      className="group/product flex flex-col w-full font-body"
+      className="group/product flex flex-col w-full h-full font-body"
       aria-label={`Ver ${name}`}
     >
       {/* Image panel */}
@@ -82,7 +82,7 @@ export default function ProductCard({ product }) {
       </div>
 
       {/* Info */}
-      <div className="flex flex-col px-1 mb-5">
+      <div className="flex flex-1 flex-col px-1 mb-5">
         {kindLabel && (
           <span
             className="font-body text-xs font-semibold mb-1.5"

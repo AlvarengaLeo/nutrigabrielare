@@ -39,6 +39,7 @@ export default function Featured() {
       products={products}
       ctaLabel={cfg.ctaLabel}
       ctaTo={cfg.ctaTo}
+      accentClass="text-[#16693d]"
     />
   );
 }

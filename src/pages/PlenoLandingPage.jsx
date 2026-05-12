@@ -116,10 +116,13 @@ export default function PlenoLandingPage() {
       </section>
 
       <PlenoProductsPLP
-        kind="physical"
-        categoryLabel="Suplementos"
-        emptyMessage="Pronto vas a encontrar suplementos disponibles aquí."
-        anchorId="pleno-suplementos"
+        kinds={[
+          { kind: 'physical', label: 'Suplementos' },
+          { kind: 'digital', label: 'Recursos digitales' },
+          { kind: 'service', label: 'Servicios' },
+        ]}
+        emptyMessage="Pronto vas a encontrar productos disponibles aquí."
+        anchorId="pleno-catalogo"
       />
     </div>
   );
