@@ -4,7 +4,7 @@ import { Menu, X, ArrowUpRight } from 'lucide-react';
 import CartIcon from './CartIcon';
 
 const navItems = [
-  { label: 'Inicio', path: '/' },
+  { label: 'Nutrigabrielare', path: '/' },
   { label: 'Pleno', path: '/pleno' },
   { label: 'Fluir Femenino', path: '/fluir-femenino' },
 ];
