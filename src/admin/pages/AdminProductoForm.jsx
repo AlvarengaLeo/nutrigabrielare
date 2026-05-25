@@ -271,10 +271,15 @@ export default function AdminProductoForm() {
             <div>
               <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-1 block">Tipo</label>
               <select className={inputClass} value={kind} onChange={(e) => setKind(e.target.value)} required>
-                <option value="physical">Suplemento (físico)</option>
-                <option value="digital">Producto digital</option>
-                <option value="service">Servicio</option>
+                <option value="physical">Suplemento (físico) — Pleno</option>
+                <option value="digital">Producto digital — Nutrigabrielare</option>
+                <option value="service">Servicio — Nutrigabrielare</option>
               </select>
+              <p className="mt-1.5 font-body text-[11px] text-primary/50">
+                {kind === 'physical'
+                  ? <>Se publicará en <strong className="text-primary/70">/pleno</strong> (tienda de suplementos).</>
+                  : <>Se publicará en <strong className="text-primary/70">/nutrigabrielare</strong> (recursos digitales y servicios).</>}
+              </p>
             </div>
             <div>
               <label className="font-body text-xs font-semibold text-primary/50 uppercase tracking-widest mb-1 block">Categoría</label>
@@ -358,7 +363,7 @@ export default function AdminProductoForm() {
                   <option value="contenido">Contenido educativo</option>
                 </select>
                 <p className="font-body text-xs text-primary/40 mt-1.5">
-                  Aparece como etiqueta en la card del producto y permite filtrar en /pleno/digitales.
+                  Aparece como etiqueta en la card del producto y permite filtrar en /nutrigabrielare.
                 </p>
               </div>
 

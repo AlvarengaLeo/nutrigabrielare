@@ -11,6 +11,13 @@ const KIND_LABEL = {
   service: 'Servicio',
 };
 
+// Front-of-house: which public store each kind is published to.
+const KIND_TO_STORE = {
+  physical: { label: 'Pleno', className: 'bg-[#16693d]/10 text-[#16693d]' },
+  digital: { label: 'Nutrigabrielare', className: 'bg-primary/10 text-primary' },
+  service: { label: 'Nutrigabrielare', className: 'bg-primary/10 text-primary' },
+};
+
 export default function AdminProductos() {
   const navigate = useNavigate();
   const containerRef = useRef(null);
@@ -18,6 +25,7 @@ export default function AdminProductos() {
   const [categories, setCategories] = useState([]);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('active');
+  const [storeFilter, setStoreFilter] = useState('all');
   const [loading, setLoading] = useState(true);
   const [collapsedCats, setCollapsedCats] = useState({});
 
@@ -45,6 +53,8 @@ export default function AdminProductos() {
     const filtered = products.filter((p) => {
       if (statusFilter === 'active' && !p.active) return false;
       if (statusFilter === 'inactive' && p.active) return false;
+      if (storeFilter === 'pleno' && p.kind !== 'physical') return false;
+      if (storeFilter === 'nutri' && p.kind !== 'digital' && p.kind !== 'service') return false;
       if (term && !p.name.toLowerCase().includes(term)) return false;
       return true;
     });
@@ -72,7 +82,7 @@ export default function AdminProductos() {
     }
 
     return Object.values(byCat).filter((b) => b.items.length > 0);
-  }, [products, categories, search, statusFilter]);
+  }, [products, categories, search, statusFilter, storeFilter]);
 
   async function handleDelete(e, product) {
     e.stopPropagation();
@@ -115,6 +125,16 @@ export default function AdminProductos() {
               <option value="active">Solo activos</option>
               <option value="inactive">Solo inactivos</option>
               <option value="all">Todos</option>
+            </select>
+            <select
+              className="bg-white border border-primary/10 rounded-xl px-4 py-2.5 text-sm text-primary outline-none focus:ring-2 focus:ring-accent/40"
+              value={storeFilter}
+              onChange={(e) => setStoreFilter(e.target.value)}
+              title="Filtrar por tienda pública"
+            >
+              <option value="all">Todas las tiendas</option>
+              <option value="pleno">Pleno (suplementos)</option>
+              <option value="nutri">Nutrigabrielare (digital + servicios)</option>
             </select>
             <Link
               to="/admin/categorias"
@@ -174,6 +194,7 @@ export default function AdminProductos() {
                         <tr>
                           <th className="p-3 w-14"></th>
                           <th className="p-3">Producto</th>
+                          <th className="p-3 w-32">Vitrina</th>
                           <th className="p-3 w-24">Tipo</th>
                           <th className="p-3 w-20">Precio</th>
                           <th className="p-3 w-16">Stock</th>
@@ -188,6 +209,7 @@ export default function AdminProductos() {
                           const kindBadge = p.digitalSubtype
                             ? DIGITAL_SUBTYPES[p.digitalSubtype]
                             : KIND_LABEL[p.kind];
+                          const store = KIND_TO_STORE[p.kind] ?? KIND_TO_STORE.physical;
                           return (
                             <tr
                               key={p.id}
@@ -206,6 +228,11 @@ export default function AdminProductos() {
                               <td className="p-3">
                                 <div className="font-heading font-semibold text-primary">{p.name}</div>
                                 <div className="text-xs text-primary/40 font-mono mt-0.5">{p.id}</div>
+                              </td>
+                              <td className="p-3">
+                                <span className={`inline-block px-2 py-1 rounded-md text-[11px] font-heading font-bold ${store.className}`}>
+                                  {store.label}
+                                </span>
                               </td>
                               <td className="p-3 font-body text-xs text-primary/60">{kindBadge}</td>
                               <td className="p-3 font-body text-primary/80">${(p.price ?? 0).toFixed(2)}</td>
