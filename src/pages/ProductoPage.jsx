@@ -22,8 +22,8 @@ const PALETTES = {
     carouselVariant: 'pleno',
   },
   nutri: {
-    accent: '#7A1838',
-    accentDeep: '#5A1228',
+    accent: '#EE7699',
+    accentDeep: '#D6517B',
     backLabel: 'Nutrigabrielare',
     backTo: '/nutrigabrielare',
     breadcrumbHover: 'hover:text-nutri-rose',

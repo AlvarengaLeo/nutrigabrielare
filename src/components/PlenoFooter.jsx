@@ -30,7 +30,7 @@ const THEMES = {
     submitTextColor: '#16693d',
   },
   nutri: {
-    bg: '#5A1228',
+    bg: '#D6517B',
     // Use the brand wordmark for the rose theme so users immediately know
     // they're in the Nutrigabrielare side of the site.
     logoSrc: '/media/logo-header.png',
@@ -40,7 +40,7 @@ const THEMES = {
       'Recursos digitales y consultas 1:1 para acompañar tu bienestar — descargables al instante y acompañamiento real cuando lo necesitás.',
     sectionTitle: 'Nutrigabrielare',
     copyright: 'Nutrigabrielare',
-    submitTextColor: '#7A1838',
+    submitTextColor: '#EE7699',
   },
 };
 

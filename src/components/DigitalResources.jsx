@@ -90,7 +90,7 @@ export default function DigitalResources({
           <div className="max-w-2xl">
             <span
               className="resource-el font-body inline-block text-[11px] uppercase tracking-[0.28em] mb-5"
-              style={{ color: '#7A1838' }}
+              style={{ color: '#EE7699' }}
             >
               {eyebrow}
             </span>
@@ -102,7 +102,7 @@ export default function DigitalResources({
               {titleLine2 && (
                 <>
                   {' '}
-                  <span className="italic" style={{ color: '#7A1838' }}>
+                  <span className="italic" style={{ color: '#EE7699' }}>
                     {titleLine2}
                   </span>
                 </>
@@ -121,7 +121,7 @@ export default function DigitalResources({
           <Link
             to="/nutrigabrielare?categoria=digital#nutri-catalogo"
             className="resource-el self-start md:self-end inline-flex items-center gap-2 font-heading font-bold text-sm hover:opacity-70 transition-opacity"
-            style={{ color: '#7A1838' }}
+            style={{ color: '#EE7699' }}
           >
             Conocer todos los recursos
             <ArrowUpRight className="w-4 h-4" />
@@ -146,7 +146,7 @@ function ResourceCard({ product }) {
   return (
     <Link
       to={`/producto/${product.slug}`}
-      className="resource-el group block bg-white border border-[#E5DFD6] hover:border-[#7A1838]/40 transition-colors duration-300"
+      className="resource-el group block bg-white border border-[#E5DFD6] hover:border-[#EE7699]/40 transition-colors duration-300"
       aria-label={`Ver detalles de ${product.name}`}
     >
       {/* Cover */}
@@ -168,7 +168,7 @@ function ResourceCard({ product }) {
         {/* subtype chip on cover */}
         <span
           className="absolute top-4 left-4 inline-block px-2.5 py-1 bg-white text-[10px] font-heading font-bold uppercase tracking-[0.22em]"
-          style={{ color: '#7A1838' }}
+          style={{ color: '#EE7699' }}
         >
           {subtypeLabel}
         </span>
@@ -177,7 +177,7 @@ function ResourceCard({ product }) {
       {/* Body */}
       <div className="p-5 md:p-6">
         <h3
-          className="font-drama not-italic text-xl md:text-2xl leading-tight mb-3 group-hover:text-[#7A1838] transition-colors"
+          className="font-drama not-italic text-xl md:text-2xl leading-tight mb-3 group-hover:text-[#EE7699] transition-colors"
           style={{ color: '#1A1410' }}
         >
           {product.name}
@@ -196,7 +196,7 @@ function ResourceCard({ product }) {
           </span>
           <span
             className="font-heading font-bold text-xs underline underline-offset-4 group-hover:no-underline"
-            style={{ color: '#7A1838' }}
+            style={{ color: '#EE7699' }}
           >
             Ver detalles →
           </span>

@@ -45,7 +45,7 @@ export default function ProductCarousel({
   const ctaStyle = isPleno
     ? { backgroundColor: '#196b41' }
     : isNutri
-      ? { backgroundColor: '#7A1838' }
+      ? { backgroundColor: '#EE7699' }
       : undefined;
   const ctaClass = isPleno || isNutri
     ? 'text-white hover:opacity-90'

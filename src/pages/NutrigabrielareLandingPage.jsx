@@ -77,7 +77,7 @@ export default function NutrigabrielareLandingPage() {
                   className="absolute -inset-12 rounded-full blur-3xl opacity-60"
                   style={{
                     background:
-                      'radial-gradient(closest-side, rgba(122,24,56,0.30), transparent 70%)',
+                      'radial-gradient(closest-side, rgba(238,118,153,0.35), transparent 70%)',
                   }}
                 />
                 <img
@@ -94,7 +94,7 @@ export default function NutrigabrielareLandingPage() {
                   width: 240,
                   height: 240,
                   background:
-                    'radial-gradient(closest-side, rgba(122,24,56,0.30), transparent 70%)',
+                    'radial-gradient(closest-side, rgba(238,118,153,0.35), transparent 70%)',
                 }}
                 aria-hidden
               />

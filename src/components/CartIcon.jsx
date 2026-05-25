@@ -5,7 +5,7 @@ import { useStoreTheme } from '../context/StoreThemeContext';
 
 const BADGE_BG = {
   pleno: '#196b41',
-  nutri: '#7A1838',
+  nutri: '#EE7699',
 };
 
 export default function CartIcon({ isLight = false }) {
