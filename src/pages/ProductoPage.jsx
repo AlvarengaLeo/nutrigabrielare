@@ -149,14 +149,20 @@ export default function ProductoPage() {
   let currentStock;
   let canAdd;
 
-  if (hasVariants) {
+  if (isDigital) {
+    // Digital products have unlimited stock — always purchasable.
+    currentStock = Infinity;
+    canAdd = true;
+  } else if (hasVariants) {
     const variantKey = selectedSize && selectedColor ? `${selectedSize}__${selectedColor}` : null;
     currentStock = variantKey ? (product.variantStock?.[variantKey] ?? 0) : product.stock;
     canAdd = (!hasColors || selectedColor) && (!hasSizes || selectedSize) && currentStock > 0;
   } else {
-    // No variants — use total product stock
-    currentStock = product.stock ?? 999; // default to available if no stock tracking
-    canAdd = currentStock > 0;
+    // No variants — use total product stock. Treat 0 as untracked (e.g. when
+    // a product has only a placeholder "Único/Estándar" variant) so the
+    // purchase flow is not blocked by missing inventory data.
+    currentStock = product.stock && product.stock > 0 ? product.stock : 999;
+    canAdd = true;
   }
 
   function handleAddToCart() {
