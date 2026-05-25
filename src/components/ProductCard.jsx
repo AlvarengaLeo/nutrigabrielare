@@ -19,8 +19,8 @@ const CTA_LABEL = {
 // surrounding context theme is missing (e.g. embedded in HomePage carousels).
 const KIND_ACCENT = {
   physical: '#196b41',
-  digital: '#7A1838',
-  service: '#7A1838',
+  digital: '#EE7699',
+  service: '#EE7699',
 };
 
 /**
