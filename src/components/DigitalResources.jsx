@@ -119,7 +119,7 @@ export default function DigitalResources({
           </div>
 
           <Link
-            to="/pleno?categoria=digital#pleno-catalogo"
+            to="/nutrigabrielare?categoria=digital#nutri-catalogo"
             className="resource-el self-start md:self-end inline-flex items-center gap-2 font-heading font-bold text-sm hover:opacity-70 transition-opacity"
             style={{ color: '#7A1838' }}
           >

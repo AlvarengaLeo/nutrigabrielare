@@ -47,6 +47,14 @@ export default function PlenoCategoryPage() {
     return <Navigate to="/pleno" replace />;
   }
 
+  // Digitales y servicios ahora viven en /nutrigabrielare.
+  if (kindSlug === 'digitales') {
+    return <Navigate to="/nutrigabrielare?categoria=digital#nutri-catalogo" replace />;
+  }
+  if (kindSlug === 'servicios') {
+    return <Navigate to="/nutrigabrielare?categoria=service#nutri-catalogo" replace />;
+  }
+
   const kind = SLUG_TO_KIND[kindSlug];
   const copy = COPY[kindSlug];
 
