@@ -3,10 +3,18 @@ import { Link } from 'react-router-dom';
 import { X, Minus, Plus } from 'lucide-react';
 import gsap from 'gsap';
 import { useCart } from '../context/CartContext';
+import { useStoreTheme } from '../context/StoreThemeContext';
+
+const CTA_BG = {
+  pleno: '#196b41',
+  nutri: '#7A1838',
+};
 
 export default function CartDrawer() {
   const { items, itemCount, subtotal, drawerOpen, setDrawerOpen, updateQuantity, removeItem } =
     useCart();
+  const { theme } = useStoreTheme();
+  const ctaBg = CTA_BG[theme] ?? CTA_BG.pleno;
 
   const overlayRef = useRef(null);
   const panelRef = useRef(null);
@@ -201,7 +209,7 @@ export default function CartDrawer() {
             <Link
               to="/checkout"
               onClick={close}
-              style={{ backgroundColor: '#196b41' }}
+              style={{ backgroundColor: ctaBg }}
               className="magnetic-btn w-full flex items-center justify-center py-3.5 px-6 rounded-2xl text-white font-heading font-semibold text-sm hover:opacity-90 transition-opacity duration-200 focus:outline-none"
             >
               Ir al checkout

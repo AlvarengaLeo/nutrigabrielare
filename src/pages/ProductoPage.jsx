@@ -5,14 +5,37 @@ import { ArrowLeft } from 'lucide-react';
 import { getProductBySlug, getCategoryById, getRelatedProducts, KIND_TO_SLUG } from '../services/productService';
 import { ColorSelector, SizeSelector } from '../components/VariantSelector';
 import { useCart } from '../context/CartContext';
+import { useStoreTheme } from '../context/StoreThemeContext';
 import MarkdownRenderer from '../components/MarkdownRenderer';
 import ProductCarousel from '../components/ProductCarousel';
 
+// Palettes used inside the product detail page itself (breadcrumb, kind
+// label, CTAs, related-products variant). Mirrors what the surrounding
+// chrome (Navbar/Footer/CartDrawer) does via StoreThemeContext.
+const PALETTES = {
+  pleno: {
+    accent: '#196b41',
+    accentDeep: '#11623a',
+    backLabel: 'Pleno',
+    backTo: '/pleno',
+    breadcrumbHover: 'hover:text-pleno-green',
+    carouselVariant: 'pleno',
+  },
+  nutri: {
+    accent: '#7A1838',
+    accentDeep: '#5A1228',
+    backLabel: 'Nutrigabrielare',
+    backTo: '/nutrigabrielare',
+    breadcrumbHover: 'hover:text-nutri-rose',
+    carouselVariant: 'nutri',
+  },
+};
 
 export default function ProductoPage() {
   const { slug } = useParams();
   const containerRef = useRef(null);
   const { addItem } = useCart();
+  const { setTheme } = useStoreTheme();
 
   const [product, setProduct] = useState(null);
   const [category, setCategory] = useState(null);
@@ -34,6 +57,9 @@ export default function ProductoPage() {
     getProductBySlug(slug)
       .then(async (p) => {
         setProduct(p);
+        if (p?.kind) {
+          setTheme(p.kind === 'physical' ? 'pleno' : 'nutri');
+        }
         if (p?.variants?.colors?.[0]) {
           setSelectedColor(p.variants.colors[0].name);
         }
@@ -55,7 +81,7 @@ export default function ProductoPage() {
       })
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [slug]);
+  }, [slug, setTheme]);
 
   // GSAP entrance animation
   useEffect(() => {
@@ -90,7 +116,7 @@ export default function ProductoPage() {
         </h1>
         <Link
           to="/pleno"
-          className="font-heading font-bold text-pleno-green hover:underline"
+          className="font-heading font-bold text-primary hover:underline"
         >
           Volver a la tienda
         </Link>
@@ -103,6 +129,7 @@ export default function ProductoPage() {
   const isDigital = kind === 'digital';
   const kindSlug = KIND_TO_SLUG[kind] ?? 'suplementos';
   const showQuote = isService && product.price === 0;
+  const palette = PALETTES[kind === 'physical' ? 'pleno' : 'nutri'];
 
   // Determine if product has variants
   // Filter out internal/default variant values. Services and digitals never expose variants.
@@ -148,19 +175,15 @@ export default function ProductoPage() {
         {/* Back button + Breadcrumb */}
         <div className="producto-el mb-10 flex flex-col gap-3">
           <Link
-            to={`/pleno/${kindSlug}`}
-            className="inline-flex items-center gap-2 text-sm font-body text-primary/50 hover:text-pleno-green transition-colors w-fit"
+            to={palette.backTo}
+            className={`inline-flex items-center gap-2 text-sm font-body text-primary/50 transition-colors w-fit ${palette.breadcrumbHover}`}
           >
             <ArrowLeft size={16} strokeWidth={2} />
             Volver
           </Link>
           <nav className="flex items-center gap-2 text-sm font-body text-primary/50">
-            <Link to="/pleno" className="hover:text-pleno-green transition-colors">
-              Pleno
-            </Link>
-            <span>/</span>
-            <Link to={`/pleno/${kindSlug}`} className="hover:text-pleno-green transition-colors capitalize">
-              {kindSlug}
+            <Link to={palette.backTo} className={`transition-colors ${palette.breadcrumbHover}`}>
+              {palette.backLabel}
             </Link>
             <span>/</span>
             <span className="text-primary/80">{product.name}</span>
@@ -187,10 +210,11 @@ export default function ProductoPage() {
                         key={i}
                         type="button"
                         onClick={() => setSelectedImage(i)}
+                        style={i === selectedImage ? { borderColor: palette.accent, borderWidth: 2 } : undefined}
                         className={[
                           'aspect-square w-20 overflow-hidden transition-all duration-200 bg-[#F3F2F0] flex items-center justify-center',
                           i === selectedImage
-                            ? 'border-2 border-accent'
+                            ? 'border-2'
                             : 'border border-primary/10 opacity-60 hover:opacity-80',
                         ].join(' ')}
                       >
@@ -215,7 +239,7 @@ export default function ProductoPage() {
           {/* Details (right) */}
           <div className="flex-1 flex flex-col gap-6">
             <span
-              style={{ color: '#196b41' }}
+              style={{ color: palette.accent }}
               className="producto-el uppercase text-xs tracking-widest font-body font-semibold"
             >
               {category?.title}
@@ -305,7 +329,7 @@ export default function ProductoPage() {
             {isService ? (
               <Link
                 to={`/reservar/${product.slug}`}
-                style={{ backgroundColor: '#196b41' }}
+                style={{ backgroundColor: palette.accent }}
                 className="producto-el w-full py-4 rounded-xl font-heading font-bold text-center transition-all duration-200 text-background hover:opacity-90"
               >
                 Reservar consulta
@@ -314,7 +338,7 @@ export default function ProductoPage() {
               <button
                 type="button"
                 onClick={handleAddToCart}
-                style={{ backgroundColor: '#196b41' }}
+                style={{ backgroundColor: palette.accent }}
                 className="producto-el w-full py-4 rounded-xl font-heading font-bold text-center transition-all duration-200 text-background hover:opacity-90 cursor-pointer"
               >
                 Comprar y descargar
@@ -324,7 +348,7 @@ export default function ProductoPage() {
                 type="button"
                 onClick={handleAddToCart}
                 disabled={!canAdd}
-                style={canAdd ? { backgroundColor: '#196b41' } : undefined}
+                style={canAdd ? { backgroundColor: palette.accent } : undefined}
                 className={[
                   'producto-el w-full py-4 rounded-xl font-heading font-bold text-center transition-all duration-200',
                   canAdd
@@ -348,11 +372,11 @@ export default function ProductoPage() {
       {/* Related products */}
       {related.length > 0 && (
         <ProductCarousel
-          variant="pleno"
+          variant={palette.carouselVariant}
           titleLine1="Recomendados"
           products={related}
           ctaLabel="Ver más"
-          ctaTo={`/pleno/${kindSlug}`}
+          ctaTo={palette.backTo}
         />
       )}
     </div>

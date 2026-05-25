@@ -11,6 +11,7 @@ import {
 } from './config/runtimeConfig';
 import { AuthProvider } from './context/AuthContext';
 import { CartProvider } from './context/CartContext';
+import { StoreThemeProvider, useStoreTheme } from './context/StoreThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import PlenoFooter from './components/PlenoFooter';
@@ -87,6 +88,27 @@ function AppContent() {
   const isPlenoRoute = PLENO_FLOW_PATHS.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`)
   );
+  const isNutriRoute = pathname === '/nutrigabrielare' || pathname.startsWith('/nutrigabrielare/');
+
+  // Drive the store theme from the route. /pleno* and the post-catalog flow
+  // (carrito, checkout, gracias, tracking, cuenta) lock to 'pleno'.
+  // /nutrigabrielare* locks to 'nutri'. /producto/:slug is special: the page
+  // itself overrides this based on the loaded product's kind, so we don't
+  // force a value here.
+  const { theme, setTheme } = useStoreTheme();
+  useEffect(() => {
+    const isProductRoute = pathname === '/producto' || pathname.startsWith('/producto/');
+    if (isProductRoute) return; // ProductoPage takes over
+    if (isNutriRoute) {
+      setTheme('nutri');
+    } else if (isPlenoRoute) {
+      setTheme('pleno');
+    } else {
+      setTheme(null);
+    }
+  }, [pathname, isNutriRoute, isPlenoRoute, setTheme]);
+
+  const showStoreFooter = isPlenoRoute || isNutriRoute || theme === 'nutri' || theme === 'pleno';
 
   return (
     <>
@@ -149,7 +171,7 @@ function AppContent() {
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
-        {!isAdminRoute && (isPlenoRoute ? <PlenoFooter /> : <Footer />)}
+        {!isAdminRoute && (showStoreFooter ? <PlenoFooter /> : <Footer />)}
         {!isAdminRoute && <CartDrawer />}
       </main>
     </>
@@ -167,8 +189,10 @@ export default function App() {
     <HelmetProvider>
       <AuthProvider>
         <CartProvider>
-          <AppContent />
-          <Analytics />
+          <StoreThemeProvider>
+            <AppContent />
+            <Analytics />
+          </StoreThemeProvider>
         </CartProvider>
       </AuthProvider>
     </HelmetProvider>
