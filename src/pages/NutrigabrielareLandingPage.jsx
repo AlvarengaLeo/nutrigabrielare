@@ -56,12 +56,9 @@ export default function NutrigabrielareLandingPage() {
 
         <div className="relative grid xl:grid-cols-2 min-h-[480px] xl:min-h-[560px]">
           <div className="px-6 sm:px-10 lg:px-16 xl:px-20 py-16 xl:py-24 flex flex-col justify-center gap-6 xl:gap-8">
-            <span className="nutri-hero-el font-body text-[11px] font-medium uppercase tracking-[0.22em] text-primary/55">
-              · Nutrigabrielare · Market ·
-            </span>
             <h1 className="nutri-hero-el font-heading not-italic leading-[1.02] tracking-tight text-[3.25rem] sm:text-6xl lg:text-7xl xl:text-[5rem] m-0 text-primary">
               Recursos y consultas{' '}
-              <span className="font-drama italic">para tu camino.</span>
+              <span className="font-drama italic text-nutri-rose">para tu camino.</span>
             </h1>
             <p className="nutri-hero-el font-body text-base lg:text-lg leading-relaxed text-primary/70 max-w-md m-0">
               Ebooks, guías y consultas 1:1 con enfoque holístico.
@@ -80,7 +77,7 @@ export default function NutrigabrielareLandingPage() {
                   className="absolute -inset-12 rounded-full blur-3xl opacity-60"
                   style={{
                     background:
-                      'radial-gradient(closest-side, rgba(159,194,255,0.35), transparent 70%)',
+                      'radial-gradient(closest-side, rgba(122,24,56,0.30), transparent 70%)',
                   }}
                 />
                 <img
@@ -97,7 +94,7 @@ export default function NutrigabrielareLandingPage() {
                   width: 240,
                   height: 240,
                   background:
-                    'radial-gradient(closest-side, rgba(159,194,255,0.35), transparent 70%)',
+                    'radial-gradient(closest-side, rgba(122,24,56,0.30), transparent 70%)',
                 }}
                 aria-hidden
               />

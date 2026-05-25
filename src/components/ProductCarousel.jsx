@@ -33,15 +33,28 @@ export default function ProductCarousel({
   accentClass,
 }) {
   const isPleno = variant === 'pleno';
-  const titleColorClass = isPleno ? 'text-pleno-green' : 'text-primary';
-  const accentColorClass = accentClass ?? (isPleno ? 'text-pleno-green' : 'text-accent');
-  const ctaStyle = isPleno ? { backgroundColor: '#196b41' } : undefined;
-  const ctaClass = isPleno
+  const isNutri = variant === 'nutri';
+  const titleColorClass = isPleno
+    ? 'text-pleno-green'
+    : isNutri
+      ? 'text-nutri-rose'
+      : 'text-primary';
+  const accentColorClass =
+    accentClass ??
+    (isPleno ? 'text-pleno-green' : isNutri ? 'text-nutri-rose' : 'text-accent');
+  const ctaStyle = isPleno
+    ? { backgroundColor: '#196b41' }
+    : isNutri
+      ? { backgroundColor: '#7A1838' }
+      : undefined;
+  const ctaClass = isPleno || isNutri
     ? 'text-white hover:opacity-90'
     : 'bg-primary text-background hover:opacity-90';
   const arrowHoverClass = isPleno
     ? 'hover:bg-pleno-green hover:text-white'
-    : 'hover:bg-primary hover:text-background';
+    : isNutri
+      ? 'hover:bg-nutri-rose hover:text-white'
+      : 'hover:bg-primary hover:text-background';
   const sectionRef = useRef(null);
   const trackRef = useRef(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);

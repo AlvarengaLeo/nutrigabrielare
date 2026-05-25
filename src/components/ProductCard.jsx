@@ -14,6 +14,15 @@ const CTA_LABEL = {
   service: 'Reservar',
 };
 
+// Identity color per kind — physical follows Pleno; digital + service follow
+// Nutrigabrielare. Hardcoded hex so the card paints correctly even when the
+// surrounding context theme is missing (e.g. embedded in HomePage carousels).
+const KIND_ACCENT = {
+  physical: '#196b41',
+  digital: '#7A1838',
+  service: '#7A1838',
+};
+
 /**
  * Reusable product card for grids.
  * @param {{ product: import('../data/products').PRODUCTS[number] }} props
@@ -37,6 +46,7 @@ export default function ProductCard({ product }) {
   const ctaLabel = CTA_LABEL[kind] ?? 'Comprar';
   const showQuote = kind === 'service' && price === 0;
   const dotCount = Math.min(images?.length ?? 0, 3);
+  const accentColor = KIND_ACCENT[kind] ?? KIND_ACCENT.physical;
 
   return (
     <Link
@@ -86,7 +96,7 @@ export default function ProductCard({ product }) {
         {kindLabel && (
           <span
             className="font-body text-xs font-semibold mb-1.5"
-            style={{ color: '#196b41' }}
+            style={{ color: accentColor }}
           >
             {kindLabel}
           </span>
@@ -102,7 +112,7 @@ export default function ProductCard({ product }) {
       {/* CTA */}
       <div
         className="text-background py-3 rounded-full text-center font-heading font-bold text-sm tracking-wide group-hover/product:opacity-90 transition-opacity"
-        style={{ backgroundColor: '#196b41' }}
+        style={{ backgroundColor: accentColor }}
       >
         {ctaLabel}
       </div>

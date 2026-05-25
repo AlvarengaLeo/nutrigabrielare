@@ -36,6 +36,18 @@ export default {
           line: "#E5E5E0",
           'line-soft': "#EFEFEA",
         },
+        nutri: {
+          rose: "#7A1838",
+          'rose-deep': "#5A1228",
+          'rose-soft': "#F7E4EA",
+          'rose-mist': "#FCF6F7",
+          paper: "#FDFAF9",
+          ink: "#2A0D14",
+          'ink-soft': "#5A3640",
+          'ink-mute': "#7A5A64",
+          line: "#F0D8DE",
+          'line-soft': "#F6E8EC",
+        },
       },
       fontFamily: {
         heading: ['Plus Jakarta Sans', 'sans-serif'],
