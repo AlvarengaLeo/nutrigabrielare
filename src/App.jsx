@@ -19,6 +19,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import HomePage from './pages/HomePage';
 import PlenoLandingPage from './pages/PlenoLandingPage';
 import PlenoCategoryPage from './pages/PlenoCategoryPage';
+import NutrigabrielareLandingPage from './pages/NutrigabrielareLandingPage';
 import ContactanosPage from './pages/ContactanosPage';
 import FluirFemeninoPage from './pages/FluirFemeninoPage';
 const FluirFemeninoV2Page = React.lazy(() => import('./pages/FluirFemeninoV2Page'));
@@ -102,6 +103,7 @@ function AppContent() {
         <Routes>
           {/* ── Public routes ── */}
           <Route path="/" element={<HomePage />} />
+          <Route path="/nutrigabrielare" element={<NutrigabrielareLandingPage />} />
           <Route path="/pleno" element={<PlenoLandingPage />} />
           <Route path="/pleno/suplementos" element={<Navigate to="/pleno" replace />} />
           <Route path="/pleno/:kindSlug" element={<PlenoCategoryPage />} />

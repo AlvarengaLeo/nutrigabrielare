@@ -4,8 +4,8 @@ import { ArrowRight } from 'lucide-react';
 
 const TIENDA_LINKS = [
   { label: 'Suplementos', to: '/pleno' },
-  { label: 'Productos digitales', to: '/pleno/digitales' },
-  { label: 'Servicios', to: '/pleno/servicios' },
+  { label: 'Productos digitales', to: '/nutrigabrielare?categoria=digital#nutri-catalogo' },
+  { label: 'Servicios', to: '/nutrigabrielare?categoria=service#nutri-catalogo' },
   { label: 'Carrito', to: '/carrito' },
 ];
 

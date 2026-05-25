@@ -18,34 +18,89 @@ const PRICE_BUCKETS = [
   { id: 'gt75', label: 'Más de $75', test: (p) => Number(p.price) > 75 },
 ];
 
-function FilterGroup({ title, children, defaultOpen = true }) {
+// Two visual themes. `pleno` = deep-green editorial; `nutri` = cream/primary brand
+// matching the rest of the marketing site (used on /nutrigabrielare).
+const THEMES = {
+  pleno: {
+    surface: 'bg-white',
+    text: 'text-pleno-ink',
+    textMute: 'text-pleno-ink-mute',
+    textSoft: 'text-pleno-ink-soft',
+    line: 'border-pleno-line',
+    lineSoft: 'border-pleno-line-soft',
+    sortHoverBorder: 'border-pleno-ink-mute',
+    sortOpenBorder: 'border-pleno-deep',
+    sortOpenShadow: 'shadow-[0_8px_24px_-12px_rgba(10,77,46,0.35)]',
+    sortMenuHover: 'hover:bg-pleno-mist',
+    sortMenuActiveBg: 'bg-pleno-soft',
+    sortMenuActiveText: 'text-pleno-deep',
+    sortIconActive: 'text-pleno-deep',
+    drawerCloseHover: 'hover:bg-pleno-mist',
+    grabber: 'bg-pleno-line',
+    badgeBg: 'bg-pleno-deep',
+    applyBtnBg: 'bg-pleno-deep',
+    applyBtnHover: 'hover:bg-pleno-green',
+    clearLink: 'text-pleno-green hover:text-pleno-deep',
+    spinnerBorder: 'border-pleno-line border-t-pleno-green',
+    activeChipBgHex: '#196b41',
+    activeChipBorderHex: '#196b41',
+    inactiveCheckboxBorder: 'border-pleno-line-soft',
+  },
+  nutri: {
+    surface: 'bg-background',
+    text: 'text-primary',
+    textMute: 'text-primary/55',
+    textSoft: 'text-primary/45',
+    line: 'border-primary/12',
+    lineSoft: 'border-primary/8',
+    sortHoverBorder: 'border-primary/35',
+    sortOpenBorder: 'border-primary',
+    sortOpenShadow: 'shadow-[0_8px_24px_-12px_rgba(17,17,17,0.25)]',
+    sortMenuHover: 'hover:bg-primary/5',
+    sortMenuActiveBg: 'bg-primary/8',
+    sortMenuActiveText: 'text-primary',
+    sortIconActive: 'text-primary',
+    drawerCloseHover: 'hover:bg-primary/5',
+    grabber: 'bg-primary/15',
+    badgeBg: 'bg-primary',
+    applyBtnBg: 'bg-primary',
+    applyBtnHover: 'hover:bg-primary/90',
+    clearLink: 'text-primary underline-offset-4 hover:text-primary/70',
+    spinnerBorder: 'border-primary/15 border-t-primary',
+    activeChipBgHex: '#1A1A1A',
+    activeChipBorderHex: '#1A1A1A',
+    inactiveCheckboxBorder: 'border-primary/20',
+  },
+};
+
+function FilterGroup({ title, children, defaultOpen = true, t }) {
   const [open, setOpen] = useState(defaultOpen);
   return (
     <div>
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="w-full flex justify-between items-center mb-3.5 font-body text-[13px] font-semibold text-pleno-ink"
+        className={`w-full flex justify-between items-center mb-3.5 font-body text-[13px] font-semibold ${t.text}`}
       >
         <span>{title}</span>
         {open ? <Minus size={14} strokeWidth={2} /> : <Plus size={14} strokeWidth={2} />}
       </button>
-      {open && <div className="flex flex-col gap-2.5 text-[13px] text-pleno-ink-soft">{children}</div>}
+      {open && <div className={`flex flex-col gap-2.5 text-[13px] ${t.textSoft}`}>{children}</div>}
     </div>
   );
 }
 
-function CheckboxLabel({ checked, onChange, children }) {
+function CheckboxLabel({ checked, onChange, children, t }) {
   return (
     <label className="flex items-center gap-2.5 cursor-pointer select-none">
       <span
         style={
           checked
-            ? { backgroundColor: '#196b41', borderColor: '#196b41' }
+            ? { backgroundColor: t.activeChipBgHex, borderColor: t.activeChipBorderHex }
             : undefined
         }
         className={`w-[18px] h-[18px] inline-flex items-center justify-center rounded-[4px] border-[1.5px] transition-colors ${
-          checked ? '' : 'bg-white border-pleno-line-soft'
+          checked ? '' : `bg-white ${t.inactiveCheckboxBorder}`
         }`}
       >
         {checked && <Check size={12} strokeWidth={3} className="text-white" />}
@@ -56,12 +111,12 @@ function CheckboxLabel({ checked, onChange, children }) {
         onChange={onChange}
         className="sr-only"
       />
-      <span className={checked ? 'text-pleno-ink font-medium' : ''}>{children}</span>
+      <span className={checked ? `${t.text} font-medium` : ''}>{children}</span>
     </label>
   );
 }
 
-function SortDropdown({ value, onChange }) {
+function SortDropdown({ value, onChange, t }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   const current = SORT_OPTIONS.find((o) => o.value === value) || SORT_OPTIONS[0];
@@ -87,27 +142,27 @@ function SortDropdown({ value, onChange }) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className={`group inline-flex items-center gap-3 pl-5 pr-4 py-2.5 rounded-full border bg-white text-pleno-ink text-[13px] font-medium transition-all ${
+        className={`group inline-flex items-center gap-3 pl-5 pr-4 py-2.5 rounded-full border bg-white ${t.text} text-[13px] font-medium transition-all ${
           open
-            ? 'border-pleno-deep shadow-[0_8px_24px_-12px_rgba(10,77,46,0.35)]'
-            : 'border-pleno-line hover:border-pleno-ink-mute'
+            ? `${t.sortOpenBorder} ${t.sortOpenShadow}`
+            : `${t.line} hover:${t.sortHoverBorder}`
         }`}
         aria-haspopup="listbox"
         aria-expanded={open}
       >
-        <span className="text-pleno-ink-mute font-normal">Ordenar</span>
-        <span className="text-pleno-ink">{current.label}</span>
+        <span className={`${t.textMute} font-normal`}>Ordenar</span>
+        <span className={t.text}>{current.label}</span>
         <ChevronDown
           size={14}
           strokeWidth={2}
-          className={`text-pleno-ink-soft transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          className={`${t.textSoft} transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
         />
       </button>
 
       {open && (
         <div
           role="listbox"
-          className="absolute right-0 mt-2 z-30 min-w-[14rem] max-w-[calc(100vw-2rem)] rounded-2xl border border-pleno-line bg-white shadow-[0_18px_60px_-20px_rgba(0,0,0,0.18)] overflow-hidden p-1.5 origin-top-right"
+          className={`absolute right-0 mt-2 z-30 min-w-[14rem] max-w-[calc(100vw-2rem)] rounded-2xl border ${t.line} bg-white shadow-[0_18px_60px_-20px_rgba(0,0,0,0.18)] overflow-hidden p-1.5 origin-top-right`}
         >
           {SORT_OPTIONS.map((o) => {
             const active = o.value === value;
@@ -122,12 +177,12 @@ function SortDropdown({ value, onChange }) {
                 }}
                 className={`w-full flex items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl text-[13px] text-left transition-colors ${
                   active
-                    ? 'bg-pleno-soft text-pleno-deep font-medium'
-                    : 'text-pleno-ink hover:bg-pleno-mist'
+                    ? `${t.sortMenuActiveBg} ${t.sortMenuActiveText} font-medium`
+                    : `${t.text} ${t.sortMenuHover}`
                 }`}
               >
                 <span>{o.label}</span>
-                {active && <Check size={14} strokeWidth={2.5} className="text-pleno-deep" />}
+                {active && <Check size={14} strokeWidth={2.5} className={t.sortIconActive} />}
               </button>
             );
           })}
@@ -138,11 +193,7 @@ function SortDropdown({ value, onChange }) {
 }
 
 /**
- * Reusable Pleno PLP body (toolbar + sidebar filters + product grid).
- *
- * Supports either a single kind (`kind` + `categoryLabel`) or a unified
- * multi-kind catalog via `kinds` ([{ kind, label }, ...]). When `kinds`
- * is provided, the "Categoría" filter renders one checkbox per kind.
+ * Reusable PLP body (toolbar + sidebar filters + product grid).
  *
  * @param {{
  *   kind?: 'physical' | 'digital' | 'service',
@@ -150,6 +201,7 @@ function SortDropdown({ value, onChange }) {
  *   kinds?: Array<{ kind: 'physical' | 'digital' | 'service', label: string }>,
  *   emptyMessage?: string,
  *   anchorId?: string,
+ *   theme?: 'pleno' | 'nutri',
  * }} props
  */
 export default function PlenoProductsPLP({
@@ -158,8 +210,10 @@ export default function PlenoProductsPLP({
   kinds,
   emptyMessage = 'Pronto vas a encontrar productos disponibles aquí.',
   anchorId,
+  theme = 'pleno',
 }) {
-  // Normalize: either multi-kind (`kinds`) or single-kind (`kind` + `categoryLabel`)
+  const t = THEMES[theme] ?? THEMES.pleno;
+
   const kindList = useMemo(() => {
     if (kinds && kinds.length) return kinds;
     if (kind) return [{ kind, label: categoryLabel ?? kind }];
@@ -170,12 +224,11 @@ export default function PlenoProductsPLP({
   const kindKeys = useMemo(() => kindList.map((k) => k.kind), [kindList]);
   const kindKeysSerialized = kindKeys.join(',');
 
-  // Allow ?categoria=digital|physical|service to preselect a kind
   const [searchParams] = useSearchParams();
   const requestedKind = searchParams.get('categoria');
   const initialKindFilters = useMemo(() => {
     if (requestedKind && kindKeys.includes(requestedKind)) return [requestedKind];
-    return kindKeys; // default: all kinds checked → all visible
+    return kindKeys;
   }, [requestedKind, kindKeysSerialized]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const [products, setProducts] = useState([]);
@@ -186,19 +239,17 @@ export default function PlenoProductsPLP({
   const [subtypeFilters, setSubtypeFilters] = useState([]);
   const [kindFilters, setKindFilters] = useState(initialKindFilters);
 
-  // Sync kindFilters when the kindList / URL param changes
   useEffect(() => {
     setKindFilters(initialKindFilters);
   }, [initialKindFilters]);
 
-  // Scroll to the catalog when arriving from a deep-link like ?categoria=digital
   useEffect(() => {
     if (!requestedKind || !anchorId) return;
-    const t = setTimeout(() => {
+    const timer = setTimeout(() => {
       const el = document.getElementById(anchorId);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 150);
-    return () => clearTimeout(t);
+    return () => clearTimeout(timer);
   }, [requestedKind, anchorId]);
 
   useEffect(() => {
@@ -307,7 +358,6 @@ export default function PlenoProductsPLP({
     (kindFilterActive ? 1 : 0) +
     (featuredOnly ? 1 : 0);
 
-  // Lock body scroll while the mobile drawer is open
   useEffect(() => {
     if (!filtersOpen) return;
     const original = document.body.style.overflow;
@@ -324,40 +374,43 @@ export default function PlenoProductsPLP({
 
   const filtersContent = (
     <>
-      <FilterGroup title="Categoría">
+      <FilterGroup title="Categoría" t={t}>
         {multiKind ? (
           kindList.map((k) => (
             <CheckboxLabel
               key={k.kind}
               checked={kindFilters.includes(k.kind)}
               onChange={() => toggleKindFilter(k.kind)}
+              t={t}
             >
               {k.label}
             </CheckboxLabel>
           ))
         ) : (
-          <CheckboxLabel checked={true} onChange={() => {}}>
+          <CheckboxLabel checked={true} onChange={() => {}} t={t}>
             {kindList[0]?.label}
           </CheckboxLabel>
         )}
       </FilterGroup>
 
-      <FilterGroup title="Beneficio">
+      <FilterGroup title="Beneficio" t={t}>
         <CheckboxLabel
           checked={featuredOnly}
           onChange={() => setFeaturedOnly((v) => !v)}
+          t={t}
         >
           Solo destacados
         </CheckboxLabel>
       </FilterGroup>
 
       {availableSubtypes.length > 0 && (
-        <FilterGroup title="Tipo de recurso">
+        <FilterGroup title="Tipo de recurso" t={t}>
           {availableSubtypes.map(([id, label]) => (
             <CheckboxLabel
               key={id}
               checked={subtypeFilters.includes(id)}
               onChange={() => toggleSubtypeFilter(id)}
+              t={t}
             >
               {label}
             </CheckboxLabel>
@@ -365,12 +418,13 @@ export default function PlenoProductsPLP({
         </FilterGroup>
       )}
 
-      <FilterGroup title="Precio">
+      <FilterGroup title="Precio" t={t}>
         {PRICE_BUCKETS.map((b) => (
           <CheckboxLabel
             key={b.id}
             checked={priceFilters.includes(b.id)}
             onChange={() => togglePriceFilter(b.id)}
+            t={t}
           >
             {b.label}
           </CheckboxLabel>
@@ -390,7 +444,7 @@ export default function PlenoProductsPLP({
             setFeaturedOnly(false);
             setSort('recommended');
           }}
-          className="self-start text-[12px] text-pleno-green underline underline-offset-4 hover:text-pleno-deep transition-colors"
+          className={`self-start text-[12px] underline underline-offset-4 transition-colors ${t.clearLink}`}
         >
           Limpiar filtros
         </button>
@@ -399,41 +453,39 @@ export default function PlenoProductsPLP({
   );
 
   return (
-    <div id={anchorId} className="bg-white">
+    <div id={anchorId} className={t.surface}>
       {/* Toolbar */}
-      <div className="border-b border-pleno-line bg-white">
+      <div className={`border-b ${t.line} ${t.surface}`}>
         <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-14 py-4 flex items-center justify-between gap-3">
-          {/* Mobile filters trigger */}
           <button
             type="button"
             onClick={() => setFiltersOpen(true)}
-            className="lg:hidden inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-pleno-line bg-white text-pleno-ink text-[13px] font-medium hover:border-pleno-ink-mute transition-colors"
+            className={`lg:hidden inline-flex items-center gap-2 px-4 py-2.5 rounded-full border bg-white ${t.text} text-[13px] font-medium transition-colors ${t.line} hover:${t.sortHoverBorder}`}
             aria-haspopup="dialog"
             aria-expanded={filtersOpen}
           >
             <SlidersHorizontal size={14} strokeWidth={2} />
             Filtros
             {activeFilterCount > 0 && (
-              <span className="grid place-items-center min-w-5 h-5 px-1.5 rounded-full bg-pleno-deep text-white text-[10px] font-semibold">
+              <span className={`grid place-items-center min-w-5 h-5 px-1.5 rounded-full ${t.badgeBg} text-white text-[10px] font-semibold`}>
                 {activeFilterCount}
               </span>
             )}
           </button>
 
-          <span className="font-body text-[13px] text-pleno-ink-mute hidden sm:block">
+          <span className={`font-body text-[13px] ${t.textMute} hidden sm:block`}>
             Mostrando {loading ? '…' : filteredProducts.length}{' '}
             {filteredProducts.length === 1 ? 'producto' : 'productos'}
           </span>
           <div className="ml-auto">
-            <SortDropdown value={sort} onChange={setSort} />
+            <SortDropdown value={sort} onChange={setSort} t={t} />
           </div>
         </div>
       </div>
 
       {/* Body */}
-      <section className="px-6 sm:px-10 lg:px-14 py-10 lg:py-16 pb-24 bg-white">
+      <section className={`px-6 sm:px-10 lg:px-14 py-10 lg:py-16 pb-24 ${t.surface}`}>
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-[240px_1fr] gap-10 lg:gap-12">
-          {/* Sidebar — solo lg+ */}
           <aside className="hidden lg:flex flex-col gap-8 text-[13px]">
             {filtersContent}
           </aside>
@@ -441,7 +493,7 @@ export default function PlenoProductsPLP({
           <main>
             {loading ? (
               <div className="flex justify-center py-20">
-                <div className="w-8 h-8 border-2 border-pleno-line border-t-pleno-green rounded-full animate-spin" />
+                <div className={`w-8 h-8 border-2 ${t.spinnerBorder} rounded-full animate-spin`} />
               </div>
             ) : filteredProducts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 gap-y-12 items-stretch">
@@ -453,24 +505,22 @@ export default function PlenoProductsPLP({
               </div>
             ) : (
               <div className="py-24 text-center">
-                <p className="font-body text-pleno-ink-mute text-base">{emptyMessage}</p>
+                <p className={`font-body text-base ${t.textMute}`}>{emptyMessage}</p>
               </div>
             )}
           </main>
         </div>
       </section>
 
-      {/* Mobile filters drawer (<lg) */}
+      {/* Mobile filters drawer */}
       <div
         className={`fixed inset-0 z-40 lg:hidden ${filtersOpen ? '' : 'pointer-events-none'}`}
         aria-hidden={!filtersOpen}
       >
-        {/* Backdrop */}
         <div
           className={`absolute inset-0 bg-black/50 transition-opacity duration-300 ${filtersOpen ? 'opacity-100' : 'opacity-0'}`}
           onClick={() => setFiltersOpen(false)}
         />
-        {/* Sheet */}
         <div
           role="dialog"
           aria-modal="true"
@@ -479,33 +529,30 @@ export default function PlenoProductsPLP({
             filtersOpen ? 'translate-y-0' : 'translate-y-full'
           }`}
         >
-          {/* Grabber + header */}
-          <div className="px-6 pt-3 pb-3 border-b border-pleno-line-soft">
-            <div className="mx-auto h-1 w-10 rounded-full bg-pleno-line mb-3" aria-hidden />
+          <div className={`px-6 pt-3 pb-3 border-b ${t.lineSoft}`}>
+            <div className={`mx-auto h-1 w-10 rounded-full ${t.grabber} mb-3`} aria-hidden />
             <div className="flex items-center justify-between">
-              <h3 className="font-drama text-xl text-pleno-ink m-0">Filtros</h3>
+              <h3 className={`font-drama text-xl ${t.text} m-0`}>Filtros</h3>
               <button
                 type="button"
                 onClick={() => setFiltersOpen(false)}
-                className="grid place-items-center w-9 h-9 rounded-full hover:bg-pleno-mist transition-colors"
+                className={`grid place-items-center w-9 h-9 rounded-full transition-colors ${t.drawerCloseHover}`}
                 aria-label="Cerrar filtros"
               >
-                <X size={18} strokeWidth={2} className="text-pleno-ink-soft" />
+                <X size={18} strokeWidth={2} className={t.textSoft} />
               </button>
             </div>
           </div>
 
-          {/* Filter content */}
           <div className="px-6 py-5 flex flex-col gap-7 overflow-y-auto text-[13px]">
             {filtersContent}
           </div>
 
-          {/* Apply CTA */}
-          <div className="px-6 py-4 border-t border-pleno-line-soft">
+          <div className={`px-6 py-4 border-t ${t.lineSoft}`}>
             <button
               type="button"
               onClick={() => setFiltersOpen(false)}
-              className="w-full py-3.5 rounded-full bg-pleno-deep text-white font-semibold text-sm hover:bg-pleno-green transition-colors"
+              className={`w-full py-3.5 rounded-full ${t.applyBtnBg} text-white font-semibold text-sm transition-colors ${t.applyBtnHover}`}
             >
               Mostrar {loading ? '…' : filteredProducts.length}{' '}
               {filteredProducts.length === 1 ? 'producto' : 'productos'}

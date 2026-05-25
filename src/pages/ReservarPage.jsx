@@ -70,7 +70,7 @@ export default function ReservarPage() {
         <h1 className="font-heading font-extrabold text-3xl text-primary mb-4">
           Servicio no encontrado
         </h1>
-        <Link to="/pleno/servicios" className="font-heading font-bold text-accent hover:underline">
+        <Link to="/nutrigabrielare?categoria=service#nutri-catalogo" className="font-heading font-bold text-accent hover:underline">
           Ver servicios disponibles
         </Link>
       </div>

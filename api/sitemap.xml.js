@@ -2,10 +2,8 @@ import { createClient } from '@supabase/supabase-js';
 
 const STATIC_ROUTES = [
   { path: '/', priority: '1.0', changefreq: 'weekly' },
+  { path: '/nutrigabrielare', priority: '0.9', changefreq: 'weekly' },
   { path: '/pleno', priority: '0.9', changefreq: 'weekly' },
-  { path: '/pleno/digitales', priority: '0.8', changefreq: 'weekly' },
-  { path: '/pleno/suplementos', priority: '0.8', changefreq: 'weekly' },
-  { path: '/pleno/servicios', priority: '0.7', changefreq: 'weekly' },
   { path: '/fluir-femenino', priority: '0.9', changefreq: 'weekly' },
   { path: '/fluir-femenino/articulos', priority: '0.8', changefreq: 'daily' },
   { path: '/contactanos', priority: '0.4', changefreq: 'monthly' },
