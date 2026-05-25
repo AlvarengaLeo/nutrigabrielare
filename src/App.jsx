@@ -108,7 +108,9 @@ function AppContent() {
     }
   }, [pathname, isNutriRoute, isPlenoRoute, setTheme]);
 
-  const showStoreFooter = isPlenoRoute || isNutriRoute || theme === 'nutri' || theme === 'pleno';
+  // PlenoFooter (deep-green editorial) is used only for the Pleno theme.
+  // Nutrigabrielare reuses the default brand Footer — same as the home page.
+  const showPlenoFooter = theme === 'pleno' || (isPlenoRoute && !isNutriRoute);
 
   return (
     <>
@@ -171,7 +173,7 @@ function AppContent() {
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
-        {!isAdminRoute && (showStoreFooter ? <PlenoFooter /> : <Footer />)}
+        {!isAdminRoute && (showPlenoFooter ? <PlenoFooter /> : <Footer />)}
         {!isAdminRoute && <CartDrawer />}
       </main>
     </>
