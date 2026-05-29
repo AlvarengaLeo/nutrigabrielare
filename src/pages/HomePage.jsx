@@ -5,6 +5,7 @@ import Philosophy from '../components/Philosophy';
 import WhyChooseUs from '../components/WhyChooseUs';
 import Featured from '../components/Featured';
 import DigitalResources from '../components/DigitalResources';
+import Testimonials from '../components/Testimonials';
 
 export default function HomePage() {
   return (
@@ -14,6 +15,7 @@ export default function HomePage() {
       <Featured />
       <DigitalResources />
       <WhyChooseUs />
+      <Testimonials />
       {/* White extender that fills the footer's rounded-corner cut so it
           matches the white bg of the section above instead of revealing
           the page background. */}

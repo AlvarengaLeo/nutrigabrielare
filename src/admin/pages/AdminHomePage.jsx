@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { Home, Sparkles, Heart, Shield, ShoppingBag, ExternalLink, Clock } from 'lucide-react';
+import { Home, Sparkles, Heart, Shield, ShoppingBag, MessageCircleHeart, ExternalLink, Clock } from 'lucide-react';
 import AdminLayout from '../components/AdminLayout';
 import { getHomeContent } from '../../services/homeContentService';
 import { DEFAULT_HOME } from '../../context/HomeContentContext';
@@ -8,12 +8,14 @@ import HeroEditor from '../components/home/HeroEditor';
 import PhilosophyEditor from '../components/home/PhilosophyEditor';
 import WhyChooseUsEditor from '../components/home/WhyChooseUsEditor';
 import FeaturedEditor from '../components/home/FeaturedEditor';
+import TestimonialsEditor from '../components/home/TestimonialsEditor';
 
 const TABS = [
   { id: 'hero', label: 'Hero', icon: Sparkles },
   { id: 'philosophy', label: 'Filosofía', icon: Heart },
   { id: 'why_choose_us', label: 'Diferenciador', icon: Shield },
   { id: 'featured', label: 'Pleno Market', icon: ShoppingBag },
+  { id: 'testimonials', label: 'Testimonios', icon: MessageCircleHeart },
 ];
 
 export default function AdminHomePage() {
@@ -32,6 +34,7 @@ export default function AdminHomePage() {
             philosophy: { ...DEFAULT_HOME.philosophy, ...(data.philosophy || {}) },
             why_choose_us: { ...DEFAULT_HOME.why_choose_us, ...(data.why_choose_us || {}) },
             featured: { ...DEFAULT_HOME.featured, ...(data.featured || {}) },
+            testimonials: { ...DEFAULT_HOME.testimonials, ...(data.testimonials || {}) },
           });
           setUpdatedAt(data.updated_at);
         } else {
@@ -83,6 +86,8 @@ export default function AdminHomePage() {
         return <WhyChooseUsEditor data={content.why_choose_us} onSaved={(d) => handleSectionSaved('why_choose_us', d)} />;
       case 'featured':
         return <FeaturedEditor data={content.featured} onSaved={(d) => handleSectionSaved('featured', d)} />;
+      case 'testimonials':
+        return <TestimonialsEditor data={content.testimonials} onSaved={(d) => handleSectionSaved('testimonials', d)} />;
       default:
         return null;
     }

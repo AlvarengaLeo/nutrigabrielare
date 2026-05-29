@@ -68,7 +68,7 @@ export default function Hero() {
   };
 
   return (
-    <section ref={containerRef} className="relative min-h-[95vh] w-full flex flex-col lg:flex-row overflow-hidden bg-[#F2FCFA]">
+    <section ref={containerRef} className="relative lg:min-h-[95vh] w-full flex flex-col lg:flex-row overflow-hidden bg-[#F2FCFA]">
 
       {/* Decorative Fluir Femenino icons */}
       {d.showDecorativeLeaves !== false && (
@@ -81,7 +81,7 @@ export default function Hero() {
       )}
 
       {/* Content (Left) */}
-      <div className="w-full lg:w-[60%] pt-40 lg:pt-48 pb-20 lg:pb-24 px-6 md:px-12 lg:pl-[10%] flex items-center relative z-10">
+      <div className="w-full lg:w-[60%] pt-40 lg:pt-48 pb-0 lg:pb-24 px-6 md:px-12 lg:pl-[10%] flex items-center relative z-10">
         
         <div className="max-w-2xl xl:max-w-3xl relative z-20">
 
@@ -113,12 +113,31 @@ export default function Hero() {
               {d.secondaryCta?.text || 'Recursos y Ebooks'}
             </a>
           </div>
+
+          {/* Mobile model image — below the buttons */}
+          {!loading && (
+            <div className="hero-element lg:hidden mt-12 flex justify-center items-end self-stretch">
+              <img
+                src={d.heroImage || '/media/hero_model.png'}
+                alt="Gabriela Retana"
+                decoding="async"
+                onError={(e) => {
+                  e.target.src = '/media/model_placeholder.png';
+                }}
+                style={{
+                  filter:
+                    'drop-shadow(0 6px 8px rgba(20, 40, 30, 0.18)) drop-shadow(0 22px 28px rgba(20, 40, 30, 0.18))',
+                }}
+                className="w-80 sm:w-[22rem] h-auto object-contain object-bottom -rotate-2 origin-bottom"
+              />
+            </div>
+          )}
         </div>
       </div>
       
       {/* Main Image Layering */}
       {!loading && (
-        <div className="hidden lg:flex absolute bottom-0 right-0 lg:w-[45%] lg:h-[85%] pointer-events-none z-20 justify-end items-end lg:pr-24 xl:pr-48">
+        <div className="hidden lg:flex absolute bottom-0 right-0 lg:w-[45%] lg:h-[95%] pointer-events-none z-20 justify-end items-end lg:pr-24 xl:pr-48">
           <div className="model-wrapper relative w-full h-full flex justify-end items-end origin-bottom">
             <img
               src={d.heroImage || '/media/hero_model.png'}

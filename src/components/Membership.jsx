@@ -36,7 +36,7 @@ export default function Membership() {
           </div>
 
           <h2 className="entry-block font-heading not-italic text-4xl md:text-5xl lg:text-[4rem] text-primary tracking-tight leading-[1.1] max-w-3xl">
-            Ebooks, Guías & Programas—<br/>
+            Ebooks, Guías & Programas<br/>
             <span className="font-drama italic text-accent">Tu Bienestar Automatizado</span>
           </h2>
         </div>

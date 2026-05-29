@@ -64,7 +64,7 @@ export default function Navbar() {
       : '/media/pleno/logo-pleno-dark.png'
     : isFluir
       ? '/media/fluir-femenino/logo-fluir-rosado.png'
-      : '/media/logo-header.png';
+      : '/media/logo-nutri.png';
   const logoAlt = isPleno
     ? 'Pleno'
     : isFluir
