@@ -88,7 +88,7 @@ export default async function handler(req, res) {
           ? `<p>Notas: ${reservation.notes}</p>`
           : '';
         await client.emails.send({
-          from: process.env.EMAIL_FROM || 'Nutrigabriela <noreply@nutrigabriela.com>',
+          from: process.env.EMAIL_FROM || 'Nutrigabriela <shop@nutrigabrielare.com>',
           to: adminEmail,
           subject: `Nueva reserva: ${reservation.products?.name ?? 'Servicio'}`,
           html: `<p>Recibiste una nueva reserva.</p>
@@ -96,7 +96,7 @@ export default async function handler(req, res) {
             <p>Cliente: <strong>${reservation.contact_name}</strong> (${reservation.contact_email}${reservation.contact_phone ? `, ${reservation.contact_phone}` : ''})</p>
             ${dateLine}
             ${notesLine}
-            <p>Revisala en el panel: <a href="${process.env.APP_URL || ''}/admin/reservas">/admin/reservas</a></p>`,
+            <p>Revisala en el panel: <a href="${(process.env.APP_URL || 'https://nutrigabrielare.com').replace(/\/$/, '')}/admin/reservas">/admin/reservas</a></p>`,
         });
       }
     } catch (err) {
