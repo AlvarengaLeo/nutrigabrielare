@@ -1,9 +1,11 @@
 import React, { useRef, useEffect, useLayoutEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { useHomeContent } from '../context/HomeContentContext';
 
 export default function Hero() {
   const containerRef = useRef(null);
+  const navigate = useNavigate();
   const { content, loading } = useHomeContent();
   const d = content.hero;
 
@@ -66,6 +68,10 @@ export default function Hero() {
     if (href?.startsWith('#')) {
       e.preventDefault();
       document.getElementById(href.slice(1))?.scrollIntoView({ behavior: 'smooth' });
+    } else if (href?.startsWith('/')) {
+      // Ruta interna: navegación SPA en vez de recarga completa
+      e.preventDefault();
+      navigate(href);
     }
   };
 
@@ -102,14 +108,14 @@ export default function Hero() {
           {/* Buttons */}
           <div className="hero-element flex flex-wrap gap-4">
             <a
-              href={d.primaryCta?.href || '#servicios'}
+              href={d.primaryCta?.href || '/nutrigabrielare?categoria=service#nutri-catalogo'}
               onClick={(e) => handleCtaClick(e, d.primaryCta?.href)}
               className="magnetic-btn inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-primary text-background font-bold text-sm tracking-wide"
             >
               <span className="relative z-10">{d.primaryCta?.text || 'Explorar Servicios'}</span>
             </a>
             <a
-              href={d.secondaryCta?.href || '#recursos'}
+              href={d.secondaryCta?.href || '/nutrigabrielare?categoria=digital#nutri-catalogo'}
               onClick={(e) => handleCtaClick(e, d.secondaryCta?.href)}
               className="inline-flex items-center justify-center px-8 py-3.5 rounded-full border-2 border-primary/10 text-primary font-bold text-sm tracking-wide hover:border-primary hover:bg-primary hover:text-background transition-all duration-300"
             >
