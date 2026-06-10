@@ -25,7 +25,7 @@ export default function Footer() {
             <p className="font-body text-lg md:text-xl text-background/80 leading-relaxed max-w-md mb-8">
               Especialista en salud hormonal de la mujer con enfoque holístico. Te acompaño a lograr tus objetivos cuidando tu cuerpo, mente y alma.
             </p>
-            <a href="https://wa.me/50376284719" target="_blank" rel="noopener noreferrer" className="magnetic-btn inline-flex items-center justify-center px-8 py-3 rounded-full bg-accent text-white font-medium text-sm transition-transform hover:scale-105 shadow-lg shadow-accent/20">
+            <a href={`https://wa.me/50376284719?text=${encodeURIComponent('¡Hola Gabriela! Vengo del sitio web y quiero agendar una cita 💕')}`} target="_blank" rel="noopener noreferrer" className="magnetic-btn inline-flex items-center justify-center px-8 py-3 rounded-full bg-accent text-white font-medium text-sm transition-transform hover:scale-105 shadow-lg shadow-accent/20">
               <span className="relative z-10">Agenda tu Cita Ahora</span>
             </a>
           </div>

@@ -290,7 +290,7 @@
 │   ├── config/runtimeConfig.js   ← Schema de variables VITE_* (críticas vs opcionales)
 │   └── lib/supabase.js           ← Cliente Supabase del frontend (anon key)
 ├── supabase/
-│   └── migrations/               ← 001…020 SQL aplicadas en orden (ver §5)
+│   └── migrations/               ← 001…021 SQL aplicadas en orden (ver §5)
 ├── docs/
 │   ├── email-setup.md            ← Guía de configuración de Resend
 │   └── manuales/                 ← Manuales entregables (este documento)
@@ -377,8 +377,8 @@
 </tr>
 <tr>
 <td><code>/reservar/:slug</code></td>
-<td><code>ReservarPage</code> (reserva de servicio)</td>
-<td>🔒 Requiere sesión (<code>ProtectedRoute</code>)</td>
+<td><code>ReservarPage</code> (reserva <strong>con pago en línea</strong>)</td>
+<td>Pública (compra como invitada)</td>
 </tr>
 <tr>
 <td><code>/cuenta</code></td>
@@ -523,7 +523,7 @@
 </section>
 <section class="card">
 <h2 id="5-base-de-datos">5. Base de datos</h2>
-<p>Schema PostgreSQL gestionado por las migraciones <code>supabase/migrations/001…020</code>. <strong>Todas las tablas tienen RLS habilitado</strong> con políticas explícitas. Convención: archivos <code>NNN_descripcion.sql</code>, idempotentes, aplicados en orden numérico (manualmente en el SQL Editor de Supabase o con <code>supabase db push</code>).</p>
+<p>Schema PostgreSQL gestionado por las migraciones <code>supabase/migrations/001…021</code>. <strong>Todas las tablas tienen RLS habilitado</strong> con políticas explícitas. Convención: archivos <code>NNN_descripcion.sql</code>, idempotentes, aplicados en orden numérico (manualmente en el SQL Editor de Supabase o con <code>supabase db push</code>).</p>
 <h3 id="51-historial-de-migraciones">5.1 Historial de migraciones</h3>
 <table>
 <thead>
@@ -632,6 +632,11 @@
 <td>020</td>
 <td><code>020_pickup_zones.sql</code></td>
 <td><code>shipping_zones.is_pickup</code> (retiro en tienda).</td>
+</tr>
+<tr>
+<td>021</td>
+<td><code>021_reservations_paid.sql</code></td>
+<td><code>reservations.order_id</code> (enlace a la orden que pagó la consulta) + estado <code>pagado</code> en el CHECK de <code>reservations.status</code>.</td>
 </tr>
 </tbody></table>
 <h3 id="52-tablas">5.2 Tablas</h3>
@@ -1061,7 +1066,7 @@
 <tr>
 <td><code>template</code></td>
 <td>text</td>
-<td><code>purchase_confirm</code> | <code>digital_download</code> | <code>reservation_confirm</code></td>
+<td><code>purchase_confirm</code> | <code>digital_download</code> | <code>reservation_confirm</code> ⧸ <code>service_paid</code> ⧸ <code>service_paid_admin</code></td>
 </tr>
 <tr>
 <td><code>recipient_email</code></td>
@@ -1396,7 +1401,17 @@
 <tr>
 <td><code>reservationConfirmationTemplate</code> → <code>sendReservationConfirmationEmail</code></td>
 <td><code>reservation_confirm</code></td>
-<td><code>api/reservations/notify.js</code> tras crear una reserva</td>
+<td>Legado: <code>api/reservations/notify.js</code> (el flujo actual de reservas cobra al reservar)</td>
+</tr>
+<tr>
+<td><code>servicePaidTemplate</code> → <code>sendServicePaidEmail</code></td>
+<td><code>service_paid</code></td>
+<td>Webhook aprobado con <strong>todos</strong> los ítems <code>service</code>: confirma el cupo pagado, incluye fecha preferida y CTA &quot;Ver mi pedido&quot;</td>
+</tr>
+<tr>
+<td>(HTML simple) → <code>sendAdminServicePaidNotification</code></td>
+<td><code>service_paid_admin</code></td>
+<td>Mismo evento, a <code>ADMIN_NOTIFY_EMAIL</code>: datos de contacto, fecha preferida, notas y link a la orden</td>
 </tr>
 </tbody></table>
 <ul>
@@ -1557,14 +1572,10 @@
 </ol>
 <h3 id="94-reservas-de-servicios">9.4 Reservas de servicios</h3>
 <ol>
-<li>Desde la página de un servicio (<code>/producto/:slug</code>, <code>kind=&#39;service&#39;</code>) se navega a <code>/reservar/:slug</code> — esta ruta <strong>sí requiere sesión</strong> (<code>ProtectedRoute</code>).</li>
-<li>El formulario inserta en <code>reservations</code> (estado <code>pendiente</code>) vía <code>reservationService</code> (RLS: la usuaria solo crea las suyas).</li>
-<li>Luego llama a <code>POST /api/reservations/notify</code> con el JWT; el servidor (cliente anon + JWT, respetando RLS) envía:<ul>
-<li>correo <code>reservation_confirm</code> a la clienta;</li>
-<li>aviso opcional al admin (<code>ADMIN_NOTIFY_EMAIL</code>) con link a <code>/admin/reservas</code>.</li>
-</ul>
-</li>
-<li>El equipo gestiona el ciclo en <code>/admin/reservas</code>: <code>pendiente → contactado → confirmado → completado</code> (o <code>cancelado</code>).</li>
+<li>Desde la página de un servicio (<code>/producto/:slug</code>, <code>kind=&#39;service&#39;</code>) se navega a <code>/reservar/:slug</code> — ruta <strong>pública</strong> (sin sesión).</li>
+<li><strong>Servicios con precio &gt; 0:</strong> el formulario (contacto + fecha/horario preferido + notas) llama a <code>create-link</code> con el servicio como ítem y un bloque <code>reservation</code>; el servidor crea la orden <strong>y</strong> la reserva (<code>pendiente</code>, <code>order_id</code> enlazado, service role) y redirige a Wompi. <strong>Servicios con precio 0 (&quot;Cotizar&quot;):</strong> se muestra un CTA de WhatsApp con mensaje precargado en lugar del formulario.</li>
+<li>Al confirmarse el pago, el webhook: marca la reserva <code>pagado</code> (o <code>cancelado</code> si el pago fue rechazado), envía <code>service_paid</code> a la clienta y <code>service_paid_admin</code> a <code>ADMIN_NOTIFY_EMAIL</code> con los datos para coordinar la cita.</li>
+<li>El equipo gestiona el ciclo en <code>/admin/reservas</code>: <code>pagado → contactado → confirmado → completado</code> (o <code>cancelado</code>). Las órdenes de servicio no requieren envío (igual que las digitales: el checkout y <code>create-link</code> omiten zona y dirección cuando no hay ítems físicos).</li>
 </ol>
 <h3 id="95-reenvío-de-descargas-desde-el-admin">9.5 Reenvío de descargas desde el admin</h3>
 <ol>

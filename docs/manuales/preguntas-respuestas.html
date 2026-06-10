@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Preguntas y Respuestas · Nutrigabrielare</title>
+<link rel="icon" href="manual-usuario/img/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Outfit:wght@300;400;600&family=Cormorant+Garamond:ital@1&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --rose:#EE7699; --rose-deep:#D6517B; --mist:#FDF1F4; --soft:#FBE4EB;
+    --ink:#3A1A22; --ink-soft:#6A3E48; --ink-mute:#8A6068; --line:#F7D7DE;
+    --green:#0E7A3F;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--mist);color:var(--ink);font-family:'Outfit',sans-serif;line-height:1.65;font-size:16px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px 80px}
+  header.cover{text-align:center;padding:72px 24px 56px}
+  header.cover img{width:84px;height:84px;display:block;margin:0 auto 16px}
+  header.cover .brand{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:28px}
+  header.cover h1{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:42px;margin:18px 0 6px;letter-spacing:-.02em}
+  header.cover h1 em{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;color:var(--rose-deep)}
+  header.cover p{color:var(--ink-mute);max-width:560px;margin:10px auto 0}
+  .divider{width:56px;height:4px;background:var(--rose);border-radius:99px;margin:22px auto}
+  section.card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:32px 40px;margin:22px 0}
+  h2{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:20px;margin:0 0 10px;letter-spacing:-.01em}
+  h2 .num{color:var(--rose);margin-right:8px}
+  p{margin:10px 0;color:var(--ink-soft)}
+  strong{color:var(--ink)}
+  ol,ul{color:var(--ink-soft);padding-left:22px}
+  li{margin:6px 0}
+  code{background:var(--soft);color:var(--rose-deep);padding:2px 8px;border-radius:8px;font-size:14px}
+  .chip{display:inline-block;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.08em;padding:4px 12px;border-radius:99px;margin-bottom:10px}
+  .ok{background:#E8F5EC;color:var(--green)}
+  .panel{background:var(--soft);color:var(--rose-deep)}
+  .dev{background:#FFF3E6;color:#B06A12}
+  .info{background:#EDF1FB;color:#3D5AA9}
+  .tip{background:var(--mist);border:1px solid var(--line);border-left:4px solid var(--rose);border-radius:12px;padding:12px 16px;margin:14px 0;font-size:15px;color:var(--ink-soft)}
+  .tip b{color:var(--rose-deep)}
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:15px}
+  th{font-family:'Plus Jakarta Sans',sans-serif;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--rose-deep);padding:9px 11px;border-bottom:2px solid var(--line)}
+  td{padding:9px 11px;border-bottom:1px solid var(--line);color:var(--ink-soft);vertical-align:top}
+  footer{text-align:center;color:var(--ink-mute);font-size:13px;padding:30px 0 0}
+  footer a{color:var(--rose-deep)}
+  @media print{body{background:#fff}section.card{border:none;padding:20px 0;margin:0;break-inside:avoid-page}}
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <img src="manual-usuario/img/logo.png" alt="Nutrigabrielare" />
+  <div class="brand">Nutrigabrielare</div>
+  <div class="divider"></div>
+  <h1>Preguntas y <em>Respuestas</em></h1>
+  <p>Respuestas punto por punto a tus preguntas sobre el sitio — qué ya está resuelto, qué podés hacer vos desde el panel y qué requiere un ajuste del equipo técnico.</p>
+</header>
+
+<div class="wrap">
+
+<section class="card">
+  <h2><span class="num">1.</span>"El botón de CTA no se redirige"</h2>
+  <span class="chip ok">✅ Ya resuelto</span>
+  <p>Los botones del inicio ("Ver Recursos y Ebooks" y "Ver Servicios") tenían guardado un destino que ya no existía — por eso el clic no hacía nada. <strong>Ya fue corregido</strong>: ahora llevan a la vitrina Nutrigabrielare con el filtro correcto (Recursos digitales / Servicios).</p>
+  <p>Si editás los botones desde el panel (Página Principal → Hero), el campo <strong>"Enlace / Acción"</strong> define a dónde van. Destinos útiles:</p>
+  <table>
+    <tr><th>Para llevar a…</th><th>Poné en el enlace</th></tr>
+    <tr><td>Recursos digitales (ebooks, cursos)</td><td><code>/nutrigabrielare?categoria=digital#nutri-catalogo</code></td></tr>
+    <tr><td>Servicios (consultas)</td><td><code>/nutrigabrielare?categoria=service#nutri-catalogo</code></td></tr>
+    <tr><td>Tienda de suplementos</td><td><code>/pleno</code></td></tr>
+  </table>
+  <p>Si algún botón aún no te responde, decinos <strong>cuál exactamente</strong> y lo revisamos.</p>
+</section>
+
+<section class="card">
+  <h2><span class="num">2.</span>"¿Cómo cambio el orden de la página inicial?"</h2>
+  <span class="chip dev">🛠️ Lo hace el equipo técnico (cambio rápido)</span>
+  <p>El orden de las secciones del inicio no se cambia desde el panel — está definido en el código (lo que sí editás desde el panel es el <em>contenido</em> de cada sección). Reordenarlas es un cambio pequeño y rápido.</p>
+  <p>Entendimos que querés este orden: <strong>1)</strong> Hero → <strong>2)</strong> Filosofía → <strong>3)</strong> Ebooks/Recursos → <strong>4)</strong> "Más que una dieta…" → <strong>5)</strong> Pleno Market → <strong>6)</strong> Testimonios. Confirmanos y lo dejamos así en la próxima actualización.</p>
+</section>
+
+<section class="card">
+  <h2><span class="num">3.</span>"¿Cómo hago para que la foto se vea justo a la par de la frase inicial?"</h2>
+  <span class="chip dev">🛠️ Ajuste de diseño (equipo técnico)</span>
+  <p>La posición de la foto del hero es parte del diseño (en computadora va a la derecha, anclada abajo; en teléfono va después de los botones). Desde el panel podés <strong>cambiar la foto</strong> (Página Principal → Hero → Imagen principal), pero su <strong>posición</strong> es un ajuste de código.</p>
+  <p>Para hacerlo bien, pasanos una referencia: una captura marcando dónde la querés ver respecto a la frase (¿alineada a la altura del título? ¿más arriba? ¿más grande?) y lo ajustamos.</p>
+</section>
+
+<section class="card">
+  <h2><span class="num">4.</span>"Los testimonios aún no tienen foto"</h2>
+  <span class="chip ok">✅ Ya desarrollado — por publicarse</span>
+  <p>¡Justo lo acabamos de construir! En la próxima actualización del sitio, cada testimonio va a tener un botón <strong>"Subir foto"</strong> en el panel (Página Principal → Testimonios). La foto es opcional: si una clienta no quiere mostrar la suya, el sitio muestra sus <strong>iniciales</strong> en un círculo de color, igual de elegante.</p>
+  <p>Las fotos las subís vos (cuadradas, máximo 2MB). Después de subirlas, tocá <strong>Guardar Testimonios</strong>.</p>
+</section>
+
+<section class="card">
+  <h2><span class="num">5.</span>"¿Cuál fue el precio del dominio y lo de Wompi?"</h2>
+  <span class="chip info">💬 Información</span>
+  <table>
+    <tr><th>Concepto</th><th>Costo</th></tr>
+    <tr><td>Dominio nutrigabrielare.com — renovación anual (vence 28-may-2027, renovación automática activada)</td><td>$19.99/año</td></tr>
+    <tr><td>Correo corporativo (Business Email, 2 buzones) — renovación (vence 04-jun-2027)</td><td>$14.16/año</td></tr>
+    <tr><td>Wompi (pagos con tarjeta)</td><td>Sin costo fijo mensual — Wompi cobra una <strong>comisión por cada venta</strong> según su tarifa vigente (la ves en tu panel de Wompi)</td></tr>
+    <tr><td>Hosting del sitio (Vercel) y base de datos (Supabase)</td><td>$0 — planes gratuitos, suficientes para el tráfico actual</td></tr>
+  </table>
+  <p>El monto exacto pagado inicialmente por el dominio y cualquier detalle de facturación te lo confirma Bryan directamente.</p>
+</section>
+
+<section class="card">
+  <h2><span class="num">6.</span>"Al comprar un producto digital pide información de envío"</h2>
+  <span class="chip ok">✅ Ya desarrollado — por publicarse</span>
+  <p>Tenías toda la razón — y ya está listo: cuando el carrito tiene <strong>solo productos digitales</strong>, el checkout ya no pide nada de envío (ni zona ni dirección), solo nombre, correo y teléfono. Entra en la próxima actualización.</p>
+</section>
+
+<section class="card">
+  <h2><span class="num">7.</span>"Me salió mi sesión activa con mi correo — ¿al cliente le aparecerá así?"</h2>
+  <span class="chip info">💬 No — tranquila</span>
+  <p>Lo que viste no fue tu sesión: el checkout <strong>recuerda en TU navegador</strong> los datos que escribiste antes (es un borrador local, para que nadie pierda lo que llenó si la página se recarga). Como vos ya habías hecho compras de prueba en esa computadora, te aparecieron tus propios datos.</p>
+  <p>Una clienta nueva, en su propio teléfono o computadora, <strong>ve el formulario vacío</strong> y lo llena de cero. Además ya no se pide iniciar sesión ni crear cuenta para comprar.</p>
+</section>
+
+<section class="card">
+  <h2><span class="num">8.</span>"¿Dónde pongo la dirección y horarios de la tienda?"</h2>
+  <span class="chip dev">🛠️ Lo agregamos nosotros (decinos los datos)</span>
+  <p>Hoy el pie de página dice "Santa Ana, El Salvador" de forma genérica, y la página de Contacto tiene una sección de horarios y políticas — pero ninguno es editable desde el panel todavía.</p>
+  <p><strong>Pasanos la dirección exacta y los horarios</strong> y los colocamos en el pie de página y en Contacto. Si querés cambiarlos seguido, también podemos hacerlos editables desde el panel (es un agregado pequeño al CMS).</p>
+</section>
+
+<section class="card">
+  <h2><span class="num">10.</span>"¿Hay forma de que el cliente PAGUE el paquete de servicio y me llegue su info?"</h2>
+  <span class="chip ok">✅ Ya desarrollado — por publicarse</span>
+  <p>Hoy el flujo de servicios es: la clienta llena el formulario de <strong>reserva</strong> (sin pago) → te llega copia al correo y aparece en el panel → Reservas → vos la contactás y coordinás el pago aparte.</p>
+  <p>Lo que pedís — <strong>que pague en línea al reservar</strong> — es totalmente posible: el sistema de pagos con Wompi ya funciona para productos, y extenderlo a los servicios es un desarrollo mediano. El flujo quedaría:</p>
+  <ol>
+    <li>La clienta elige el paquete y paga con tarjeta (Wompi)</li>
+    <li>Te llega el aviso con sus datos y el pago ya confirmado</li>
+    <li>La contactás solo para agendar día y hora — sin perseguir pagos</li>
+  </ol>
+  <p>¡Ya está construido exactamente así! En la próxima actualización: la clienta paga al reservar (sin crear cuenta), la reserva te aparece como <strong>"Pagada"</strong> en el panel y te llega el aviso con todos sus datos. Los servicios con precio "Cotizar" muestran un botón de WhatsApp con mensaje listo.</p>
+  <div class="tip"><b>Bonus:</b> el formulario de reserva ya no pide iniciar sesión — quedó igual de simple que el checkout.</div>
+</section>
+
+<section class="card">
+  <h2><span class="num">11.</span>"Cambié la frase inicial pero al volver se ve rapidito la frase anterior"</h2>
+  <span class="chip ok">✅ Ya corregido</span>
+  <p>Era un comportamiento real: el sitio mostraba el texto guardado en memoria mientras consultaba el más reciente. Con la última actualización, eso quedó así:</p>
+  <ul>
+    <li>El sitio guarda tu <strong>último contenido publicado</strong> en el navegador del visitante y lo muestra al instante.</li>
+    <li>Después de que editás algo, cada visitante puede ver el cambio "entrar" <strong>una sola vez</strong> (su navegador se actualiza en silencio). De ahí en adelante, ve siempre la versión nueva, sin parpadeos.</li>
+  </ul>
+  <p>Si después de un par de recargas seguís viendo la frase vieja, avisanos con una captura.</p>
+</section>
+
+<section class="card">
+  <h2><span class="num">12.</span>"¿Lograste ver lo de las frutas en iPhone?"</h2>
+  <span class="chip ok">✅ Encontrado y arreglado — por publicarse</span>
+  <p>Sí — encontramos la causa exacta: las imágenes de las frutas tenían <strong>fondo blanco</strong> y dependían de un efecto visual que el navegador del iPhone (Safari) no aplica bien con animaciones — por eso se veían los recortes blancos.</p>
+  <p>Ya regeneramos las 4 imágenes con <strong>transparencia real</strong>: en la próxima actualización se van a ver perfectas en cualquier teléfono.</p>
+</section>
+
+<section class="card">
+  <h2><span class="num">13.</span>"¿Cómo configuro mis correos en la computadora?"</h2>
+  <span class="chip panel">🔧 Lo hacés vos — está en el Manual de Correo</span>
+  <p>Dos opciones:</p>
+  <ol>
+    <li><strong>La rápida:</strong> entrá a <code>webmail.hostinger.com</code> desde cualquier navegador con tu correo completo y contraseña. Sin instalar nada.</li>
+    <li><strong>En un programa de correo</strong> (Outlook, Mail de Mac, Thunderbird): agregá la cuenta como <strong>IMAP</strong> con estos datos:</li>
+  </ol>
+  <table>
+    <tr><th></th><th>Entrada (IMAP)</th><th>Salida (SMTP)</th></tr>
+    <tr><td>Servidor</td><td><code>imap.hostinger.com</code></td><td><code>smtp.hostinger.com</code></td></tr>
+    <tr><td>Puerto</td><td><code>993</code> (SSL)</td><td><code>465</code> (SSL)</td></tr>
+    <tr><td>Usuario</td><td colspan="2">el correo completo (ej. shop@nutrigabrielare.com)</td></tr>
+  </table>
+  <p>El paso a paso completo está en el <strong>Manual de Correo</strong> que te entregamos.</p>
+</section>
+
+<section class="card">
+  <h2><span class="num">14.</span>"En Fluir Femenino… ¿suscripción por correo o link al canal de difusión de Instagram?"</h2>
+  <span class="chip dev">🛠️ Recomendación + desarrollo rápido</span>
+  <p>Nuestra recomendación honesta, en dos etapas:</p>
+  <ol>
+    <li><strong>Ahora (cambio rápido):</strong> un botón "Unite al canal de difusión 💌" que lleve a tu canal de Instagram. Cero mantenimiento extra para vos, y aprovecha la comunidad que ya tenés. Solo pasanos el enlace del canal.</li>
+    <li><strong>Más adelante (si querés):</strong> una suscripción por correo real (la clienta deja su email y vos enviás novedades). Es más potente — la lista es TUYA, no de Instagram — pero implica desarrollo y el compromiso de enviar correos con regularidad. Vale la pena cuando tengás contenido constante.</li>
+  </ol>
+</section>
+
+<section class="card">
+  <h2><span class="num">15.</span>"¿Se puede dejar un mensaje estándar al redirigir a WhatsApp?"</h2>
+  <span class="chip ok">✅ Ya configurado — por publicarse</span>
+  <p>¡Sí, y te lo recomendamos! Los enlaces de WhatsApp pueden llevar el mensaje ya escrito — la clienta solo toca "Enviar". Además, baja la barrera de escribir el primer mensaje (que a muchas les da pena) y a vos te llega contexto de dónde viene.</p>
+  <p>Podemos poner un mensaje distinto según el botón, por ejemplo:</p>
+  <table>
+    <tr><th>Botón</th><th>Mensaje sugerido</th></tr>
+    <tr><td>Contacto general</td><td>"¡Hola Gabriela! Vengo del sitio web y quiero más información 💕"</td></tr>
+    <tr><td>Fluir Femenino</td><td>"¡Hola! Quiero unirme al círculo de Fluir Femenino ✨"</td></tr>
+    <tr><td>Reservas</td><td>"¡Hola! Quiero agendar una consulta. Mi nombre es ___"</td></tr>
+  </table>
+  <p>Ya quedaron configurados con estos textos — si querés ajustar alguno a tu voz, es un cambio de minutos.</p>
+</section>
+
+<section class="card">
+  <h2>Resumen — próximos pasos</h2>
+  <table>
+    <tr><th>#</th><th>Tema</th><th>Estado</th><th>Necesitamos de vos</th></tr>
+    <tr><td>1</td><td>Botones CTA</td><td>✅ Resuelto</td><td>Avisar si alguno sigue fallando</td></tr>
+    <tr><td>2</td><td>Orden de secciones</td><td>🛠️ Pendiente</td><td>Confirmar el orden exacto</td></tr>
+    <tr><td>3</td><td>Posición de la foto del hero</td><td>🛠️ Pendiente</td><td>Captura de referencia</td></tr>
+    <tr><td>4</td><td>Fotos en testimonios</td><td>✅ Por publicarse</td><td>Las fotos de tus clientas</td></tr>
+    <tr><td>6</td><td>Sin envío en compras digitales</td><td>✅ Por publicarse</td><td>—</td></tr>
+    <tr><td>8</td><td>Dirección y horarios</td><td>🛠️ Pendiente</td><td>Dirección y horarios exactos</td></tr>
+    <tr><td>10</td><td>Pagar servicios en línea</td><td>✅ Por publicarse</td><td>—</td></tr>
+    <tr><td>11</td><td>Parpadeo de frase vieja</td><td>✅ Resuelto</td><td>—</td></tr>
+    <tr><td>12</td><td>Frutas en iPhone</td><td>✅ Por publicarse</td><td>—</td></tr>
+    <tr><td>14</td><td>Lecturas / canal de difusión</td><td>🛠️ Pendiente</td><td>Enlace del canal de IG</td></tr>
+    <tr><td>15</td><td>WhatsApp con mensaje listo</td><td>✅ Por publicarse</td><td>Ajustes de texto si querés</td></tr>
+  </table>
+</section>
+
+<footer>
+  <p>Preguntas y respuestas · <strong>nutrigabrielare.com</strong> · Junio 2026</p>
+  <p>Soporte técnico: <a href="mailto:bryanquezadap@gmail.com">bryanquezadap@gmail.com</a></p>
+</footer>
+
+</div>
+</body>
+</html>

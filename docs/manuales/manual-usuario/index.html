@@ -140,15 +140,20 @@
   <figure><img src="img/09-carrito.png" alt="Carrito" /><figcaption>El carrito guarda los productos aunque la clienta cierre el navegador.</figcaption></figure>
 
   <h3>Checkout (datos y pago)</h3>
-  <figure><img src="img/10-checkout.png" alt="Checkout" /><figcaption>Solo pide datos de contacto y entrega. Si elige "Recoger en Tienda", los campos de dirección desaparecen.</figcaption></figure>
-  <p>Al presionar <strong>"Pagar con Wompi"</strong> la clienta va a la página segura de Wompi, paga con tarjeta y vuelve al sitio con su pedido confirmado. El número de pedido y el código de seguimiento llegan también por correo.</p>
+  <figure><img src="img/10-checkout.png" alt="Checkout" /><figcaption>Checkout de una compra digital: solo datos de contacto — sin dirección de envío. Para suplementos sí se pide la zona y dirección (o "Recoger en Tienda", que las oculta).</figcaption></figure>
+  <p>El formulario se adapta al carrito: las compras <strong>100% digitales no piden nada de envío</strong>; las físicas piden zona y dirección (o retiro en tienda). Al presionar <strong>"Pagar con Wompi"</strong> la clienta va a la página segura de Wompi, paga con tarjeta y vuelve al sitio con su pedido confirmado. El número de pedido y el código de seguimiento llegan también por correo.</p>
 
   <h3>Después del pago</h3>
   <table>
     <tr><th>Tipo de compra</th><th>Qué recibe la clienta</th></tr>
     <tr><td><strong>Suplementos</strong> (físico)</td><td>Correo de confirmación con resumen, número de pedido y botón "Seguir mi pedido" → página de seguimiento con la línea de tiempo del envío.</td></tr>
     <tr><td><strong>Digital</strong> (ebooks, cursos…)</td><td>Correo con botones de <strong>Descargar</strong> (válidos 7 días) y botón "Ver mi pedido" → una página personal donde puede volver a descargar <strong>sin iniciar sesión</strong>, con enlaces que se renuevan solos en cada visita.</td></tr>
+    <tr><td><strong>Servicio</strong> (consultas)</td><td>Correo "¡Tu consulta está pagada!" confirmando su cupo, y a vos te llega un <strong>aviso interno</strong> con su nombre, contacto, fecha preferida y notas — solo la contactás para agendar.</td></tr>
   </table>
+
+  <h3>Reservar y pagar una consulta</h3>
+  <figure><img src="img/12-reservar-pago.png" alt="Reservar y pagar" /><figcaption>La página de reserva: datos de contacto, fecha y horario preferidos, y pago en línea con Wompi — sin necesidad de cuenta.</figcaption></figure>
+  <p>Cuando una clienta elige un servicio, llena sus datos, indica su <strong>fecha y horario preferidos</strong> y paga en el momento. Su cupo queda asegurado y la reserva te aparece como <strong>"Pagada"</strong> en el panel. Los servicios con precio "Cotizar" muestran en cambio un botón de WhatsApp con el mensaje ya escrito.</p>
 
   <h3>Seguimiento del pedido</h3>
   <figure><img src="img/11-tracking.png" alt="Tracking" /><figcaption>La página de seguimiento es pública: basta el código NTG-…-TRK que llega por correo.</figcaption></figure>
@@ -261,7 +266,8 @@
 <section class="card" id="reservas">
   <h2><span class="num">10.</span>Reservas</h2>
   <figure><img src="img/29-admin-reservas.png" alt="Reservas" /><figcaption>Solicitudes de consulta con fecha preferida y notas de la clienta.</figcaption></figure>
-  <p>Cuando alguien reserva una consulta, recibís copia por correo y la solicitud aparece acá. Confirmá el día y la hora con la clienta (por WhatsApp o respondiendo su correo) y actualizá el estado de la reserva.</p>
+  <p>Cuando una clienta reserva una consulta, <strong>paga en línea en el momento</strong>: la reserva llega con el badge verde <strong>"Pagada"</strong>, recibís un aviso al correo con sus datos y su fecha preferida, y solo la contactás (WhatsApp o respondiendo el correo) para confirmar día y hora. Después podés avanzar el estado: Contactado → Confirmado → Completado.</p>
+  <div class="tip"><b>Bueno saber:</b> si un pago es rechazado, la reserva se cancela sola — las que ves "Pagada" son cupos con dinero ya acreditado. Los servicios con precio "Cotizar" no pasan por acá: esas clientas te escriben directo por WhatsApp.</div>
 </section>
 
 <!-- ─────────────────────────── 11. CORREOS ─────────────────────────── -->
@@ -272,7 +278,8 @@
     <tr><th>Correo</th><th>Cuándo se envía</th></tr>
     <tr><td>Confirmación de pedido</td><td>Al acreditarse el pago de una compra física.</td></tr>
     <tr><td>Tus productos digitales</td><td>Al acreditarse una compra digital: botones de descarga + "Ver mi pedido".</td></tr>
-    <tr><td>Confirmación de reserva</td><td>Al solicitar una consulta (y copia para vos).</td></tr>
+    <tr><td>¡Tu consulta está pagada!</td><td>Al acreditarse el pago de una consulta o paquete de servicio.</td></tr>
+    <tr><td>Aviso interno de consulta pagada</td><td>A tu correo (shop@): datos de la clienta, fecha preferida y notas, listo para agendar.</td></tr>
   </table>
   <figure><img src="img/30-admin-emails.png" alt="Registro de correos" /><figcaption>La sección Correos del panel registra cada envío: a quién, cuándo y si llegó.</figcaption></figure>
   <div class="tip"><b>Tip:</b> si una clienta dice que no recibió un correo, primero revisá acá. Si figura "sent", pedile que mire spam; si figura "failed", contactá al soporte técnico.</div>
