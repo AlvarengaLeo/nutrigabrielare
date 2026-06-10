@@ -213,11 +213,19 @@ async function sendOrderConfirmation(supabase, orderId) {
       itemsArray
     );
 
+    // Acceso sin sesión a la página del pedido (mismo HMAC que
+    // createOrderAccessKey en create-link.js).
+    const apiSecret = process.env.WOMPI_API_SECRET?.trim();
+    const appUrl = (process.env.APP_URL?.trim() || 'https://nutrigabrielare.com').replace(/\/$/, '');
+    const orderKey = createHmac('sha256', apiSecret).update(order.id).digest('hex');
+    const orderUrl = `${appUrl}/gracias?order=${encodeURIComponent(order.id)}&key=${orderKey}`;
+
     await sendDigitalDownloadEmail({
       order,
       items: itemsArray,
       customer,
       downloadLinks: downloadLinks.map((link) => ({ ...link, expiresAt })),
+      orderUrl,
     });
   } else {
     await sendPurchaseConfirmationEmail({

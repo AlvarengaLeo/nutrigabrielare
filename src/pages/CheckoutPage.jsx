@@ -1,9 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
-import CheckoutAuthPanel from '../components/CheckoutAuthPanel';
 import { useCart } from '../context/CartContext';
-import { useAuth } from '../context/AuthContext';
 import { createPaymentLink } from '../services/paymentService';
 import { getActiveZones, calculateShippingCost } from '../services/shippingService';
 import { supabase } from '../lib/supabase';
@@ -31,10 +29,6 @@ function loadDraft() {
   }
 }
 
-function getUserDisplayName(user) {
-  return [user?.firstName, user?.lastName].filter(Boolean).join(' ').trim();
-}
-
 function CheckoutItemThumbnail({ item }) {
   const [hasImageError, setHasImageError] = useState(false);
   const hasImage = Boolean(item.image) && !hasImageError;
@@ -57,7 +51,6 @@ function CheckoutItemThumbnail({ item }) {
 
 export default function CheckoutPage() {
   const { items, subtotal } = useCart();
-  const { user } = useAuth();
   const navigate = useNavigate();
   const containerRef = useRef(null);
 
@@ -115,18 +108,6 @@ export default function CheckoutPage() {
   }, []);
 
   useEffect(() => {
-    if (!user) {
-      return;
-    }
-
-    setDraft((prev) => ({
-      ...prev,
-      name: prev.name || getUserDisplayName(user),
-      email: prev.email || user.email || '',
-    }));
-  }, [user]);
-
-  useEffect(() => {
     try {
       localStorage.setItem(CHECKOUT_DRAFT_KEY, JSON.stringify(draft));
     } catch {
@@ -136,6 +117,7 @@ export default function CheckoutPage() {
 
   const selectedZone =
     zones.find((z) => z.id === draft.shippingZoneId) ?? null;
+  const isPickup = Boolean(selectedZone?.isPickup);
   const shippingCost = calculateShippingCost(selectedZone, subtotal);
   const total = subtotal + shippingCost;
 
@@ -149,13 +131,17 @@ export default function CheckoutPage() {
 
   function validateCheckout() {
     const nextErrors = {};
+    const zone = zones.find((z) => z.id === draft.shippingZoneId) ?? null;
+    const zoneIsPickup = Boolean(zone?.isPickup);
 
     if (!draft.name.trim()) nextErrors.name = true;
     if (!draft.email.trim()) nextErrors.email = true;
     if (!draft.phone.trim()) nextErrors.phone = true;
-    if (!draft.address.trim()) nextErrors.address = true;
-    if (!draft.city.trim()) nextErrors.city = true;
-    if (!draft.department.trim()) nextErrors.department = true;
+    if (!zoneIsPickup) {
+      if (!draft.address.trim()) nextErrors.address = true;
+      if (!draft.city.trim()) nextErrors.city = true;
+      if (!draft.department.trim()) nextErrors.department = true;
+    }
     if (!draft.shippingZoneId) nextErrors.shippingZoneId = true;
 
     const emailPattern = /\S+@\S+\.\S+/;
@@ -171,6 +157,7 @@ export default function CheckoutPage() {
     e.preventDefault();
 
     if (!validateCheckout()) {
+      setSubmitError('Revisá los campos marcados en rojo.');
       return;
     }
 
@@ -198,10 +185,10 @@ export default function CheckoutPage() {
           phone: draft.phone.trim(),
         },
         shipping: {
-          address: draft.address.trim(),
-          city: draft.city.trim(),
-          department: draft.department.trim(),
-          notes: draft.notes.trim(),
+          address: isPickup ? '' : draft.address.trim(),
+          city: isPickup ? '' : draft.city.trim(),
+          department: isPickup ? '' : draft.department.trim(),
+          notes: isPickup ? '' : draft.notes.trim(),
           zoneId: draft.shippingZoneId,
         },
       };
@@ -245,34 +232,13 @@ export default function CheckoutPage() {
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-6 lg:flex-row">
           <div className="min-w-0 flex-[2] space-y-3">
-            {!user ? (
-              <CheckoutAuthPanel defaultEmail={draft.email} />
-            ) : (
-              <section className="checkout-el rounded-2xl bg-white p-6">
-                <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                  <div>
-                    <h2 className="font-heading text-sm font-bold text-primary">
-                      Checkout desde tu cuenta
-                    </h2>
-                    <p className="mt-2 max-w-xl font-body text-sm text-primary/60">
-                      Tu sesion ya esta activa. Puedes seguir con el pago ahora mismo
-                      y ajustar los datos de contacto o envio si lo necesitas.
-                    </p>
-                  </div>
-                  <span className="text-xs font-body text-green-600">
-                    Sesion iniciada
-                  </span>
-                </div>
-              </section>
-            )}
-
             <section className="checkout-el rounded-2xl bg-white p-6">
               <div className="mb-4 flex items-center justify-between">
                 <h2 className="font-heading text-sm font-bold text-primary">
                   Datos de contacto
                 </h2>
                 <span className="text-xs font-body text-primary/45">
-                  {user ? 'Puedes editar estos datos' : 'Compra como invitado'}
+                  Compra como invitada
                 </span>
               </div>
 
@@ -303,10 +269,10 @@ export default function CheckoutPage() {
 
             <section className="checkout-el rounded-2xl bg-white p-6">
               <h2 className="mb-1 font-heading text-sm font-bold text-primary">
-                Direccion de envio
+                {isPickup ? 'Entrega' : 'Dirección de envío'}
               </h2>
               <span className="mb-4 inline-block font-body text-xs text-primary/50">
-                Envio a domicilio
+                {isPickup ? 'Recoger en tienda' : 'Envío a domicilio'}
               </span>
 
               {zonesLoading ? (
@@ -351,36 +317,43 @@ export default function CheckoutPage() {
                 </div>
               )}
 
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                <input
-                  type="text"
-                  placeholder="Direccion"
-                  value={draft.address}
-                  onChange={(e) => updateDraftField('address', e.target.value)}
-                  className={`${inputBase} sm:col-span-2 ${errors.address ? 'border border-red-400' : ''}`}
-                />
-                <input
-                  type="text"
-                  placeholder="Ciudad"
-                  value={draft.city}
-                  onChange={(e) => updateDraftField('city', e.target.value)}
-                  className={`${inputBase} ${errors.city ? 'border border-red-400' : ''}`}
-                />
-                <input
-                  type="text"
-                  placeholder="Departamento"
-                  value={draft.department}
-                  onChange={(e) => updateDraftField('department', e.target.value)}
-                  className={`${inputBase} ${errors.department ? 'border border-red-400' : ''}`}
-                />
-                <input
-                  type="text"
-                  placeholder="Indicaciones de entrega (opcional)"
-                  value={draft.notes}
-                  onChange={(e) => updateDraftField('notes', e.target.value)}
-                  className={`${inputBase} sm:col-span-2`}
-                />
-              </div>
+              {isPickup ? (
+                <p className="rounded-xl bg-[#f8f6f3] px-4 py-3 font-body text-xs text-primary/60">
+                  Retirás tu pedido en la tienda. Te contactamos por teléfono o
+                  correo para coordinar la entrega.
+                </p>
+              ) : (
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                  <input
+                    type="text"
+                    placeholder="Direccion"
+                    value={draft.address}
+                    onChange={(e) => updateDraftField('address', e.target.value)}
+                    className={`${inputBase} sm:col-span-2 ${errors.address ? 'border border-red-400' : ''}`}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Ciudad"
+                    value={draft.city}
+                    onChange={(e) => updateDraftField('city', e.target.value)}
+                    className={`${inputBase} ${errors.city ? 'border border-red-400' : ''}`}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Departamento"
+                    value={draft.department}
+                    onChange={(e) => updateDraftField('department', e.target.value)}
+                    className={`${inputBase} ${errors.department ? 'border border-red-400' : ''}`}
+                  />
+                  <input
+                    type="text"
+                    placeholder="Indicaciones de entrega (opcional)"
+                    value={draft.notes}
+                    onChange={(e) => updateDraftField('notes', e.target.value)}
+                    className={`${inputBase} sm:col-span-2`}
+                  />
+                </div>
+              )}
             </section>
           </div>
 

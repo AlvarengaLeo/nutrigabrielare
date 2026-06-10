@@ -52,6 +52,7 @@ export default function GraciasPage() {
 
   const [order, setOrder] = useState(null);
   const [paymentStatus, setPaymentStatus] = useState(null);
+  const [downloadLinks, setDownloadLinks] = useState([]);
   const [loading, setLoading] = useState(true);
 
   async function fetchStatus() {
@@ -66,6 +67,7 @@ export default function GraciasPage() {
 
     setOrder(result.order);
     setPaymentStatus(resolvePaymentStatus(result.payment, result.order));
+    setDownloadLinks(result.downloadLinks ?? []);
     return result;
   }
 
@@ -120,13 +122,21 @@ export default function GraciasPage() {
   }, [paymentStatus, orderId, orderKey]);
 
   useEffect(() => {
-    if (paymentStatus === 'approved' && !cartClearedRef.current) {
+    // Limpia el carrito solo cuando esta visita corresponde al pago recién
+    // hecho (hay orden pendiente local y coincide). El correo "Ver mi pedido"
+    // trae de vuelta a esta página días después — no debe borrar un carrito
+    // nuevo en progreso.
+    if (
+      paymentStatus === 'approved' &&
+      pendingOrder?.id === orderId &&
+      !cartClearedRef.current
+    ) {
       cartClearedRef.current = true;
       clearCart();
       localStorage.removeItem(PENDING_ORDER_KEY);
       localStorage.removeItem(CHECKOUT_DRAFT_KEY);
     }
-  }, [paymentStatus, clearCart]);
+  }, [paymentStatus, clearCart, orderId]);
 
   useEffect(() => {
     if (loading) {
@@ -314,6 +324,33 @@ export default function GraciasPage() {
             </div>
           </div>
         </div>
+
+        {downloadLinks.length > 0 && (
+          <div className="gracias-el mt-4 rounded-2xl bg-white p-6">
+            <h2 className="mb-4 font-heading text-sm font-bold text-primary">
+              Tus descargas
+            </h2>
+            <div className="space-y-3">
+              {downloadLinks.map((link, idx) => (
+                <div key={idx} className="flex items-center justify-between gap-4">
+                  <p className="font-body text-sm text-primary/70">{link.name}</p>
+                  <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener"
+                    style={{ backgroundColor: '#196b41' }}
+                    className="rounded-xl px-4 py-2 text-xs font-bold text-white"
+                  >
+                    Descargar
+                  </a>
+                </div>
+              ))}
+            </div>
+            <p className="mt-3 font-body text-xs text-primary/40">
+              Los enlaces se renuevan cada vez que abrís esta página y duran 7 días.
+            </p>
+          </div>
+        )}
 
         <div className="gracias-el mt-4 rounded-2xl bg-[#1A1A1A] p-8 text-center">
           <p className="mb-2 text-xs uppercase tracking-widest text-white/40">

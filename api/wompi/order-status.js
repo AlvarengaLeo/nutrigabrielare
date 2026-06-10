@@ -23,6 +23,66 @@ function createOrderAccessKey(orderId, secret) {
   return createHmac('sha256', secret).update(orderId).digest('hex');
 }
 
+const SIGNED_URL_TTL_SECONDS = 60 * 60 * 24 * 7; // 7 days
+
+// Estados con pago acreditado: la compra digital sigue siendo descargable
+// aunque el admin avance la orden (mixtas físico+digital).
+const PAID_STATUSES = ['confirmed', 'preparing', 'shipped', 'delivered'];
+
+/**
+ * For each digital item of a paid order, create a fresh 7-day
+ * signed URL for its file in the digital-products bucket. Signing
+ * errors are logged and skipped so the response never breaks.
+ */
+async function buildDownloadLinks(supabase, orderRow, items) {
+  if (!PAID_STATUSES.includes(orderRow.status)) {
+    return [];
+  }
+
+  const expiresAtIso = new Date(
+    Date.now() + SIGNED_URL_TTL_SECONDS * 1000,
+  ).toISOString();
+  const links = [];
+
+  for (const item of items) {
+    if (item.products?.kind !== 'digital') {
+      continue;
+    }
+
+    const path = item.products?.digital_file_path;
+    if (!path) {
+      continue;
+    }
+
+    try {
+      const { data: signed, error: signErr } = await supabase.storage
+        .from('digital-products')
+        .createSignedUrl(path, SIGNED_URL_TTL_SECONDS);
+
+      if (signErr || !signed?.signedUrl) {
+        console.error(
+          `[${ORDER_STATUS_SCOPE}] Order ${orderRow.id}: signed URL failed for ${path}:`,
+          signErr,
+        );
+        continue;
+      }
+
+      links.push({
+        name: item.product_name,
+        url: signed.signedUrl,
+        expiresAt: expiresAtIso,
+      });
+    } catch (signError) {
+      console.error(
+        `[${ORDER_STATUS_SCOPE}] Order ${orderRow.id}: signed URL failed for ${path}:`,
+        signError,
+      );
+    }
+  }
+
+  return links;
+}
+
 function transformOrder(row, items = [], statusHistory = []) {
   return {
     id: row.id,
@@ -122,7 +182,10 @@ export default async function handler(req, res) {
     }
 
     const [itemsResult, historyResult, paymentResult] = await Promise.all([
-      supabase.from('order_items').select('*').eq('order_id', orderId),
+      supabase
+        .from('order_items')
+        .select('*, products ( kind, digital_file_path )')
+        .eq('order_id', orderId),
       supabase
         .from('order_status_history')
         .select('*')
@@ -153,6 +216,11 @@ export default async function handler(req, res) {
     }
 
     const payment = paymentResult.data?.[0] ?? null;
+    const downloadLinks = await buildDownloadLinks(
+      supabase,
+      orderRow,
+      itemsResult.data ?? [],
+    );
 
     return res.status(200).json({
       order: transformOrder(orderRow, itemsResult.data ?? [], historyResult.data ?? []),
@@ -162,6 +230,7 @@ export default async function handler(req, res) {
             amount: Number(payment.amount),
           }
         : null,
+      downloadLinks,
     });
   } catch (error) {
     console.error(`[${ORDER_STATUS_SCOPE}]`, error);

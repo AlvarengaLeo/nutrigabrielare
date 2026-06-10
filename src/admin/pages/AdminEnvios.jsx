@@ -16,6 +16,7 @@ const EMPTY_FORM = {
   freeThreshold: '',
   sortOrder: 0,
   active: true,
+  isPickup: false,
 };
 
 export default function AdminEnvios() {
@@ -70,6 +71,7 @@ export default function AdminEnvios() {
       freeThreshold: zone.freeThreshold == null ? '' : String(zone.freeThreshold),
       sortOrder: zone.sortOrder ?? 0,
       active: zone.active,
+      isPickup: zone.isPickup ?? false,
     });
     setEditingId(zone.id);
     setModalOpen(true);
@@ -86,6 +88,7 @@ export default function AdminEnvios() {
           form.freeThreshold === '' ? null : Number(form.freeThreshold),
         sortOrder: Number(form.sortOrder) || 0,
         active: form.active,
+        isPickup: form.isPickup,
       };
       if (editingId) {
         await updateZone(editingId, payload);
@@ -116,7 +119,16 @@ export default function AdminEnvios() {
     {
       key: 'name',
       label: 'Zona',
-      render: (v) => <span className="font-heading font-semibold">{v}</span>,
+      render: (v, row) => (
+        <span className="inline-flex items-center gap-2">
+          <span className="font-heading font-semibold">{v}</span>
+          {row.isPickup && (
+            <span className="px-2 py-0.5 rounded-full text-xs font-heading font-bold bg-accent/20 text-primary">
+              Retiro en tienda
+            </span>
+          )}
+        </span>
+      ),
     },
     {
       key: 'cost',
@@ -279,6 +291,17 @@ export default function AdminEnvios() {
                   placeholder="50.00"
                 />
               </div>
+              <label className="flex items-center gap-2 font-body text-sm text-primary cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={form.isPickup}
+                  onChange={(e) =>
+                    setForm({ ...form, isPickup: e.target.checked })
+                  }
+                  className="accent-accent w-4 h-4"
+                />
+                Retiro en tienda (no requiere dirección)
+              </label>
               <label className="flex items-center gap-2 font-body text-sm text-primary cursor-pointer">
                 <input
                   type="checkbox"
