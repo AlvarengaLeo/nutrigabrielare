@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Manual de Hostinger · Nutrigabrielare</title>
+<link rel="icon" href="img/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Outfit:wght@300;400;600&family=Cormorant+Garamond:ital@1&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --rose:#EE7699; --rose-deep:#D6517B; --mist:#FDF1F4; --soft:#FBE4EB;
+    --ink:#3A1A22; --ink-soft:#6A3E48; --ink-mute:#8A6068; --line:#F7D7DE;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--mist);color:var(--ink);font-family:'Outfit',sans-serif;line-height:1.65;font-size:16px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px 80px}
+  header.cover{text-align:center;padding:72px 24px 56px}
+  header.cover img{width:84px;height:84px;display:block;margin:0 auto 16px}
+  header.cover .brand{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:28px}
+  header.cover h1{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:44px;margin:18px 0 6px;letter-spacing:-.02em}
+  header.cover h1 em{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;color:var(--rose-deep)}
+  header.cover p{color:var(--ink-mute);max-width:560px;margin:10px auto 0}
+  .divider{width:56px;height:4px;background:var(--rose);border-radius:99px;margin:22px auto}
+  section.card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:40px 44px;margin:26px 0}
+  h2{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:26px;margin:0 0 4px}
+  h2 .num{color:var(--rose);margin-right:10px}
+  h3{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:18px;margin:30px 0 8px}
+  h3::before{content:"";display:inline-block;width:10px;height:10px;border-radius:99px;background:var(--rose);margin-right:10px}
+  p{margin:10px 0;color:var(--ink-soft)}
+  strong{color:var(--ink)}
+  .lead{font-size:17px}
+  figure{margin:18px 0 8px}
+  figure img{width:100%;border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 40px -22px rgba(214,81,123,.25)}
+  figcaption{font-size:13px;color:var(--ink-mute);margin-top:8px;text-align:center}
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:15px}
+  th{font-family:'Plus Jakarta Sans',sans-serif;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--rose-deep);padding:10px 12px;border-bottom:2px solid var(--line)}
+  td{padding:10px 12px;border-bottom:1px solid var(--line);color:var(--ink-soft);vertical-align:top}
+  code{background:var(--soft);color:var(--rose-deep);padding:2px 8px;border-radius:8px;font-size:14px}
+  ol{color:var(--ink-soft);padding-left:22px}
+  ol li{margin:8px 0}
+  .tip{background:var(--mist);border:1px solid var(--line);border-left:4px solid var(--rose);border-radius:12px;padding:14px 18px;margin:16px 0;font-size:15px;color:var(--ink-soft)}
+  .tip b{color:var(--rose-deep)}
+  .warn{background:#FFF8F0;border:1px solid #F5E3C8;border-left:4px solid #E5A33D;border-radius:12px;padding:14px 18px;margin:16px 0;font-size:15px;color:#7A5A22}
+  .danger{background:#FEF1F1;border:1px solid #F5C8C8;border-left:4px solid #D64545;border-radius:12px;padding:14px 18px;margin:16px 0;font-size:15px;color:#7A2222}
+  nav.toc{background:#fff;border:1px solid var(--line);border-radius:24px;padding:34px 44px;margin:0 0 26px}
+  nav.toc h2{margin-bottom:14px}
+  nav.toc ol{margin:0;padding-left:22px;columns:2;gap:40px}
+  nav.toc li{margin:6px 0}
+  nav.toc a{color:var(--ink-soft);text-decoration:none}
+  nav.toc a:hover{color:var(--rose-deep)}
+  footer{text-align:center;color:var(--ink-mute);font-size:13px;padding:30px 0 0}
+  footer a{color:var(--rose-deep)}
+  @media print{body{background:#fff}section.card{border:none;padding:24px 0;margin:0;break-inside:avoid-page}nav.toc{border:none}figure img{box-shadow:none}}
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <img src="img/logo.png" alt="Nutrigabrielare" />
+  <div class="brand">Nutrigabrielare</div>
+  <div class="divider"></div>
+  <h1>Manual de <em>Hostinger</em></h1>
+  <p>Qué vive en Hostinger, cómo administrarlo y — sobre todo — qué <strong>no</strong> hay que tocar. Para la administración del dominio <strong>nutrigabrielare.com</strong> y los correos corporativos.</p>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+  <h2>Índice</h2>
+  <ol>
+    <li><a href="#rol">Qué hace Hostinger (y qué no)</a></li>
+    <li><a href="#acceso">Acceso al panel</a></li>
+    <li><a href="#suscripciones">Suscripciones y renovaciones</a></li>
+    <li><a href="#dominio">El dominio</a></li>
+    <li><a href="#dns">La zona DNS (zona delicada)</a></li>
+    <li><a href="#correo">Correos corporativos</a></li>
+    <li><a href="#diagnostico">Diagnóstico de correo</a></li>
+    <li><a href="#reglas">Reglas de oro</a></li>
+  </ol>
+</nav>
+
+<!-- ─────────────── 1. ROL ─────────────── -->
+<section class="card" id="rol">
+  <h2><span class="num">1.</span>Qué hace Hostinger (y qué no)</h2>
+  <p class="lead">Hostinger es donde vive el <strong>dominio</strong> y el <strong>correo corporativo</strong>. El sitio web <strong>NO</strong> está alojado en Hostinger.</p>
+  <table>
+    <tr><th>Servicio</th><th>Dónde vive</th></tr>
+    <tr><td><strong>Dominio</strong> nutrigabrielare.com (registro y renovación)</td><td>✅ Hostinger</td></tr>
+    <tr><td><strong>DNS</strong> (los registros que dirigen el tráfico)</td><td>✅ Hostinger</td></tr>
+    <tr><td><strong>Correos</strong> hola@ y shop@nutrigabrielare.com</td><td>✅ Hostinger (plan Business Email)</td></tr>
+    <tr><td><strong>El sitio web</strong> (tienda, panel admin)</td><td>❌ Vercel — el DNS de Hostinger apunta hacia allá</td></tr>
+    <tr><td><strong>Base de datos y archivos</strong></td><td>❌ Supabase</td></tr>
+    <tr><td><strong>Pagos</strong></td><td>❌ Wompi</td></tr>
+    <tr><td><strong>Correos automáticos del sitio</strong> (confirmaciones)</td><td>❌ Resend (salen como shop@, las respuestas llegan al buzón de Hostinger)</td></tr>
+  </table>
+  <div class="tip"><b>En una frase:</b> Hostinger es la "guía telefónica" (dominio + DNS) y el "buzón de cartas" (correo). La tienda en sí está en otra parte.</div>
+</section>
+
+<!-- ─────────────── 2. ACCESO ─────────────── -->
+<section class="card" id="acceso">
+  <h2><span class="num">2.</span>Acceso al panel</h2>
+  <ol>
+    <li>Entrá a <strong>hpanel.hostinger.com</strong></li>
+    <li>Iniciá sesión con el correo y contraseña de la cuenta Hostinger de la clienta.</li>
+  </ol>
+  <figure><img src="img/01-websites-hosting.png" alt="Vista Websites" /><figcaption>La vista principal. Las secciones que vas a usar: <strong>Domains</strong>, <strong>Emails</strong> y <strong>Billing</strong> (menú de perfil → Billing).</figcaption></figure>
+</section>
+
+<!-- ─────────────── 3. SUSCRIPCIONES ─────────────── -->
+<section class="card" id="suscripciones">
+  <h2><span class="num">3.</span>Suscripciones y renovaciones</h2>
+  <p class="lead">En <strong>Billing → Subscriptions</strong> (menú del perfil, arriba a la derecha) están los 3 servicios contratados:</p>
+  <figure><img src="img/08-subscriptions.png" alt="Suscripciones" /><figcaption>Las 3 suscripciones con sus fechas de vencimiento y renovación automática.</figcaption></figure>
+  <table>
+    <tr><th>Suscripción</th><th>Vence</th><th>¿Es necesaria?</th></tr>
+    <tr><td><strong>.COM Domain</strong> (el dominio)</td><td>2027-05-28</td><td><strong>SÍ — crítica.</strong> Si vence, el sitio Y el correo dejan de funcionar. Mantené la renovación automática activada y la tarjeta al día.</td></tr>
+    <tr><td><strong>Business Email</strong> (los buzones)</td><td>2027-06-04</td><td><strong>SÍ</strong> — sin ella se pierden los buzones hola@ y shop@.</td></tr>
+    <tr><td><strong>Premium Web Hosting</strong></td><td>2026-06-28</td><td><strong>Consultar con soporte técnico antes de renovar.</strong> El sitio web ya NO se aloja aquí (corre en Vercel). Ver nota abajo.</td></tr>
+  </table>
+  <div class="warn"><b>Nota sobre el Premium Web Hosting:</b> el sitio se migró a Vercel, así que este plan ya no aloja nada. El dominio y el correo son suscripciones independientes y NO dependen de él. Antes de que venza (28 de junio de 2026), consultá con el soporte técnico si conviene dejarlo vencer para ahorrar el costo — la decisión no afecta al sitio ni al correo, pero conviene confirmarlo en el momento.</div>
+  <div class="tip"><b>Tip:</b> verificá en <b>Billing → Payment methods</b> que haya una tarjeta vigente. La renovación automática solo funciona si puede cobrar.</div>
+</section>
+
+<!-- ─────────────── 4. DOMINIO ─────────────── -->
+<section class="card" id="dominio">
+  <h2><span class="num">4.</span>El dominio</h2>
+  <p class="lead">En <strong>Domains → Domain portfolio</strong> se administra nutrigabrielare.com.</p>
+  <figure><img src="img/02-domain-portfolio.png" alt="Portafolio de dominio" /><figcaption>Estado Active, vence 2027-05-28, renovación automática activada ✅.</figcaption></figure>
+
+  <h3>Datos de la propietaria (WHOIS)</h3>
+  <figure><img src="img/04-domain-ownership.png" alt="Domain Ownership" /><figcaption>Domain Ownership: datos de contacto de Gabriela + privacidad "Protected".</figcaption></figure>
+  <p>El dominio está a nombre de <strong>Gabriela Retana</strong> con privacidad <strong>Protected</strong> (sus datos personales no aparecen en directorios públicos). Si cambia de correo o teléfono, actualizá estos datos con <strong>Edit</strong> — ahí llegan los avisos importantes del dominio.</p>
+  <div class="danger"><b>Nunca:</b> transfieras el dominio, cambies los nameservers, ni respondas correos que pidan "verificar el dominio" con enlaces sospechosos — son phishing comunes. Ante cualquier correo raro sobre el dominio, consultá con soporte técnico.</div>
+</section>
+
+<!-- ─────────────── 5. DNS ─────────────── -->
+<section class="card" id="dns">
+  <h2><span class="num">5.</span>La zona DNS — zona delicada ⚠️</h2>
+  <p class="lead">En <strong>Domains → nutrigabrielare.com → DNS / Nameservers</strong> están los registros que hacen funcionar TODO. Cada registro tiene un propósito:</p>
+  <figure><img src="img/03-dns-zone.png" alt="Zona DNS" /><figcaption>La zona DNS actual. Cada fila dirige una parte del sistema.</figcaption></figure>
+  <table>
+    <tr><th>Registro</th><th>Qué hace</th><th>Si se borra…</th></tr>
+    <tr><td><code>A @ → 76.76.21.21</code></td><td>Apunta nutrigabrielare.com al sitio en Vercel</td><td>El sitio deja de cargar</td></tr>
+    <tr><td><code>CNAME www → cname.vercel-dns.com</code></td><td>Hace funcionar www.nutrigabrielare.com</td><td>www deja de cargar</td></tr>
+    <tr><td><code>MX @ → mx1/mx2.hostinger.com</code></td><td>Dirige los correos entrantes a los buzones</td><td>Dejan de llegar correos</td></tr>
+    <tr><td><code>TXT @ (v=spf1…)</code> y <code>CNAME hostingermail-a/b/c</code></td><td>Autentican el correo de Hostinger (SPF/DKIM)</td><td>Los correos caen en spam</td></tr>
+    <tr><td><code>TXT resend._domainkey</code>, <code>MX/TXT send</code></td><td>Autentican los correos automáticos del sitio (Resend)</td><td>Las confirmaciones de compra caen en spam o no salen</td></tr>
+    <tr><td><code>CNAME autodiscover / autoconfig</code></td><td>Configuración automática en Outlook/Thunderbird</td><td>Molesto pero no crítico</td></tr>
+    <tr><td><code>A ftp</code></td><td>Acceso FTP del hosting viejo</td><td>Nada relevante</td></tr>
+  </table>
+  <div class="danger"><b>Regla de oro:</b> en esta pantalla <b>no se borra ni se edita nada</b> sin consultar antes con soporte técnico. Un solo registro mal tocado puede tirar el sitio o el correo de toda la marca.</div>
+</section>
+
+<!-- ─────────────── 6. CORREO ─────────────── -->
+<section class="card" id="correo">
+  <h2><span class="num">6.</span>Correos corporativos</h2>
+  <p class="lead">En <strong>Emails → nutrigabrielare.com</strong> se administran los buzones.</p>
+  <figure><img src="img/05-emails-plan.png" alt="Plan de email" /><figcaption>El plan de correo con sus 2 buzones (límite del plan actual: 2/2 usados).</figcaption></figure>
+  <figure><img src="img/06-mailboxes.png" alt="Buzones" /><figcaption>hola@ y shop@ activos. El botón <strong>Webmail</strong> abre el buzón en el navegador.</figcaption></figure>
+  <table>
+    <tr><th>Acción</th><th>Cómo</th></tr>
+    <tr><td>Leer el correo</td><td>Botón <strong>Webmail</strong> junto al buzón, o webmail.hostinger.com</td></tr>
+    <tr><td>Cambiar una contraseña</td><td>Menú <code>⋮</code> del buzón → Change password</td></tr>
+    <tr><td>Crear otro buzón</td><td><strong>Add mailboxes</strong> — ojo: el plan actual permite 2; uno más requiere upgrade del plan de email</td></tr>
+    <tr><td>Configurarlo en el teléfono</td><td>Ver el <strong>Manual de Correo</strong> (documento aparte) con los datos IMAP/SMTP</td></tr>
+  </table>
+  <div class="tip"><b>Recordatorio:</b> shop@ recibe las respuestas de las clientas a los correos automáticos de la tienda — revisalo a diario. hola@ es el contacto general para publicar en redes.</div>
+</section>
+
+<!-- ─────────────── 7. DIAGNÓSTICO ─────────────── -->
+<section class="card" id="diagnostico">
+  <h2><span class="num">7.</span>Diagnóstico de correo</h2>
+  <p class="lead">Si un correo "no llega" o "no sale", <strong>Emails → Email Logs</strong> muestra la actividad real de los buzones:</p>
+  <figure><img src="img/07-email-logs.png" alt="Email Logs" /><figcaption>Pestañas: <strong>Access</strong> (inicios de sesión IMAP/POP), <strong>Actions</strong> y <strong>Delivery</strong> (entregas).</figcaption></figure>
+  <table>
+    <tr><th>Problema</th><th>Dónde mirar</th></tr>
+    <tr><td>"No me llegan correos al buzón"</td><td>Pestaña <strong>Delivery</strong>: ¿aparece el correo como entregado? Si sí, revisá la carpeta de spam del cliente de correo.</td></tr>
+    <tr><td>"No puedo entrar al buzón desde el teléfono"</td><td>Pestaña <strong>Access</strong>: si no aparecen intentos, la app está mal configurada (ver Manual de Correo); si aparecen como Failed, la contraseña está mal.</td></tr>
+    <tr><td>"Una clienta no recibió su confirmación de compra"</td><td>Eso NO es de Hostinger — esos correos salen por Resend. Revisá el panel del sitio → <strong>Correos</strong> (ver Manual de Usuario, cap. 11).</td></tr>
+  </table>
+</section>
+
+<!-- ─────────────── 8. REGLAS DE ORO ─────────────── -->
+<section class="card" id="reglas">
+  <h2><span class="num">8.</span>Reglas de oro</h2>
+  <table>
+    <tr><th>✅ Hacé con confianza</th><th>🚫 Nunca sin consultar</th></tr>
+    <tr><td>Leer y responder correos por Webmail</td><td>Borrar o editar registros DNS</td></tr>
+    <tr><td>Cambiar contraseñas de los buzones</td><td>Cambiar nameservers del dominio</td></tr>
+    <tr><td>Verificar fechas de renovación y la tarjeta de pago</td><td>Transferir el dominio o moverlo de cuenta</td></tr>
+    <tr><td>Revisar Email Logs para diagnóstico</td><td>Cancelar la suscripción del dominio o del email</td></tr>
+    <tr><td>Mantener actualizado el contacto WHOIS</td><td>Renovar/cancelar el Premium Web Hosting sin consultar (ver cap. 3)</td></tr>
+  </table>
+  <div class="tip"><b>Ante la duda, siempre:</b> primero soporte técnico, después el clic. Hostinger también tiene chat de ayuda 24/7 (botón "Need help?" arriba a la derecha del hPanel) para temas de su plataforma.</div>
+</section>
+
+<footer>
+  <p>Manual de Hostinger · <strong>nutrigabrielare.com</strong> · Capturas reales del hPanel (junio 2026).</p>
+  <p>Soporte técnico: <a href="mailto:bryanquezadap@gmail.com">bryanquezadap@gmail.com</a></p>
+</footer>
+
+</div>
+</body>
+</html>
