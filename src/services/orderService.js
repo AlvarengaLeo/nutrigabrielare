@@ -16,6 +16,7 @@ export function transformOrder(row, items = [], statusHistory = []) {
       price: item.price,
       quantity: item.quantity,
       image: item.image,
+      kind: item.products?.kind ?? null,
     })),
     contact: {
       name: row.contact_name,
@@ -136,7 +137,7 @@ export async function getOrderById(orderId) {
   }
 
   const [itemsResult, historyResult] = await Promise.all([
-    supabase.from('order_items').select('*').eq('order_id', orderId),
+    supabase.from('order_items').select('*, products ( kind )').eq('order_id', orderId),
     supabase
       .from('order_status_history')
       .select('*')
@@ -148,6 +149,36 @@ export async function getOrderById(orderId) {
   if (historyResult.error) throw new Error(`Failed to fetch status history: ${historyResult.error.message}`);
 
   return transformOrder(orderRow, itemsResult.data, historyResult.data);
+}
+
+/**
+ * Asks the server to resend the digital download email for an order,
+ * with freshly signed 7-day links. Admin/gestor only (validated server-side).
+ */
+export async function resendDigitalDownloadEmail(orderId) {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  const token = session?.access_token;
+  if (!token) {
+    throw new Error('Sesión expirada. Volvé a iniciar sesión.');
+  }
+
+  const res = await fetch('/api/digital/resend-email', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ orderId }),
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    throw new Error(data.error || 'No se pudo reenviar el correo.');
+  }
+  return data;
 }
 
 /**

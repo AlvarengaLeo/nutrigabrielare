@@ -83,9 +83,6 @@ function validateCheckout(checkout) {
     checkout.contact.name,
     checkout.contact.email,
     checkout.contact.phone,
-    checkout.shipping.address,
-    checkout.shipping.city,
-    checkout.shipping.department,
     checkout.shipping.zoneId,
   ];
 
@@ -174,12 +171,21 @@ async function createOrderFromCheckout(supabase, checkout, userId = null) {
 
   const { data: zone, error: zoneError } = await supabase
     .from('shipping_zones')
-    .select('id, name, cost, free_threshold, active')
+    .select('id, name, cost, free_threshold, active, is_pickup')
     .eq('id', checkout.shipping.zoneId)
     .single();
 
   if (zoneError || !zone || !zone.active) {
     throw new Error('La zona de envío seleccionada no está disponible.');
+  }
+
+  if (
+    !zone.is_pickup &&
+    (!checkout.shipping.address ||
+      !checkout.shipping.city ||
+      !checkout.shipping.department)
+  ) {
+    throw new Error('Faltan datos de la dirección de envío.');
   }
 
   const zoneCost = Number(zone.cost) || 0;
@@ -213,7 +219,7 @@ async function createOrderFromCheckout(supabase, checkout, userId = null) {
       shipping_address: checkout.shipping.address,
       shipping_city: checkout.shipping.city,
       shipping_department: checkout.shipping.department,
-      shipping_notes: checkout.shipping.notes || null,
+      shipping_notes: checkout.shipping.notes || '',
       shipping_zone_id: zone.id,
       shipping_zone_name: zone.name,
       subtotal,

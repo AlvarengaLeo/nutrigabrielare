@@ -8,6 +8,7 @@ function transformZone(row) {
     freeThreshold:
       row.free_threshold == null ? null : Number(row.free_threshold),
     active: row.active,
+    isPickup: row.is_pickup === true,
     sortOrder: row.sort_order,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
@@ -43,6 +44,7 @@ export async function createZone(input) {
       cost: input.cost,
       free_threshold: input.freeThreshold ?? null,
       active: input.active ?? true,
+      is_pickup: input.isPickup ?? false,
       sort_order: input.sortOrder ?? 0,
     })
     .select()
@@ -58,6 +60,7 @@ export async function updateZone(id, input) {
   if (input.cost !== undefined) update.cost = input.cost;
   if (input.freeThreshold !== undefined) update.free_threshold = input.freeThreshold;
   if (input.active !== undefined) update.active = input.active;
+  if (input.isPickup !== undefined) update.is_pickup = input.isPickup;
   if (input.sortOrder !== undefined) update.sort_order = input.sortOrder;
 
   const { data, error } = await supabase
