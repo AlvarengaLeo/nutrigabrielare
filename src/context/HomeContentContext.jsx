@@ -139,38 +139,75 @@ export const DEFAULT_HOME = {
 
 const HomeContentContext = createContext(null);
 
+// Stale-while-revalidate: la última fila conocida de home_content se cachea en
+// localStorage para que las visitas siguientes rendericen el contenido real al
+// instante (sin flash de los textos default) mientras se refresca en silencio.
+const CACHE_KEY = 'nutri-home-content:v1';
+
+function mergeRow(data) {
+  return {
+    hero: { ...DEFAULT_HOME.hero, ...(data.hero || {}) },
+    philosophy: { ...DEFAULT_HOME.philosophy, ...(data.philosophy || {}) },
+    why_choose_us: { ...DEFAULT_HOME.why_choose_us, ...(data.why_choose_us || {}) },
+    featured: { ...DEFAULT_HOME.featured, ...(data.featured || {}) },
+    testimonials: { ...DEFAULT_HOME.testimonials, ...(data.testimonials || {}) },
+    pleno_hero: { ...DEFAULT_HOME.pleno_hero, ...(data.pleno_hero || {}) },
+    nutri_hero: { ...DEFAULT_HOME.nutri_hero, ...(data.nutri_hero || {}) },
+    fluir_content: { ...DEFAULT_HOME.fluir_content, ...(data.fluir_content || {}) },
+  };
+}
+
+function loadCachedRow() {
+  try {
+    const raw = localStorage.getItem(CACHE_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 export function HomeContentProvider({ children }) {
-  const [content, setContent] = useState(DEFAULT_HOME);
-  const [loading, setLoading] = useState(true);
+  const [{ content, loading }, setState] = useState(() => {
+    const cached = loadCachedRow();
+    return cached
+      ? { content: mergeRow(cached), loading: false }
+      : { content: DEFAULT_HOME, loading: true };
+  });
 
   useEffect(() => {
     let cancelled = false;
 
+    // Si Supabase cuelga (sin fallar), soltamos loading a los 4s para que la
+    // página renderice con los defaults en vez de quedarse en blanco.
+    const timeoutId = setTimeout(() => {
+      if (!cancelled) {
+        setState((s) => (s.loading ? { ...s, loading: false } : s));
+      }
+    }, 4000);
+
     getHomeContent()
       .then((data) => {
-        if (cancelled) return;
-        if (data) {
-          setContent({
-            hero: { ...DEFAULT_HOME.hero, ...(data.hero || {}) },
-            philosophy: { ...DEFAULT_HOME.philosophy, ...(data.philosophy || {}) },
-            why_choose_us: { ...DEFAULT_HOME.why_choose_us, ...(data.why_choose_us || {}) },
-            featured: { ...DEFAULT_HOME.featured, ...(data.featured || {}) },
-            testimonials: { ...DEFAULT_HOME.testimonials, ...(data.testimonials || {}) },
-            pleno_hero: { ...DEFAULT_HOME.pleno_hero, ...(data.pleno_hero || {}) },
-            nutri_hero: { ...DEFAULT_HOME.nutri_hero, ...(data.nutri_hero || {}) },
-            fluir_content: { ...DEFAULT_HOME.fluir_content, ...(data.fluir_content || {}) },
-          });
+        if (cancelled || !data) return;
+        try {
+          localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+        } catch {
+          // ignore quota errors
         }
+        setState({ content: mergeRow(data), loading: false });
       })
       .catch(() => {
-        // Keep defaults on error
+        // Keep defaults/cache on error
       })
       .finally(() => {
-        if (!cancelled) setLoading(false);
+        clearTimeout(timeoutId);
+        if (!cancelled) {
+          setState((s) => (s.loading ? { ...s, loading: false } : s));
+        }
       });
 
     return () => {
       cancelled = true;
+      clearTimeout(timeoutId);
     };
   }, []);
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -72,7 +72,7 @@ const ICON_BG = {
 
 function FluirFemeninoContent() {
   const rootRef = useRef(null);
-  const { content } = useHomeContent();
+  const { content, loading } = useHomeContent();
   const cfg = content.fluir_content;
   const [latestPosts, setLatestPosts] = useState([]);
   const [postsLoaded, setPostsLoaded] = useState(false);
@@ -94,7 +94,10 @@ function FluirFemeninoContent() {
     };
   }, []);
 
-  useEffect(() => {
+  // Espera el fetch del CMS para animar con el texto real (sin flash de defaults).
+  // Layout effect para que no se pinte un frame a opacidad completa antes del tween.
+  useLayoutEffect(() => {
+    if (loading) return;
     const ctx = gsap.context(() => {
       const heroEls = rootRef.current?.querySelectorAll('.hero-tile');
       if (heroEls?.length) {
@@ -156,7 +159,7 @@ function FluirFemeninoContent() {
     }, rootRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [loading]);
 
   return (
     <div ref={rootRef} className="bg-fluir-mist text-fluir-ink overflow-hidden">
@@ -183,33 +186,37 @@ function FluirFemeninoContent() {
         />
 
         <div className="relative mx-auto max-w-[1100px] flex flex-col items-center text-center gap-6 sm:gap-7">
-          <h1 className="ffhero-el font-display font-light leading-[0.95] tracking-tight text-[2.6rem] sm:text-[3.6rem] lg:text-[5rem] m-0 max-w-3xl">
-            {cfg.heroTitle} <em className="italic text-fluir-magenta">{cfg.heroHighlight}</em>
-          </h1>
+          {!loading && (
+            <>
+              <h1 className="ffhero-el font-display font-light leading-[0.95] tracking-tight text-[2.6rem] sm:text-[3.6rem] lg:text-[5rem] m-0 max-w-3xl">
+                {cfg.heroTitle} <em className="italic text-fluir-magenta">{cfg.heroHighlight}</em>
+              </h1>
 
-          <p className="ffhero-el font-body text-base sm:text-lg leading-relaxed text-fluir-ink/75 max-w-xl m-0">
-            {cfg.heroSubtitle}
-          </p>
+              <p className="ffhero-el font-body text-base sm:text-lg leading-relaxed text-fluir-ink/75 max-w-xl m-0">
+                {cfg.heroSubtitle}
+              </p>
 
-          <div className="ffhero-el flex flex-wrap items-center justify-center gap-3 mt-2">
-            <a
-              href="#fluir-articulos"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-fluir-magenta text-white text-sm font-heading font-bold hover:bg-fluir-rose hover:text-fluir-ink transition-colors"
-            >
-              Leer el diario
-              <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden>
-                <path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-              </svg>
-            </a>
-            <a
-              href="https://wa.me/50376284719"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-fluir-ink/20 text-fluir-ink text-sm font-heading font-bold hover:bg-fluir-ink hover:text-white transition-colors"
-            >
-              Únete al círculo
-            </a>
-          </div>
+              <div className="ffhero-el flex flex-wrap items-center justify-center gap-3 mt-2">
+                <a
+                  href="#fluir-articulos"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-fluir-magenta text-white text-sm font-heading font-bold hover:bg-fluir-rose hover:text-fluir-ink transition-colors"
+                >
+                  Leer el diario
+                  <svg viewBox="0 0 24 24" className="w-4 h-4" aria-hidden>
+                    <path d="M5 12h14m-6-6l6 6-6 6" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                  </svg>
+                </a>
+                <a
+                  href="https://wa.me/50376284719"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-fluir-ink/20 text-fluir-ink text-sm font-heading font-bold hover:bg-fluir-ink hover:text-white transition-colors"
+                >
+                  Únete al círculo
+                </a>
+              </div>
+            </>
+          )}
         </div>
       </section>
 
