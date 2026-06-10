@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -11,7 +11,7 @@ gsap.registerPlugin(ScrollTrigger);
 function PlenoLandingContent() {
   const heroRef = useRef(null);
   const [featured, setFeatured] = useState(null);
-  const { content } = useHomeContent();
+  const { content, loading } = useHomeContent();
   const cfg = content.pleno_hero;
 
   useEffect(() => {
@@ -28,7 +28,10 @@ function PlenoLandingContent() {
     };
   }, []);
 
-  useEffect(() => {
+  // Espera el fetch del CMS para animar con el texto real (sin flash de defaults).
+  // Layout effect para que no se pinte un frame a opacidad completa antes del tween.
+  useLayoutEffect(() => {
+    if (loading) return;
     const ctx = gsap.context(() => {
       gsap.from('.pleno-hero-el', {
         y: 40,
@@ -40,7 +43,7 @@ function PlenoLandingContent() {
       });
     });
     return () => ctx.revert();
-  }, []);
+  }, [loading]);
 
   const featuredImage = featured?.images?.[0] ?? null;
 
@@ -70,18 +73,22 @@ function PlenoLandingContent() {
         <div className="relative grid xl:grid-cols-2 min-h-[480px] xl:min-h-[560px]">
           {/* Text — full width <xl, izquierda en xl+ */}
           <div className="px-6 sm:px-10 lg:px-16 xl:px-20 py-16 xl:py-24 flex flex-col justify-center gap-6 xl:gap-8">
-            <h1 className="pleno-hero-el font-drama font-normal leading-[1.02] tracking-tight text-[3.25rem] sm:text-6xl lg:text-7xl xl:text-[5rem] m-0">
-              {cfg.titleLine1}<br />
-              <em className="italic font-normal">{cfg.titleLine2}</em>
-            </h1>
-            <p className="pleno-hero-el font-body text-base lg:text-lg leading-relaxed text-white/85 max-w-md m-0">
-              {cfg.subtitle}
-            </p>
+            {!loading && (
+              <>
+                <h1 className="pleno-hero-el font-drama font-normal leading-[1.02] tracking-tight text-[3.25rem] sm:text-6xl lg:text-7xl xl:text-[5rem] m-0">
+                  {cfg.titleLine1}<br />
+                  <em className="italic font-normal">{cfg.titleLine2}</em>
+                </h1>
+                <p className="pleno-hero-el font-body text-base lg:text-lg leading-relaxed text-white/85 max-w-md m-0">
+                  {cfg.subtitle}
+                </p>
+              </>
+            )}
           </div>
 
           {/* Producto destacado — solo en xl+ */}
           <div className="relative hidden xl:grid place-items-center min-h-[480px] overflow-hidden">
-            {featuredImage ? (
+            {!loading && (featuredImage ? (
               <Link
                 to={featured ? `/producto/${featured.slug}` : '#'}
                 className="pleno-hero-el group relative grid place-items-center"
@@ -112,7 +119,7 @@ function PlenoLandingContent() {
                 }}
                 aria-hidden
               />
-            )}
+            ))}
           </div>
         </div>
       </section>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -11,7 +11,7 @@ gsap.registerPlugin(ScrollTrigger);
 function NutrigabrielareLandingContent() {
   const heroRef = useRef(null);
   const [featured, setFeatured] = useState(null);
-  const { content } = useHomeContent();
+  const { content, loading } = useHomeContent();
   const cfg = content.nutri_hero;
 
   useEffect(() => {
@@ -29,7 +29,10 @@ function NutrigabrielareLandingContent() {
     };
   }, []);
 
-  useEffect(() => {
+  // Espera el fetch del CMS para animar con el texto real (sin flash de defaults).
+  // Layout effect para que no se pinte un frame a opacidad completa antes del tween.
+  useLayoutEffect(() => {
+    if (loading) return;
     const ctx = gsap.context(() => {
       gsap.from('.nutri-hero-el', {
         y: 40,
@@ -41,7 +44,7 @@ function NutrigabrielareLandingContent() {
       });
     });
     return () => ctx.revert();
-  }, []);
+  }, [loading]);
 
   const featuredImage = featured?.images?.[0] ?? null;
 
@@ -58,17 +61,21 @@ function NutrigabrielareLandingContent() {
 
         <div className="relative grid xl:grid-cols-2 min-h-[480px] xl:min-h-[560px]">
           <div className="px-6 sm:px-10 lg:px-16 xl:px-20 py-16 xl:py-24 flex flex-col justify-center gap-6 xl:gap-8">
-            <h1 className="nutri-hero-el font-heading not-italic leading-[1.02] tracking-tight text-[3.25rem] sm:text-6xl lg:text-7xl xl:text-[5rem] m-0 text-primary">
-              {cfg.titleLine1}{' '}
-              <span className="font-drama italic text-nutri-rose">{cfg.titleHighlight}</span>
-            </h1>
-            <p className="nutri-hero-el font-body text-base lg:text-lg leading-relaxed text-primary/70 max-w-md m-0">
-              {cfg.subtitle}
-            </p>
+            {!loading && (
+              <>
+                <h1 className="nutri-hero-el font-heading not-italic leading-[1.02] tracking-tight text-[3.25rem] sm:text-6xl lg:text-7xl xl:text-[5rem] m-0 text-primary">
+                  {cfg.titleLine1}{' '}
+                  <span className="font-drama italic text-nutri-rose">{cfg.titleHighlight}</span>
+                </h1>
+                <p className="nutri-hero-el font-body text-base lg:text-lg leading-relaxed text-primary/70 max-w-md m-0">
+                  {cfg.subtitle}
+                </p>
+              </>
+            )}
           </div>
 
           <div className="relative hidden xl:grid place-items-center min-h-[480px] overflow-hidden">
-            {featuredImage ? (
+            {!loading && (featuredImage ? (
               <Link
                 to={featured ? `/producto/${featured.slug}` : '#'}
                 className="nutri-hero-el group relative grid place-items-center"
@@ -99,7 +106,7 @@ function NutrigabrielareLandingContent() {
                 }}
                 aria-hidden
               />
-            )}
+            ))}
           </div>
         </div>
       </section>

@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useLayoutEffect } from 'react';
 import gsap from 'gsap';
 import { useHomeContent } from '../context/HomeContentContext';
 
@@ -9,15 +9,6 @@ export default function Hero() {
 
   useEffect(() => {
     let ctx = gsap.context(() => {
-      gsap.from('.hero-element', {
-        y: 40,
-        opacity: 0,
-        duration: 1,
-        stagger: 0.15,
-        ease: 'power3.out',
-        delay: 0.2
-      });
-
       // Floating animation for decorative leaves
       gsap.to('.floating-leaf', {
         y: -20,
@@ -43,10 +34,21 @@ export default function Hero() {
     return () => ctx.revert();
   }, []);
 
-  // Premium cinematic entrance for the model — runs once the image element is mounted
-  useEffect(() => {
+  // Entrance for text + model — waits for the CMS fetch so the animation runs
+  // with the real content (no default-text flash mid-animation). Layout effect
+  // so the elements never paint a full-opacity frame before the tween starts.
+  useLayoutEffect(() => {
     if (loading) return;
     let ctx = gsap.context(() => {
+      gsap.from('.hero-element', {
+        y: 40,
+        opacity: 0,
+        duration: 1,
+        stagger: 0.15,
+        ease: 'power3.out',
+        delay: 0.2
+      });
+
       gsap.from('.hero-image', {
         x: 100,
         scale: 1.05,
@@ -83,6 +85,7 @@ export default function Hero() {
       {/* Content (Left) */}
       <div className="w-full lg:w-[60%] pt-40 lg:pt-48 pb-0 lg:pb-24 px-6 md:px-12 lg:pl-[10%] flex items-center relative z-10">
         
+        {!loading && (
         <div className="max-w-2xl xl:max-w-3xl relative z-20">
 
           {/* Headline */}
@@ -115,26 +118,25 @@ export default function Hero() {
           </div>
 
           {/* Mobile model image — below the buttons */}
-          {!loading && (
-            <div className="hero-element lg:hidden mt-12 flex justify-center items-end self-stretch">
-              <img
-                src={d.heroImage || '/media/hero_model.png'}
-                alt="Gabriela Retana"
-                decoding="async"
-                onError={(e) => {
-                  e.target.src = '/media/model_placeholder.png';
-                }}
-                style={{
-                  filter:
-                    'drop-shadow(0 6px 8px rgba(20, 40, 30, 0.18)) drop-shadow(0 22px 28px rgba(20, 40, 30, 0.18))',
-                }}
-                className="w-80 sm:w-[22rem] h-auto object-contain object-bottom -rotate-2 origin-bottom"
-              />
-            </div>
-          )}
+          <div className="hero-element lg:hidden mt-12 flex justify-center items-end self-stretch">
+            <img
+              src={d.heroImage || '/media/hero_model.png'}
+              alt="Gabriela Retana"
+              decoding="async"
+              onError={(e) => {
+                e.target.src = '/media/model_placeholder.png';
+              }}
+              style={{
+                filter:
+                  'drop-shadow(0 6px 8px rgba(20, 40, 30, 0.18)) drop-shadow(0 22px 28px rgba(20, 40, 30, 0.18))',
+              }}
+              className="w-80 sm:w-[22rem] h-auto object-contain object-bottom -rotate-2 origin-bottom"
+            />
+          </div>
         </div>
+        )}
       </div>
-      
+
       {/* Main Image Layering */}
       {!loading && (
         <div className="hidden lg:flex absolute bottom-0 right-0 lg:w-[45%] lg:h-[95%] pointer-events-none z-20 justify-end items-end lg:pr-24 xl:pr-48">
