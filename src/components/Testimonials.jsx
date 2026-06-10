@@ -89,6 +89,7 @@ export default function Testimonials() {
               location={t.location}
               rating={t.rating}
               quote={t.quote}
+              photo={t.photo}
             />
           ))}
         </div>

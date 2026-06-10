@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Quote, Star, StarHalf } from 'lucide-react';
 
 /**
@@ -12,8 +12,11 @@ import { Quote, Star, StarHalf } from 'lucide-react';
  * @param {string=} props.location  - Optional city / "Online".
  * @param {number}  props.rating    - 0–5, supports half steps (e.g. 4.5).
  * @param {string}  props.quote     - Testimonial text.
+ * @param {string=} props.photo     - Optional avatar URL; falls back to initials.
  */
-export default function TestimonialCard({ name, role, location, rating = 5, quote }) {
+export default function TestimonialCard({ name, role, location, rating = 5, quote, photo }) {
+  const [photoError, setPhotoError] = useState(false);
+  const showPhoto = Boolean(photo) && !photoError;
   // Initials for the avatar (first + last word), e.g. "Andrea Martínez" -> "AM".
   const initials = (name || '')
     .trim()
@@ -67,12 +70,22 @@ export default function TestimonialCard({ name, role, location, rating = 5, quot
 
       {/* Author */}
       <figcaption className="mt-7 flex items-center gap-4 border-t border-nutri-line-soft pt-6">
-        <span
-          aria-hidden="true"
-          className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-highlight to-accent font-heading text-sm font-bold text-white shadow-sm"
-        >
-          {initials}
-        </span>
+        {showPhoto ? (
+          <img
+            src={photo}
+            alt={name ? `Foto de ${name}` : ''}
+            loading="lazy"
+            onError={() => setPhotoError(true)}
+            className="h-12 w-12 flex-shrink-0 rounded-full object-cover shadow-sm ring-2 ring-nutri-rose-soft"
+          />
+        ) : (
+          <span
+            aria-hidden="true"
+            className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-highlight to-accent font-heading text-sm font-bold text-white shadow-sm"
+          >
+            {initials}
+          </span>
+        )}
         <span className="min-w-0">
           <span className="block font-heading text-base font-bold leading-tight text-primary">
             {name}
