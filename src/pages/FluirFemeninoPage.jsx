@@ -5,6 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowUpRight } from 'lucide-react';
 import { getLatestPosts } from '../services/blogService';
 import DigitalResources from '../components/DigitalResources';
+import { HomeContentProvider, useHomeContent } from '../context/HomeContentContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -69,8 +70,10 @@ const ICON_BG = {
   lime: 'bg-fluir-lime/20',
 };
 
-export default function FluirFemeninoPage() {
+function FluirFemeninoContent() {
   const rootRef = useRef(null);
+  const { content } = useHomeContent();
+  const cfg = content.fluir_content;
   const [latestPosts, setLatestPosts] = useState([]);
   const [postsLoaded, setPostsLoaded] = useState(false);
 
@@ -181,12 +184,11 @@ export default function FluirFemeninoPage() {
 
         <div className="relative mx-auto max-w-[1100px] flex flex-col items-center text-center gap-6 sm:gap-7">
           <h1 className="ffhero-el font-display font-light leading-[0.95] tracking-tight text-[2.6rem] sm:text-[3.6rem] lg:text-[5rem] m-0 max-w-3xl">
-            Un espacio para fluir <em className="italic text-fluir-magenta">en tu propio tiempo.</em>
+            {cfg.heroTitle} <em className="italic text-fluir-magenta">{cfg.heroHighlight}</em>
           </h1>
 
           <p className="ffhero-el font-body text-base sm:text-lg leading-relaxed text-fluir-ink/75 max-w-xl m-0">
-            Lecturas, recursos y una comunidad para acompañar tu salud hormonal,
-            tu mente y tu ciclo — sin prisa, sin pausa forzada.
+            {cfg.heroSubtitle}
           </p>
 
           <div className="ffhero-el flex flex-wrap items-center justify-center gap-3 mt-2">
@@ -496,7 +498,7 @@ export default function FluirFemeninoPage() {
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 md:mb-14">
               <div>
                 <h2 className="font-display font-light leading-tight text-4xl sm:text-5xl md:text-6xl">
-                  Lecturas <span className="italic text-fluir-magenta">recientes.</span>
+                  {cfg.lecturasTitle} <span className="italic text-fluir-magenta">{cfg.lecturasHighlight}</span>
                 </h2>
               </div>
               <Link
@@ -550,9 +552,9 @@ export default function FluirFemeninoPage() {
 
       {/* ─── RECURSOS DIGITALES (ebooks/cursos/guías) ─── */}
       <DigitalResources
-        titleLine1="Lo que la lectura"
-        titleLine2="no alcanza a cubrir."
-        subtitle="Ebooks, cursos y guías diseñados por Gabriela para acompañarte más allá del artículo."
+        titleLine1={cfg.resourcesTitleLine1}
+        titleLine2={cfg.resourcesTitleLine2}
+        subtitle={cfg.resourcesSubtitle}
         limit={4}
         bg="cream"
       />
@@ -614,5 +616,13 @@ export default function FluirFemeninoPage() {
         </div>
       </section>
     </div>
+  );
+}
+
+export default function FluirFemeninoPage() {
+  return (
+    <HomeContentProvider>
+      <FluirFemeninoContent />
+    </HomeContentProvider>
   );
 }

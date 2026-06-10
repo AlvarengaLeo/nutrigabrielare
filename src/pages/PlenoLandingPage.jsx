@@ -3,20 +3,22 @@ import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { getFeaturedProducts } from '../services/productService';
+import { HomeContentProvider, useHomeContent } from '../context/HomeContentContext';
 import PlenoProductsPLP from '../components/pleno/PlenoProductsPLP';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function PlenoLandingPage() {
+function PlenoLandingContent() {
   const heroRef = useRef(null);
   const [featured, setFeatured] = useState(null);
+  const { content } = useHomeContent();
+  const cfg = content.pleno_hero;
 
   useEffect(() => {
     let cancelled = false;
-    getFeaturedProducts(5)
+    getFeaturedProducts(1, 'physical')
       .then((rows) => {
-        const pick = rows.find((p) => p.kind === 'physical') ?? null;
-        if (!cancelled) setFeatured(pick);
+        if (!cancelled) setFeatured(rows[0] ?? null);
       })
       .catch(() => {
         if (!cancelled) setFeatured(null);
@@ -69,12 +71,11 @@ export default function PlenoLandingPage() {
           {/* Text — full width <xl, izquierda en xl+ */}
           <div className="px-6 sm:px-10 lg:px-16 xl:px-20 py-16 xl:py-24 flex flex-col justify-center gap-6 xl:gap-8">
             <h1 className="pleno-hero-el font-drama font-normal leading-[1.02] tracking-tight text-[3.25rem] sm:text-6xl lg:text-7xl xl:text-[5rem] m-0">
-              Bienestar en su forma<br />
-              <em className="italic font-normal">más plena.</em>
+              {cfg.titleLine1}<br />
+              <em className="italic font-normal">{cfg.titleLine2}</em>
             </h1>
             <p className="pleno-hero-el font-body text-base lg:text-lg leading-relaxed text-white/85 max-w-md m-0">
-              Productos digitales, suplementos seleccionados y consultas con
-              acompañamiento real. Una sola tienda para tu bienestar integral.
+              {cfg.subtitle}
             </p>
           </div>
 
@@ -123,5 +124,13 @@ export default function PlenoLandingPage() {
         anchorId="pleno-catalogo"
       />
     </div>
+  );
+}
+
+export default function PlenoLandingPage() {
+  return (
+    <HomeContentProvider>
+      <PlenoLandingContent />
+    </HomeContentProvider>
   );
 }

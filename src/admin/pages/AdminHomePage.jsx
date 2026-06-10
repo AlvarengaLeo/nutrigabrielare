@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { Home, Sparkles, Heart, Shield, ShoppingBag, MessageCircleHeart, ExternalLink, Clock } from 'lucide-react';
+import { Home, Sparkles, Heart, Shield, ShoppingBag, MessageCircleHeart, ExternalLink, Clock, Leaf, BookOpen, Flower2 } from 'lucide-react';
 import AdminLayout from '../components/AdminLayout';
 import { getHomeContent } from '../../services/homeContentService';
 import { DEFAULT_HOME } from '../../context/HomeContentContext';
@@ -9,6 +9,9 @@ import PhilosophyEditor from '../components/home/PhilosophyEditor';
 import WhyChooseUsEditor from '../components/home/WhyChooseUsEditor';
 import FeaturedEditor from '../components/home/FeaturedEditor';
 import TestimonialsEditor from '../components/home/TestimonialsEditor';
+import PlenoHeroEditor from '../components/home/PlenoHeroEditor';
+import NutriHeroEditor from '../components/home/NutriHeroEditor';
+import FluirContentEditor from '../components/home/FluirContentEditor';
 
 const TABS = [
   { id: 'hero', label: 'Hero', icon: Sparkles },
@@ -16,6 +19,9 @@ const TABS = [
   { id: 'why_choose_us', label: 'Diferenciador', icon: Shield },
   { id: 'featured', label: 'Pleno Market', icon: ShoppingBag },
   { id: 'testimonials', label: 'Testimonios', icon: MessageCircleHeart },
+  { id: 'pleno_hero', label: 'Pleno', icon: Leaf },
+  { id: 'nutri_hero', label: 'Nutrigabrielare', icon: BookOpen },
+  { id: 'fluir_content', label: 'Fluir Femenino', icon: Flower2 },
 ];
 
 export default function AdminHomePage() {
@@ -35,6 +41,9 @@ export default function AdminHomePage() {
             why_choose_us: { ...DEFAULT_HOME.why_choose_us, ...(data.why_choose_us || {}) },
             featured: { ...DEFAULT_HOME.featured, ...(data.featured || {}) },
             testimonials: { ...DEFAULT_HOME.testimonials, ...(data.testimonials || {}) },
+            pleno_hero: { ...DEFAULT_HOME.pleno_hero, ...(data.pleno_hero || {}) },
+            nutri_hero: { ...DEFAULT_HOME.nutri_hero, ...(data.nutri_hero || {}) },
+            fluir_content: { ...DEFAULT_HOME.fluir_content, ...(data.fluir_content || {}) },
           });
           setUpdatedAt(data.updated_at);
         } else {
@@ -88,6 +97,12 @@ export default function AdminHomePage() {
         return <FeaturedEditor data={content.featured} onSaved={(d) => handleSectionSaved('featured', d)} />;
       case 'testimonials':
         return <TestimonialsEditor data={content.testimonials} onSaved={(d) => handleSectionSaved('testimonials', d)} />;
+      case 'pleno_hero':
+        return <PlenoHeroEditor data={content.pleno_hero} onSaved={(d) => handleSectionSaved('pleno_hero', d)} />;
+      case 'nutri_hero':
+        return <NutriHeroEditor data={content.nutri_hero} onSaved={(d) => handleSectionSaved('nutri_hero', d)} />;
+      case 'fluir_content':
+        return <FluirContentEditor data={content.fluir_content} onSaved={(d) => handleSectionSaved('fluir_content', d)} />;
       default:
         return null;
     }
@@ -115,7 +130,7 @@ export default function AdminHomePage() {
             </div>
             <div>
               <h2 className="font-heading font-extrabold text-xl text-primary">Contenido de la Home</h2>
-              <p className="font-body text-xs text-primary/50">Editá textos, imágenes, tarjetas y contenido visible de la página principal</p>
+              <p className="font-body text-xs text-primary/50">Editá textos, imágenes y contenido visible de la página principal y las vitrinas (Pleno, Nutrigabrielare, Fluir Femenino)</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
