@@ -10,6 +10,7 @@ import {
 
 const STATUS_LABELS = {
   pendiente: 'Pendiente',
+  pagado: 'Pagada',
   contactado: 'Contactado',
   confirmado: 'Confirmado',
   completado: 'Completado',

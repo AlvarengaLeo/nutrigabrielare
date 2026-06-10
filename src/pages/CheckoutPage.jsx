@@ -115,10 +115,15 @@ export default function CheckoutPage() {
     }
   }, [draft]);
 
+  // Carritos 100% digitales no necesitan envío (los items sin kind —
+  // carritos viejos — se tratan como físicos por seguridad)
+  const digitalOnly =
+    items.length > 0 && items.every((item) => item.kind === 'digital');
+
   const selectedZone =
     zones.find((z) => z.id === draft.shippingZoneId) ?? null;
   const isPickup = Boolean(selectedZone?.isPickup);
-  const shippingCost = calculateShippingCost(selectedZone, subtotal);
+  const shippingCost = digitalOnly ? 0 : calculateShippingCost(selectedZone, subtotal);
   const total = subtotal + shippingCost;
 
   function updateDraftField(field, value) {
@@ -137,12 +142,14 @@ export default function CheckoutPage() {
     if (!draft.name.trim()) nextErrors.name = true;
     if (!draft.email.trim()) nextErrors.email = true;
     if (!draft.phone.trim()) nextErrors.phone = true;
-    if (!zoneIsPickup) {
-      if (!draft.address.trim()) nextErrors.address = true;
-      if (!draft.city.trim()) nextErrors.city = true;
-      if (!draft.department.trim()) nextErrors.department = true;
+    if (!digitalOnly) {
+      if (!zoneIsPickup) {
+        if (!draft.address.trim()) nextErrors.address = true;
+        if (!draft.city.trim()) nextErrors.city = true;
+        if (!draft.department.trim()) nextErrors.department = true;
+      }
+      if (!draft.shippingZoneId) nextErrors.shippingZoneId = true;
     }
-    if (!draft.shippingZoneId) nextErrors.shippingZoneId = true;
 
     const emailPattern = /\S+@\S+\.\S+/;
     if (draft.email.trim() && !emailPattern.test(draft.email.trim())) {
@@ -185,11 +192,11 @@ export default function CheckoutPage() {
           phone: draft.phone.trim(),
         },
         shipping: {
-          address: isPickup ? '' : draft.address.trim(),
-          city: isPickup ? '' : draft.city.trim(),
-          department: isPickup ? '' : draft.department.trim(),
-          notes: isPickup ? '' : draft.notes.trim(),
-          zoneId: draft.shippingZoneId,
+          address: isPickup || digitalOnly ? '' : draft.address.trim(),
+          city: isPickup || digitalOnly ? '' : draft.city.trim(),
+          department: isPickup || digitalOnly ? '' : draft.department.trim(),
+          notes: isPickup || digitalOnly ? '' : draft.notes.trim(),
+          zoneId: digitalOnly ? '' : draft.shippingZoneId,
         },
       };
 
@@ -267,6 +274,20 @@ export default function CheckoutPage() {
               </div>
             </section>
 
+            {digitalOnly ? (
+              <section className="checkout-el rounded-2xl bg-white p-6">
+                <h2 className="mb-1 font-heading text-sm font-bold text-primary">
+                  Entrega
+                </h2>
+                <span className="mb-4 inline-block font-body text-xs text-primary/50">
+                  Productos digitales
+                </span>
+                <p className="rounded-xl bg-[#f8f6f3] px-4 py-3 font-body text-xs text-primary/60">
+                  Tu compra es 100% digital: los enlaces de descarga te llegan al
+                  correo apenas se confirme el pago. No se necesita dirección de envío.
+                </p>
+              </section>
+            ) : (
             <section className="checkout-el rounded-2xl bg-white p-6">
               <h2 className="mb-1 font-heading text-sm font-bold text-primary">
                 {isPickup ? 'Entrega' : 'Dirección de envío'}
@@ -355,6 +376,7 @@ export default function CheckoutPage() {
                 </div>
               )}
             </section>
+            )}
           </div>
 
           <div className="min-w-0 flex-1">
@@ -395,16 +417,18 @@ export default function CheckoutPage() {
                   <span>Subtotal</span>
                   <span>${subtotal.toFixed(2)}</span>
                 </div>
-                <div className="flex justify-between text-primary/60">
-                  <span>
-                    Envio{selectedZone ? ` · ${selectedZone.name}` : ''}
-                  </span>
-                  <span>
-                    {shippingCost === 0 && selectedZone?.freeThreshold != null
-                      ? 'Gratis'
-                      : `$${shippingCost.toFixed(2)}`}
-                  </span>
-                </div>
+                {!digitalOnly && (
+                  <div className="flex justify-between text-primary/60">
+                    <span>
+                      Envio{selectedZone ? ` · ${selectedZone.name}` : ''}
+                    </span>
+                    <span>
+                      {shippingCost === 0 && selectedZone?.freeThreshold != null
+                        ? 'Gratis'
+                        : `$${shippingCost.toFixed(2)}`}
+                    </span>
+                  </div>
+                )}
                 <div className="flex justify-between border-t border-primary/10 pt-2 text-lg font-bold text-primary">
                   <span>Total</span>
                   <span>${total.toFixed(2)}</span>

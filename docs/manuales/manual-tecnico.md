@@ -164,7 +164,7 @@ nutrigabrielare/
 │   ├── config/runtimeConfig.js   ← Schema de variables VITE_* (críticas vs opcionales)
 │   └── lib/supabase.js           ← Cliente Supabase del frontend (anon key)
 ├── supabase/
-│   └── migrations/               ← 001…020 SQL aplicadas en orden (ver §5)
+│   └── migrations/               ← 001…021 SQL aplicadas en orden (ver §5)
 ├── docs/
 │   ├── email-setup.md            ← Guía de configuración de Resend
 │   └── manuales/                 ← Manuales entregables (este documento)
@@ -202,7 +202,7 @@ Todas las rutas se declaran en `src/App.jsx`. El `Navbar`, el `Footer` y el `Car
 | `/checkout` | `CheckoutPage` — **compra como invitada permitida** (no requiere login) | Público |
 | `/gracias` | `GraciasPage` — requiere `?order=<id>&key=<hmac>` o sesión dueña de la orden | Público* |
 | `/tracking` y `/tracking/:code` | `TrackingPage` (timeline de estados por código) | Público |
-| `/reservar/:slug` | `ReservarPage` (reserva de servicio) | 🔒 Requiere sesión (`ProtectedRoute`) |
+| `/reservar/:slug` | `ReservarPage` (reserva **con pago en línea**) | Pública (compra como invitada) |
 | `/cuenta` | `CuentaPage` (pedidos, biblioteca digital "Mis productos") | 🔒 Requiere sesión |
 | `/login` / `/registro` | `LoginPage` / `RegistroPage` | Público |
 | `/fluir-femenino` | `FluirFemeninoPage` (landing del blog) | Público |
@@ -242,7 +242,7 @@ El gate es `src/admin/components/AdminRoute.jsx`: si no hay sesión redirige a `
 
 ## 5. Base de datos
 
-Schema PostgreSQL gestionado por las migraciones `supabase/migrations/001…020`. **Todas las tablas tienen RLS habilitado** con políticas explícitas. Convención: archivos `NNN_descripcion.sql`, idempotentes, aplicados en orden numérico (manualmente en el SQL Editor de Supabase o con `supabase db push`).
+Schema PostgreSQL gestionado por las migraciones `supabase/migrations/001…021`. **Todas las tablas tienen RLS habilitado** con políticas explícitas. Convención: archivos `NNN_descripcion.sql`, idempotentes, aplicados en orden numérico (manualmente en el SQL Editor de Supabase o con `supabase db push`).
 
 ### 5.1 Historial de migraciones
 
@@ -268,6 +268,7 @@ Schema PostgreSQL gestionado por las migraciones `supabase/migrations/001…020`
 | 018 | `018_testimonials.sql` | Columna JSONB `testimonials` en `home_content`. |
 | 019 | `019_landing_sections.sql` | Columnas JSONB `pleno_hero`, `nutri_hero`, `fluir_content` en `home_content`. |
 | 020 | `020_pickup_zones.sql` | `shipping_zones.is_pickup` (retiro en tienda). |
+| 021 | `021_reservations_paid.sql` | `reservations.order_id` (enlace a la orden que pagó la consulta) + estado `pagado` en el CHECK de `reservations.status`. |
 
 ### 5.2 Tablas
 
@@ -406,7 +407,7 @@ Auditoría de cada intento de envío de correo (insertado por `api/_lib/email.js
 |---|---|---|
 | `id` | uuid PK | |
 | `provider` | text | `resend` |
-| `template` | text | `purchase_confirm` \| `digital_download` \| `reservation_confirm` |
+| `template` | text | `purchase_confirm` \| `digital_download` \| `reservation_confirm` ⧸ `service_paid` ⧸ `service_paid_admin` |
 | `recipient_email` | text | |
 | `status` | text | CHECK: `queued` \| `sent` \| `failed` \| `skipped` \| `bounced` |
 | `error_message` | text | truncado a 1000 chars |
@@ -566,7 +567,9 @@ CheckoutPage (front)                     create-link.js (server)              Wo
 |---|---|---|
 | `purchasePhysicalTemplate` → `sendPurchaseConfirmationEmail` | `purchase_confirm` | Webhook Wompi aprobado con al menos un ítem no digital. Incluye nº de pedido, tracking code y CTA "Seguir mi pedido" → `/tracking/:code` |
 | `purchaseDigitalTemplate` → `sendDigitalDownloadEmail` | `digital_download` | Webhook aprobado con **todos** los ítems digitales, o reenvío admin. Incluye botones de descarga (signed URLs de 7 días) y CTA "Ver mi pedido" → `/gracias?order&key` |
-| `reservationConfirmationTemplate` → `sendReservationConfirmationEmail` | `reservation_confirm` | `api/reservations/notify.js` tras crear una reserva |
+| `reservationConfirmationTemplate` → `sendReservationConfirmationEmail` | `reservation_confirm` | Legado: `api/reservations/notify.js` (el flujo actual de reservas cobra al reservar) |
+| `servicePaidTemplate` → `sendServicePaidEmail` | `service_paid` | Webhook aprobado con **todos** los ítems `service`: confirma el cupo pagado, incluye fecha preferida y CTA "Ver mi pedido" |
+| (HTML simple) → `sendAdminServicePaidNotification` | `service_paid_admin` | Mismo evento, a `ADMIN_NOTIFY_EMAIL`: datos de contacto, fecha preferida, notas y link a la orden |
 
 - **Fail-safe:** si `RESEND_API_KEY` no está configurada, los senders no lanzan error: registran `skipped` en `email_logs` y el flujo (webhook, reserva) continúa. Los fallos de Resend se registran como `failed` con `error_message`.
 - **Auditoría:** cada intento queda en `email_logs` (insertado con service role). Visor con filtros (destinataria / template / estado) en **`/admin/emails`** (solo rol admin), vía `src/services/emailLogService.js`.
@@ -645,12 +648,10 @@ Notas:
 
 ### 9.4 Reservas de servicios
 
-1. Desde la página de un servicio (`/producto/:slug`, `kind='service'`) se navega a `/reservar/:slug` — esta ruta **sí requiere sesión** (`ProtectedRoute`).
-2. El formulario inserta en `reservations` (estado `pendiente`) vía `reservationService` (RLS: la usuaria solo crea las suyas).
-3. Luego llama a `POST /api/reservations/notify` con el JWT; el servidor (cliente anon + JWT, respetando RLS) envía:
-   - correo `reservation_confirm` a la clienta;
-   - aviso opcional al admin (`ADMIN_NOTIFY_EMAIL`) con link a `/admin/reservas`.
-4. El equipo gestiona el ciclo en `/admin/reservas`: `pendiente → contactado → confirmado → completado` (o `cancelado`).
+1. Desde la página de un servicio (`/producto/:slug`, `kind='service'`) se navega a `/reservar/:slug` — ruta **pública** (sin sesión).
+2. **Servicios con precio > 0:** el formulario (contacto + fecha/horario preferido + notas) llama a `create-link` con el servicio como ítem y un bloque `reservation`; el servidor crea la orden **y** la reserva (`pendiente`, `order_id` enlazado, service role) y redirige a Wompi. **Servicios con precio 0 ("Cotizar"):** se muestra un CTA de WhatsApp con mensaje precargado en lugar del formulario.
+3. Al confirmarse el pago, el webhook: marca la reserva `pagado` (o `cancelado` si el pago fue rechazado), envía `service_paid` a la clienta y `service_paid_admin` a `ADMIN_NOTIFY_EMAIL` con los datos para coordinar la cita.
+4. El equipo gestiona el ciclo en `/admin/reservas`: `pagado → contactado → confirmado → completado` (o `cancelado`). Las órdenes de servicio no requieren envío (igual que las digitales: el checkout y `create-link` omiten zona y dirección cuando no hay ítems físicos).
 
 ### 9.5 Reenvío de descargas desde el admin
 

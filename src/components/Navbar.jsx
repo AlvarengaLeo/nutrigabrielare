@@ -146,7 +146,7 @@ export default function Navbar() {
       <div className="hidden md:flex items-center justify-end md:flex-1 gap-6">
         <CartIcon isLight={(isPleno || isNutri) && scrolled} />
         <a
-          href="https://wa.me/50376284719"
+          href={`https://wa.me/50376284719?text=${encodeURIComponent('¡Hola Gabriela! Vengo del sitio web y quiero más información 💕')}`}
           target="_blank"
           rel="noopener noreferrer"
           className={`magnetic-btn px-5 py-2.5 rounded-full font-bold text-sm flex items-center justify-center transition-colors ${ctaClass}`}

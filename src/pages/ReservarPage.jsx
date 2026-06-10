@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
 import gsap from 'gsap';
-import { ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { getProductBySlug } from '../services/productService';
-import { createReservation, notifyReservation } from '../services/reservationService';
+import { createPaymentLink } from '../services/paymentService';
 import { useAuth } from '../context/AuthContext';
 import { supabase } from '../lib/supabase';
+
+const PENDING_ORDER_KEY = 'nutri-pending-order';
 
 export default function ReservarPage() {
   const { slug } = useParams();
@@ -16,7 +18,6 @@ export default function ReservarPage() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(null);
 
   const [contactName, setContactName] = useState('');
   const [contactEmail, setContactEmail] = useState('');
@@ -33,7 +34,7 @@ export default function ReservarPage() {
       .finally(() => setLoading(false));
   }, [slug]);
 
-  // Prefill from auth user
+  // Prefill opcional si hay sesión (no es requisito para reservar)
   useEffect(() => {
     if (!user) return;
     const fullName = [user.firstName, user.lastName].filter(Boolean).join(' ').trim();
@@ -54,7 +55,7 @@ export default function ReservarPage() {
       );
     }, containerRef);
     return () => ctx.revert();
-  }, [loading, success]);
+  }, [loading]);
 
   if (loading) {
     return (
@@ -81,70 +82,65 @@ export default function ReservarPage() {
     return <Navigate to={`/producto/${product.slug}`} replace />;
   }
 
+  const showQuote = product.price === 0;
+
   async function handleSubmit(e) {
     e.preventDefault();
     setError('');
     setSubmitting(true);
     try {
-      const reservation = await createReservation({
-        userId: user.id,
-        productId: product.id,
-        contactName,
-        contactEmail,
-        contactPhone,
-        preferredDate,
-        preferredTime,
-        notes,
-      });
+      const checkoutPayload = {
+        items: [
+          {
+            productId: product.id,
+            slug: product.slug,
+            name: product.name,
+            size: 'Único',
+            color: 'Estándar',
+            quantity: 1,
+            image: product.images?.[0] ?? null,
+          },
+        ],
+        contact: {
+          name: contactName.trim(),
+          email: contactEmail.trim(),
+          phone: contactPhone.trim(),
+        },
+        shipping: {
+          address: '',
+          city: '',
+          department: '',
+          notes: '',
+          zoneId: '',
+        },
+        reservation: {
+          preferredDate,
+          preferredTime,
+          notes,
+        },
+      };
 
-      // Fire confirmation email — non-blocking failures.
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.access_token) {
-        notifyReservation(reservation.id, session.access_token).catch(() => {});
-      }
+      // Si hay sesión activa, la orden queda asociada a la cuenta
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-      setSuccess(reservation);
+      const payment = await createPaymentLink(
+        checkoutPayload,
+        session?.access_token ?? null,
+      );
+
+      localStorage.setItem(
+        PENDING_ORDER_KEY,
+        JSON.stringify({ id: payment.orderId, key: payment.orderKey, source: 'reserva' }),
+      );
+
+      window.location.assign(payment.urlEnlace);
     } catch (err) {
-      setError(err.message || 'No pudimos guardar tu reserva. Intentá de nuevo.');
-    } finally {
+      setError(err.message || 'No pudimos preparar tu pago. Intentá de nuevo.');
       setSubmitting(false);
     }
   }
-
-  if (success) {
-    return (
-      <div ref={containerRef} className="min-h-screen pt-32 pb-20 bg-background">
-        <div className="container mx-auto px-6 max-w-2xl text-center">
-          <div className="reservar-el inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/10 mb-6">
-            <CheckCircle2 className="w-8 h-8 text-accent" />
-          </div>
-          <h1 className="reservar-el font-heading font-extrabold text-3xl md:text-4xl text-primary mb-4">
-            Recibimos tu reserva
-          </h1>
-          <p className="reservar-el font-body text-primary/60 leading-relaxed mb-8">
-            Te vamos a contactar por correo o WhatsApp para coordinar el día y la hora final.
-            Mientras tanto, podés ver el estado de tus reservas en tu cuenta.
-          </p>
-          <div className="reservar-el flex flex-wrap justify-center gap-3">
-            <Link
-              to="/cuenta"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-background font-heading font-bold text-sm hover:opacity-90 transition-opacity"
-            >
-              Ir a mi cuenta
-            </Link>
-            <Link
-              to="/pleno"
-              className="inline-flex items-center gap-2 px-5 py-3 rounded-full border border-primary/15 text-primary font-heading font-bold text-sm hover:bg-primary/5 transition-colors"
-            >
-              Seguir explorando
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  const showQuote = product.price === 0;
 
   return (
     <div ref={containerRef} className="min-h-screen pt-32 pb-20 bg-background">
@@ -161,7 +157,9 @@ export default function ReservarPage() {
           Reservar consulta
         </h1>
         <p className="reservar-el font-body text-primary/60 mb-8">
-          Completá los datos y te contactamos para coordinar el día y la hora.
+          {showQuote
+            ? 'Este servicio se cotiza según tus necesidades — escribinos y lo armamos juntas.'
+            : 'Completá tus datos, pagá en línea y te contactamos para coordinar el día y la hora.'}
         </p>
 
         {/* Service summary */}
@@ -173,107 +171,128 @@ export default function ReservarPage() {
           </p>
         </div>
 
-        {error && (
-          <p className="reservar-el text-sm text-red-500 font-body mb-4">{error}</p>
+        {showQuote ? (
+          <div className="reservar-el rounded-2xl bg-white border border-primary/10 p-6 text-center">
+            <p className="font-body text-primary/60 mb-5">
+              Contanos qué necesitás y te preparamos una propuesta a tu medida.
+            </p>
+            <a
+              href={`https://wa.me/50376284719?text=${encodeURIComponent(`¡Hola! Quiero cotizar el servicio "${product.name}" 🌸`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-accent text-white font-heading font-bold text-sm hover:opacity-90 transition-opacity"
+            >
+              Cotizar por WhatsApp
+            </a>
+          </div>
+        ) : (
+          <>
+            {error && (
+              <p className="reservar-el text-sm text-red-500 font-body mb-4">{error}</p>
+            )}
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+              <div className="reservar-el">
+                <label className="block font-body text-xs font-semibold text-primary/60 uppercase tracking-widest mb-2">
+                  Nombre completo
+                </label>
+                <input
+                  required
+                  type="text"
+                  value={contactName}
+                  onChange={(e) => setContactName(e.target.value)}
+                  className="w-full px-5 py-3.5 rounded-xl bg-white border border-primary/10 font-body text-primary outline-none focus:border-accent transition-colors"
+                />
+              </div>
+
+              <div className="reservar-el grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-body text-xs font-semibold text-primary/60 uppercase tracking-widest mb-2">
+                    Correo
+                  </label>
+                  <input
+                    required
+                    type="email"
+                    value={contactEmail}
+                    onChange={(e) => setContactEmail(e.target.value)}
+                    className="w-full px-5 py-3.5 rounded-xl bg-white border border-primary/10 font-body text-primary outline-none focus:border-accent transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block font-body text-xs font-semibold text-primary/60 uppercase tracking-widest mb-2">
+                    Teléfono / WhatsApp
+                  </label>
+                  <input
+                    required
+                    type="tel"
+                    value={contactPhone}
+                    onChange={(e) => setContactPhone(e.target.value)}
+                    placeholder="7xxx-xxxx"
+                    className="w-full px-5 py-3.5 rounded-xl bg-white border border-primary/10 font-body text-primary outline-none focus:border-accent transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="reservar-el grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block font-body text-xs font-semibold text-primary/60 uppercase tracking-widest mb-2">
+                    Fecha preferida
+                  </label>
+                  <input
+                    type="date"
+                    value={preferredDate}
+                    onChange={(e) => setPreferredDate(e.target.value)}
+                    className="w-full px-5 py-3.5 rounded-xl bg-white border border-primary/10 font-body text-primary outline-none focus:border-accent transition-colors"
+                  />
+                </div>
+                <div>
+                  <label className="block font-body text-xs font-semibold text-primary/60 uppercase tracking-widest mb-2">
+                    Horario preferido
+                  </label>
+                  <input
+                    type="text"
+                    value={preferredTime}
+                    onChange={(e) => setPreferredTime(e.target.value)}
+                    placeholder="Mañana / 3:00 pm / etc."
+                    className="w-full px-5 py-3.5 rounded-xl bg-white border border-primary/10 font-body text-primary outline-none focus:border-accent transition-colors"
+                  />
+                </div>
+              </div>
+
+              <div className="reservar-el">
+                <label className="block font-body text-xs font-semibold text-primary/60 uppercase tracking-widest mb-2">
+                  Notas (opcional)
+                </label>
+                <textarea
+                  rows={4}
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Contanos brevemente qué necesitás trabajar"
+                  className="w-full px-5 py-3.5 rounded-xl bg-white border border-primary/10 font-body text-primary outline-none focus:border-accent transition-colors resize-none"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={submitting}
+                className={`reservar-el mt-2 w-full py-4 rounded-xl font-heading font-bold text-center transition-opacity ${
+                  submitting
+                    ? 'bg-primary/30 text-background/60 cursor-not-allowed'
+                    : 'bg-primary text-background hover:opacity-90'
+                }`}
+              >
+                {submitting
+                  ? 'Redirigiendo a Wompi…'
+                  : `Reservar y pagar $${Number(product.price).toFixed(2)}`}
+              </button>
+
+              <p className="reservar-el font-body text-xs text-primary/40 text-center">
+                Pagás de forma segura con Wompi. Tu cupo queda asegurado y te
+                contactamos para coordinar el día y la hora de tu consulta.
+              </p>
+            </form>
+          </>
         )}
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
-          <div className="reservar-el">
-            <label className="block font-body text-xs font-semibold text-primary/60 uppercase tracking-widest mb-2">
-              Nombre completo
-            </label>
-            <input
-              required
-              type="text"
-              value={contactName}
-              onChange={(e) => setContactName(e.target.value)}
-              className="w-full px-5 py-3.5 rounded-xl bg-white border border-primary/10 font-body text-primary outline-none focus:border-accent transition-colors"
-            />
-          </div>
-
-          <div className="reservar-el grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block font-body text-xs font-semibold text-primary/60 uppercase tracking-widest mb-2">
-                Correo
-              </label>
-              <input
-                required
-                type="email"
-                value={contactEmail}
-                onChange={(e) => setContactEmail(e.target.value)}
-                className="w-full px-5 py-3.5 rounded-xl bg-white border border-primary/10 font-body text-primary outline-none focus:border-accent transition-colors"
-              />
-            </div>
-            <div>
-              <label className="block font-body text-xs font-semibold text-primary/60 uppercase tracking-widest mb-2">
-                Teléfono / WhatsApp
-              </label>
-              <input
-                required
-                type="tel"
-                value={contactPhone}
-                onChange={(e) => setContactPhone(e.target.value)}
-                placeholder="7xxx-xxxx"
-                className="w-full px-5 py-3.5 rounded-xl bg-white border border-primary/10 font-body text-primary outline-none focus:border-accent transition-colors"
-              />
-            </div>
-          </div>
-
-          <div className="reservar-el grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block font-body text-xs font-semibold text-primary/60 uppercase tracking-widest mb-2">
-                Fecha preferida
-              </label>
-              <input
-                type="date"
-                value={preferredDate}
-                onChange={(e) => setPreferredDate(e.target.value)}
-                className="w-full px-5 py-3.5 rounded-xl bg-white border border-primary/10 font-body text-primary outline-none focus:border-accent transition-colors"
-              />
-            </div>
-            <div>
-              <label className="block font-body text-xs font-semibold text-primary/60 uppercase tracking-widest mb-2">
-                Horario preferido
-              </label>
-              <input
-                type="text"
-                value={preferredTime}
-                onChange={(e) => setPreferredTime(e.target.value)}
-                placeholder="Mañana / 3:00 pm / etc."
-                className="w-full px-5 py-3.5 rounded-xl bg-white border border-primary/10 font-body text-primary outline-none focus:border-accent transition-colors"
-              />
-            </div>
-          </div>
-
-          <div className="reservar-el">
-            <label className="block font-body text-xs font-semibold text-primary/60 uppercase tracking-widest mb-2">
-              Notas (opcional)
-            </label>
-            <textarea
-              rows={4}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Contanos brevemente qué necesitás trabajar"
-              className="w-full px-5 py-3.5 rounded-xl bg-white border border-primary/10 font-body text-primary outline-none focus:border-accent transition-colors resize-none"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={submitting}
-            className={`reservar-el mt-2 w-full py-4 rounded-xl font-heading font-bold text-center transition-opacity ${
-              submitting
-                ? 'bg-primary/30 text-background/60 cursor-not-allowed'
-                : 'bg-primary text-background hover:opacity-90'
-            }`}
-          >
-            {submitting ? 'Enviando…' : 'Enviar reserva'}
-          </button>
-
-          <p className="reservar-el font-body text-xs text-primary/40 text-center">
-            Al enviar, aceptás que la nutricionista te contacte por correo o WhatsApp.
-          </p>
-        </form>
       </div>
     </div>
   );

@@ -71,6 +71,14 @@ function normalizeCheckout(checkout) {
       notes: checkout?.shipping?.notes?.trim() || '',
       zoneId: checkout?.shipping?.zoneId?.trim() || '',
     },
+    // Datos opcionales de reserva (flujo de servicios con pago)
+    reservation: checkout?.reservation
+      ? {
+          preferredDate: checkout.reservation.preferredDate?.trim() || '',
+          preferredTime: checkout.reservation.preferredTime?.trim() || '',
+          notes: checkout.reservation.notes?.trim() || '',
+        }
+      : null,
   };
 }
 
@@ -79,11 +87,11 @@ function validateCheckout(checkout) {
     return 'El checkout debe incluir al menos un producto.';
   }
 
+  // zoneId se exige más adelante solo cuando hay productos físicos
   const requiredFields = [
     checkout.contact.name,
     checkout.contact.email,
     checkout.contact.phone,
-    checkout.shipping.zoneId,
   ];
 
   if (requiredFields.some((value) => !value)) {
@@ -135,7 +143,7 @@ async function createOrderFromCheckout(supabase, checkout, userId = null) {
   const productIds = [...new Set(checkout.items.map((item) => item.productId))];
   const { data: products, error: productsError } = await supabase
     .from('products')
-    .select('id, slug, name, price, active, product_images ( url, sort_order )')
+    .select('id, slug, name, price, active, kind, product_images ( url, sort_order )')
     .in('id', productIds);
 
   if (productsError) {
@@ -156,6 +164,7 @@ async function createOrderFromCheckout(supabase, checkout, userId = null) {
       productId: product.id,
       productName: product.name,
       slug: product.slug,
+      kind: product.kind ?? 'physical',
       size: item.size.trim(),
       color: item.color.trim(),
       quantity,
@@ -169,30 +178,46 @@ async function createOrderFromCheckout(supabase, checkout, userId = null) {
     0,
   );
 
-  const { data: zone, error: zoneError } = await supabase
-    .from('shipping_zones')
-    .select('id, name, cost, free_threshold, active, is_pickup')
-    .eq('id', checkout.shipping.zoneId)
-    .single();
+  // Solo los productos físicos requieren envío; digitales y servicios no.
+  const requiresShipping = normalizedItems.some(
+    (item) => item.kind === 'physical',
+  );
 
-  if (zoneError || !zone || !zone.active) {
-    throw new Error('La zona de envío seleccionada no está disponible.');
+  let zone = null;
+  let shippingCost = 0;
+
+  if (requiresShipping) {
+    if (!checkout.shipping.zoneId) {
+      throw new Error('Seleccioná una zona de envío.');
+    }
+
+    const { data: zoneRow, error: zoneError } = await supabase
+      .from('shipping_zones')
+      .select('id, name, cost, free_threshold, active, is_pickup')
+      .eq('id', checkout.shipping.zoneId)
+      .single();
+
+    if (zoneError || !zoneRow || !zoneRow.active) {
+      throw new Error('La zona de envío seleccionada no está disponible.');
+    }
+    zone = zoneRow;
+
+    if (
+      !zone.is_pickup &&
+      (!checkout.shipping.address ||
+        !checkout.shipping.city ||
+        !checkout.shipping.department)
+    ) {
+      throw new Error('Faltan datos de la dirección de envío.');
+    }
+
+    const zoneCost = Number(zone.cost) || 0;
+    const freeThreshold =
+      zone.free_threshold == null ? null : Number(zone.free_threshold);
+    shippingCost =
+      freeThreshold != null && subtotal >= freeThreshold ? 0 : zoneCost;
   }
 
-  if (
-    !zone.is_pickup &&
-    (!checkout.shipping.address ||
-      !checkout.shipping.city ||
-      !checkout.shipping.department)
-  ) {
-    throw new Error('Faltan datos de la dirección de envío.');
-  }
-
-  const zoneCost = Number(zone.cost) || 0;
-  const freeThreshold =
-    zone.free_threshold == null ? null : Number(zone.free_threshold);
-  const shippingCost =
-    freeThreshold != null && subtotal >= freeThreshold ? 0 : zoneCost;
   const total = subtotal + shippingCost;
 
   const { data: generatedId, error: idError } = await supabase.rpc(
@@ -220,8 +245,8 @@ async function createOrderFromCheckout(supabase, checkout, userId = null) {
       shipping_city: checkout.shipping.city,
       shipping_department: checkout.shipping.department,
       shipping_notes: checkout.shipping.notes || '',
-      shipping_zone_id: zone.id,
-      shipping_zone_name: zone.name,
+      shipping_zone_id: zone?.id ?? null,
+      shipping_zone_name: zone?.name ?? '',
       subtotal,
       shipping_cost: shippingCost,
       total,
@@ -259,6 +284,31 @@ async function createOrderFromCheckout(supabase, checkout, userId = null) {
     throw new Error(
       `No se pudo registrar el estado inicial de la orden: ${historyError.message}`,
     );
+  }
+
+  // Flujo de servicios con pago: si el checkout trae datos de reserva y hay
+  // un servicio entre los items, creamos la reserva enlazada a la orden.
+  // El webhook la marca 'pagado' al confirmarse el pago. Nunca bloquea el pago.
+  const serviceItem = normalizedItems.find((item) => item.kind === 'service');
+  if (checkout.reservation && serviceItem) {
+    const { error: reservationError } = await supabase.from('reservations').insert({
+      user_id: userId,
+      product_id: serviceItem.productId,
+      contact_name: checkout.contact.name,
+      contact_email: checkout.contact.email,
+      contact_phone: checkout.contact.phone,
+      preferred_date: checkout.reservation.preferredDate || null,
+      preferred_time: checkout.reservation.preferredTime || '',
+      notes: checkout.reservation.notes || '',
+      status: 'pendiente',
+      order_id: orderId,
+    });
+    if (reservationError) {
+      console.error(
+        `Order ${orderId}: reservation insert failed (non-blocking):`,
+        reservationError.message,
+      );
+    }
   }
 
   return order;

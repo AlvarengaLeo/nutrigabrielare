@@ -143,7 +143,7 @@ function AppContent() {
           <Route path="/comunidad" element={<Navigate to="/fluir-femenino" replace />} />
           <Route path="/contactanos" element={<ContactanosPage />} />
           <Route path="/producto/:slug" element={<ProductoPage />} />
-          <Route path="/reservar/:slug" element={<ProtectedRoute><ReservarPage /></ProtectedRoute>} />
+          <Route path="/reservar/:slug" element={<ReservarPage />} />
           <Route path="/carrito" element={<CarritoPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/registro" element={<RegistroPage />} />
