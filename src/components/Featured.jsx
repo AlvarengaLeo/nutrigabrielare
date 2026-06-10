@@ -13,7 +13,8 @@ export default function Featured() {
 
   useEffect(() => {
     let cancelled = false;
-    getFeaturedProducts(limit)
+    // Pleno Market es vitrina de productos físicos; digitales/servicios viven en /nutrigabrielare
+    getFeaturedProducts(limit, 'physical')
       .then((rows) => {
         if (!cancelled) setProducts(rows);
       })

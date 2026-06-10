@@ -4,20 +4,22 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { getFeaturedProducts } from '../services/productService';
 import PlenoProductsPLP from '../components/pleno/PlenoProductsPLP';
+import { HomeContentProvider, useHomeContent } from '../context/HomeContentContext';
 
 gsap.registerPlugin(ScrollTrigger);
 
-export default function NutrigabrielareLandingPage() {
+function NutrigabrielareLandingContent() {
   const heroRef = useRef(null);
   const [featured, setFeatured] = useState(null);
+  const { content } = useHomeContent();
+  const cfg = content.nutri_hero;
 
   useEffect(() => {
     let cancelled = false;
     // Featured digital or service product
-    getFeaturedProducts(5)
+    getFeaturedProducts(1, ['digital', 'service'])
       .then((rows) => {
-        const pick = rows.find((p) => p.kind === 'digital' || p.kind === 'service') ?? null;
-        if (!cancelled) setFeatured(pick);
+        if (!cancelled) setFeatured(rows[0] ?? null);
       })
       .catch(() => {
         if (!cancelled) setFeatured(null);
@@ -57,12 +59,11 @@ export default function NutrigabrielareLandingPage() {
         <div className="relative grid xl:grid-cols-2 min-h-[480px] xl:min-h-[560px]">
           <div className="px-6 sm:px-10 lg:px-16 xl:px-20 py-16 xl:py-24 flex flex-col justify-center gap-6 xl:gap-8">
             <h1 className="nutri-hero-el font-heading not-italic leading-[1.02] tracking-tight text-[3.25rem] sm:text-6xl lg:text-7xl xl:text-[5rem] m-0 text-primary">
-              Recursos y consultas{' '}
-              <span className="font-drama italic text-nutri-rose">para tu camino.</span>
+              {cfg.titleLine1}{' '}
+              <span className="font-drama italic text-nutri-rose">{cfg.titleHighlight}</span>
             </h1>
             <p className="nutri-hero-el font-body text-base lg:text-lg leading-relaxed text-primary/70 max-w-md m-0">
-              Ebooks, guías y consultas 1:1 con enfoque holístico.
-              Descargables al instante y acompañamiento real cuando lo necesitás.
+              {cfg.subtitle}
             </p>
           </div>
 
@@ -113,5 +114,13 @@ export default function NutrigabrielareLandingPage() {
         anchorId="nutri-catalogo"
       />
     </div>
+  );
+}
+
+export default function NutrigabrielareLandingPage() {
+  return (
+    <HomeContentProvider>
+      <NutrigabrielareLandingContent />
+    </HomeContentProvider>
   );
 }

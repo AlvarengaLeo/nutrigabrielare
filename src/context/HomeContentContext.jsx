@@ -113,6 +113,26 @@ export const DEFAULT_HOME = {
       },
     ],
   },
+  pleno_hero: {
+    titleLine1: 'Bienestar en su forma',
+    titleLine2: 'más plena.',
+    subtitle: 'Productos digitales, suplementos seleccionados y consultas con acompañamiento real. Una sola tienda para tu bienestar integral.',
+  },
+  nutri_hero: {
+    titleLine1: 'Recursos y consultas',
+    titleHighlight: 'para tu camino.',
+    subtitle: 'Ebooks, guías y consultas 1:1 con enfoque holístico. Descargables al instante y acompañamiento real cuando lo necesitás.',
+  },
+  fluir_content: {
+    heroTitle: 'Un espacio para fluir',
+    heroHighlight: 'en tu propio tiempo.',
+    heroSubtitle: 'Lecturas, recursos y una comunidad para acompañar tu salud hormonal, tu mente y tu ciclo — sin prisa, sin pausa forzada.',
+    lecturasTitle: 'Lecturas',
+    lecturasHighlight: 'recientes.',
+    resourcesTitleLine1: 'Lo que la lectura',
+    resourcesTitleLine2: 'no alcanza a cubrir.',
+    resourcesSubtitle: 'Ebooks, cursos y guías diseñados por Gabriela para acompañarte más allá del artículo.',
+  },
 };
 
 // ─── Context ─────────────────────────────────────────────────────────────────
@@ -136,6 +156,9 @@ export function HomeContentProvider({ children }) {
             why_choose_us: { ...DEFAULT_HOME.why_choose_us, ...(data.why_choose_us || {}) },
             featured: { ...DEFAULT_HOME.featured, ...(data.featured || {}) },
             testimonials: { ...DEFAULT_HOME.testimonials, ...(data.testimonials || {}) },
+            pleno_hero: { ...DEFAULT_HOME.pleno_hero, ...(data.pleno_hero || {}) },
+            nutri_hero: { ...DEFAULT_HOME.nutri_hero, ...(data.nutri_hero || {}) },
+            fluir_content: { ...DEFAULT_HOME.fluir_content, ...(data.fluir_content || {}) },
           });
         }
       })

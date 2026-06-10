@@ -174,13 +174,21 @@ export async function getProductBySlug(slug) {
 
 /**
  * Fetch featured active products ordered by featured_order then created_at.
+ * @param {number} limit
+ * @param {string|string[]} [kinds] — optional kind filter ('physical' | ['digital','service'] | ...)
  */
-export async function getFeaturedProducts(limit = 5) {
-  const { data, error } = await supabase
+export async function getFeaturedProducts(limit = 5, kinds = null) {
+  let query = supabase
     .from('products')
     .select(PRODUCT_SELECT)
     .eq('active', true)
-    .eq('featured', true)
+    .eq('featured', true);
+
+  if (kinds) {
+    query = Array.isArray(kinds) ? query.in('kind', kinds) : query.eq('kind', kinds);
+  }
+
+  const { data, error } = await query
     .order('featured_order', { ascending: true })
     .order('created_at', { ascending: false })
     .limit(limit);
