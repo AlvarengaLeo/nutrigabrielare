@@ -3,9 +3,10 @@ import { useParams } from 'react-router-dom';
 import gsap from 'gsap';
 import AdminLayout from '../components/AdminLayout';
 import StatusBadge from '../components/StatusBadge';
-import { getOrderById, updateOrderStatus, updateOrderCourier } from '../../services/orderService';
+import { getOrderById, updateOrderStatus, updateOrderCourier, resendDigitalDownloadEmail } from '../../services/orderService';
 
 const STATUSES = ['confirmed', 'preparing', 'shipped', 'delivered', 'cancelled'];
+const PAID_STATUSES = ['confirmed', 'preparing', 'shipped', 'delivered'];
 
 export default function AdminOrdenDetalle() {
   const { id } = useParams();
@@ -17,6 +18,8 @@ export default function AdminOrdenDetalle() {
   const [courierName, setCourierName] = useState('');
   const [courierTracking, setCourierTracking] = useState('');
   const [savingCourier, setSavingCourier] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendResult, setResendResult] = useState(null);
 
   async function loadOrder() {
     setLoading(true);
@@ -62,6 +65,26 @@ export default function AdminOrdenDetalle() {
     } catch (err) { alert(err.message || 'Error'); }
     finally { setSavingCourier(false); }
   }
+
+  async function handleResendDigital() {
+    setResending(true);
+    setResendResult(null);
+    try {
+      const result = await resendDigitalDownloadEmail(id);
+      setResendResult({
+        type: 'success',
+        msg: `Enlaces reenviados a ${result.sentTo} (${result.links} archivo${result.links === 1 ? '' : 's'}).`,
+      });
+    } catch (err) {
+      setResendResult({ type: 'error', msg: err.message || 'No se pudo reenviar el correo.' });
+    } finally {
+      setResending(false);
+      setTimeout(() => setResendResult(null), 6000);
+    }
+  }
+
+  const hasDigitalItems = (order?.items ?? []).some((item) => item.kind === 'digital');
+  const canResendDigital = hasDigitalItems && PAID_STATUSES.includes(order?.status);
 
   const courierDirty =
     order &&
@@ -172,6 +195,30 @@ export default function AdminOrdenDetalle() {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Digital downloads resend */}
+        {canResendDigital && (
+          <div className="det-el bg-white rounded-2xl border border-primary/5 p-5 mb-6">
+            <h3 className="font-heading font-bold text-sm text-primary mb-3">Productos digitales</h3>
+            <p className="font-body text-xs text-primary/50 mb-3">
+              Reenvía el correo de descargas con enlaces frescos (válidos por 7 días) a{' '}
+              <span className="font-semibold text-primary/70">{order.contact?.email}</span>.
+              Útil cuando a la clienta se le vencieron los enlaces originales.
+            </p>
+            {resendResult && (
+              <p className={`font-body text-xs mb-3 ${resendResult.type === 'success' ? 'text-green-600' : 'text-red-500'}`}>
+                {resendResult.msg}
+              </p>
+            )}
+            <button
+              onClick={handleResendDigital}
+              disabled={resending}
+              className={`bg-primary text-background px-6 py-2.5 rounded-xl font-heading font-bold text-sm transition-opacity ${resending ? 'opacity-50 cursor-not-allowed' : 'hover:opacity-90'}`}
+            >
+              {resending ? 'Enviando...' : 'Reenviar enlaces de descarga'}
+            </button>
           </div>
         )}
 
