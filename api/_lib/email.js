@@ -361,6 +361,39 @@ export function reservationConfirmationTemplate({ reservation, service, customer
   });
 }
 
+export function servicePaidTemplate({ order, items, customer, reservation, orderUrl }) {
+  const serviceName = items?.[0]?.product_name ?? 'Consulta';
+  const intro = `Hola ${escapeHtml(customer?.firstName ?? '')}, recibimos tu pago. Tu cupo quedó asegurado: te contactaremos por correo o WhatsApp para coordinar el día y la hora de tu consulta.`;
+  const dateLine = reservation?.preferred_date
+    ? `<div style="margin-top:8px;color:${BRAND.textMuted};font-size:12px;">Fecha preferida: <span style="color:${BRAND.text};font-weight:700;">${formatDate(reservation.preferred_date)}${reservation.preferred_time ? ` · ${escapeHtml(reservation.preferred_time)}` : ''}</span></div>`
+    : '';
+
+  const body = `
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:24px;">
+      <tr>
+        <td align="center" bgcolor="${BRAND.bg}" style="background:${BRAND.bg};border:1px solid ${BRAND.border};border-radius:16px;padding:18px 20px;font-size:13px;line-height:1.6;color:${BRAND.text};text-align:center;">
+          <div style="color:${BRAND.accentDeep};font-size:11px;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:6px;">Servicio pagado</div>
+          <div style="font-weight:800;font-size:18px;">${escapeHtml(serviceName)}</div>
+          <div style="margin-top:8px;color:${BRAND.textMuted};font-size:12px;">Pedido: <span style="color:${BRAND.text};font-weight:700;">${escapeHtml(order.id)}</span></div>
+          ${dateLine}
+        </td>
+      </tr>
+    </table>
+    ${totalsBlock({ subtotal: order.subtotal, shippingCost: 0, total: order.total })}
+    <p style="margin-top:24px;font-size:13px;line-height:1.6;color:${BRAND.textMuted};text-align:center;">
+      Si necesitás reagendar o tenés alguna consulta, simplemente respondé este correo.
+    </p>
+  `;
+
+  return brandLayout({
+    preheader: `Pago confirmado — ${serviceName}`,
+    heading: '¡Tu consulta está pagada!',
+    intro,
+    body,
+    cta: orderUrl ? { label: 'Ver mi pedido', href: orderUrl } : undefined,
+  });
+}
+
 // ─── Senders ──────────────────────────────────────────────────
 
 async function send({ to, subject, html, meta }) {
@@ -473,6 +506,53 @@ export function sendReservationConfirmationEmail({ reservation, service, custome
       template: 'reservation_confirm',
       relatedOrderId: null,
       relatedUserId: reservation.user_id ?? null,
+    },
+  });
+}
+
+export function sendServicePaidEmail({ order, items, customer, reservation, orderUrl }) {
+  return send({
+    to: order.contact_email || customer?.email,
+    subject: `¡Tu consulta está pagada! — ${order.id}`,
+    html: servicePaidTemplate({ order, items, customer, reservation, orderUrl }),
+    meta: {
+      template: 'service_paid',
+      relatedOrderId: order.id,
+      relatedUserId: order.user_id ?? null,
+    },
+  });
+}
+
+/**
+ * Aviso interno a la administradora cuando una consulta queda pagada:
+ * datos de contacto + fecha preferida para coordinar la cita.
+ */
+export function sendAdminServicePaidNotification({ order, items, reservation }) {
+  const adminEmail = process.env.ADMIN_NOTIFY_EMAIL?.trim();
+  if (!adminEmail) return Promise.resolve({ skipped: true });
+
+  const serviceName = items?.[0]?.product_name ?? 'Consulta';
+  const dateLine = reservation?.preferred_date
+    ? `<p>Fecha preferida: <strong>${escapeHtml(String(reservation.preferred_date))}${reservation.preferred_time ? ` · ${escapeHtml(reservation.preferred_time)}` : ''}</strong></p>`
+    : '<p>Sin fecha preferida indicada.</p>';
+  const notesLine = reservation?.notes
+    ? `<p>Notas: ${escapeHtml(reservation.notes)}</p>`
+    : '';
+  const appUrl = resolveAppUrl();
+
+  return send({
+    to: adminEmail,
+    subject: `Consulta pagada: ${serviceName} — ${order.id}`,
+    html: `<p>Una clienta pagó una consulta y espera que la contactes para agendar.</p>
+      <p>Servicio: <strong>${escapeHtml(serviceName)}</strong> · Pedido <strong>${escapeHtml(order.id)}</strong> · $${Number(order.total ?? 0).toFixed(2)}</p>
+      <p>Cliente: <strong>${escapeHtml(order.contact_name ?? '')}</strong> (${escapeHtml(order.contact_email ?? '')}${order.contact_phone ? `, ${escapeHtml(order.contact_phone)}` : ''})</p>
+      ${dateLine}
+      ${notesLine}
+      <p>Vela en el panel: <a href="${appUrl}/admin/ordenes/${encodeURIComponent(order.id)}">${appUrl}/admin/ordenes/${encodeURIComponent(order.id)}</a></p>`,
+    meta: {
+      template: 'service_paid_admin',
+      relatedOrderId: order.id,
+      relatedUserId: null,
     },
   });
 }

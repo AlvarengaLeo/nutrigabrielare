@@ -132,9 +132,13 @@ export default function GraciasPage() {
       !cartClearedRef.current
     ) {
       cartClearedRef.current = true;
-      clearCart();
+      // Las reservas de servicios no pasan por el carrito: no hay que
+      // vaciarle a la clienta un carrito de compras en progreso.
+      if (pendingOrder.source !== 'reserva') {
+        clearCart();
+        localStorage.removeItem(CHECKOUT_DRAFT_KEY);
+      }
       localStorage.removeItem(PENDING_ORDER_KEY);
-      localStorage.removeItem(CHECKOUT_DRAFT_KEY);
     }
   }, [paymentStatus, clearCart, orderId]);
 

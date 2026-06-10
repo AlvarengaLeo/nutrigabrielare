@@ -7,6 +7,8 @@ import {
 import {
   sendPurchaseConfirmationEmail,
   sendDigitalDownloadEmail,
+  sendServicePaidEmail,
+  sendAdminServicePaidNotification,
 } from '../_lib/email.js';
 
 const WEBHOOK_SCOPE = 'wompi/webhook';
@@ -147,6 +149,24 @@ export default async function handler(req, res) {
     } catch (err) {
       console.error('decrement_order_stock threw (non-blocking):', err);
     }
+
+  }
+
+  // Reservas enlazadas a esta orden: 'pagado' si el pago entró,
+  // 'cancelado' si fue rechazado (evita reservas huérfanas de pagos fallidos).
+  try {
+    const { error: resErr } = await supabase
+      .from('reservations')
+      .update({
+        status: isApproved ? 'pagado' : 'cancelado',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('order_id', orderId);
+    if (resErr) {
+      console.error('reservation status update failed (non-blocking):', resErr);
+    }
+  } catch (err) {
+    console.error('reservation status update threw (non-blocking):', err);
   }
 
   // Notify customer — never block the webhook on email delivery.
@@ -165,7 +185,7 @@ async function sendOrderConfirmation(supabase, orderId) {
   const { data: order } = await supabase
     .from('orders')
     .select(
-      'id, tracking_code, subtotal, shipping_cost, total, contact_name, contact_email, user_id'
+      'id, tracking_code, subtotal, shipping_cost, total, contact_name, contact_email, contact_phone, user_id'
     )
     .eq('id', orderId)
     .single();
@@ -205,6 +225,16 @@ async function sendOrderConfirmation(supabase, orderId) {
   const allDigital =
     itemsArray.length > 0 &&
     itemsArray.every((it) => it.products?.kind === 'digital');
+  const allService =
+    itemsArray.length > 0 &&
+    itemsArray.every((it) => it.products?.kind === 'service');
+
+  // Acceso sin sesión a la página del pedido (mismo HMAC que
+  // createOrderAccessKey en create-link.js).
+  const apiSecret = process.env.WOMPI_API_SECRET?.trim();
+  const appUrl = (process.env.APP_URL?.trim() || 'https://nutrigabrielare.com').replace(/\/$/, '');
+  const orderKey = createHmac('sha256', apiSecret).update(order.id).digest('hex');
+  const orderUrl = `${appUrl}/gracias?order=${encodeURIComponent(order.id)}&key=${orderKey}`;
 
   if (allDigital) {
     const { downloadLinks, expiresAt } = await provisionDigitalDownloads(
@@ -213,13 +243,6 @@ async function sendOrderConfirmation(supabase, orderId) {
       itemsArray
     );
 
-    // Acceso sin sesión a la página del pedido (mismo HMAC que
-    // createOrderAccessKey en create-link.js).
-    const apiSecret = process.env.WOMPI_API_SECRET?.trim();
-    const appUrl = (process.env.APP_URL?.trim() || 'https://nutrigabrielare.com').replace(/\/$/, '');
-    const orderKey = createHmac('sha256', apiSecret).update(order.id).digest('hex');
-    const orderUrl = `${appUrl}/gracias?order=${encodeURIComponent(order.id)}&key=${orderKey}`;
-
     await sendDigitalDownloadEmail({
       order,
       items: itemsArray,
@@ -227,6 +250,33 @@ async function sendOrderConfirmation(supabase, orderId) {
       downloadLinks: downloadLinks.map((link) => ({ ...link, expiresAt })),
       orderUrl,
     });
+  } else if (allService) {
+    // Consulta pagada: confirmación a la clienta + aviso interno con sus
+    // datos para coordinar la cita.
+    const { data: reservation } = await supabase
+      .from('reservations')
+      .select('preferred_date, preferred_time, notes')
+      .eq('order_id', order.id)
+      .limit(1)
+      .maybeSingle();
+
+    await sendServicePaidEmail({
+      order,
+      items: itemsArray,
+      customer,
+      reservation: reservation ?? null,
+      orderUrl,
+    });
+
+    try {
+      await sendAdminServicePaidNotification({
+        order,
+        items: itemsArray,
+        reservation: reservation ?? null,
+      });
+    } catch (err) {
+      console.error('Admin service notification failed (non-blocking):', err);
+    }
   } else {
     await sendPurchaseConfirmationEmail({
       order,

@@ -27,6 +27,7 @@ function transformReservation(row) {
 
 export const RESERVATION_STATUSES = [
   'pendiente',
+  'pagado',
   'contactado',
   'confirmado',
   'completado',
