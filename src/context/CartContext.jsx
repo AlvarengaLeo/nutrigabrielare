@@ -43,7 +43,7 @@ export function CartProvider({ children }) {
     let cancelled = false;
 
     const itemsNeedingRefresh = items.filter(
-      (item) => item.slug && (!item.image || item.image.includes('placeholder')),
+      (item) => item.slug && (!item.image || item.image.includes('placeholder') || !item.kind),
     );
 
     if (itemsNeedingRefresh.length === 0) {
@@ -60,6 +60,7 @@ export function CartProvider({ children }) {
             name: product.name,
             price: product.price,
             slug: product.slug,
+            kind: product.kind ?? null,
           };
         } catch {
           return null;
@@ -86,6 +87,7 @@ export function CartProvider({ children }) {
                 name: refreshed.name,
                 price: refreshed.price,
                 image: refreshed.image,
+                kind: refreshed.kind ?? item.kind ?? null,
               }
             : item;
         }),
@@ -150,6 +152,7 @@ export function CartProvider({ children }) {
                 name: product.name,
                 price: product.price,
                 image: nextImage ?? i.image ?? null,
+                kind: product.kind ?? i.kind ?? null,
                 quantity: i.quantity + qty,
               }
             : i,
@@ -167,6 +170,7 @@ export function CartProvider({ children }) {
           color,
           quantity: qty,
           image: nextImage,
+          kind: product.kind ?? null,
         },
       ];
     });
