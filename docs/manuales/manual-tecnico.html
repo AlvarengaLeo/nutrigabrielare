@@ -1,0 +1,1760 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Manual Técnico · Nutrigabrielare</title>
+<link rel="icon" href="manual-usuario/img/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Outfit:wght@300;400;600&family=Cormorant+Garamond:ital@1&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --rose:#EE7699; --rose-deep:#D6517B; --mist:#FDF1F4; --soft:#FBE4EB;
+    --ink:#3A1A22; --ink-soft:#6A3E48; --ink-mute:#8A6068; --line:#F7D7DE;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--mist);color:var(--ink);font-family:'Outfit',sans-serif;line-height:1.65;font-size:15.5px}
+  .wrap{max-width:920px;margin:0 auto;padding:0 24px 80px}
+  header.cover{text-align:center;padding:72px 24px 40px}
+  header.cover img{width:84px;height:84px;display:block;margin:0 auto 16px}
+  header.cover .brand{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:28px}
+  header.cover h1{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:44px;margin:18px 0 6px;letter-spacing:-.02em}
+  header.cover h1 em{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;color:var(--rose-deep)}
+  .divider{width:56px;height:4px;background:var(--rose);border-radius:99px;margin:22px auto}
+
+  .intro{background:#fff;border:1px solid var(--line);border-radius:24px;padding:30px 44px;margin:0 0 26px}
+  .intro h1{display:none}
+  .intro blockquote{margin:0 0 6px;border-left:4px solid var(--rose);background:var(--mist);border-radius:12px;padding:14px 18px;color:var(--ink-soft)}
+  .intro blockquote p{margin:4px 0}
+
+  section.card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:36px 44px;margin:26px 0;overflow-x:auto}
+  h2{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:25px;margin:0 0 12px;letter-spacing:-.01em}
+  h3{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:18px;margin:30px 0 8px}
+  h3::before{content:"";display:inline-block;width:10px;height:10px;border-radius:99px;background:var(--rose);margin-right:10px}
+  h4{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:15.5px;margin:22px 0 6px;color:var(--rose-deep)}
+  p{margin:10px 0;color:var(--ink-soft)}
+  strong{color:var(--ink)}
+  a{color:var(--rose-deep)}
+  ul,ol{color:var(--ink-soft);padding-left:24px}
+  li{margin:5px 0}
+  blockquote{border-left:4px solid var(--rose);background:var(--mist);border-radius:12px;padding:12px 18px;margin:14px 0;color:var(--ink-soft)}
+  blockquote p{margin:4px 0}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px}
+  th{font-family:'Plus Jakarta Sans',sans-serif;text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--rose-deep);padding:9px 11px;border-bottom:2px solid var(--line);white-space:nowrap}
+  td{padding:9px 11px;border-bottom:1px solid var(--line);color:var(--ink-soft);vertical-align:top}
+
+  code{background:var(--soft);color:var(--rose-deep);padding:2px 7px;border-radius:8px;font-size:13px;font-family:Consolas,'Courier New',monospace}
+  pre{background:#2A1218;color:#F7D7DE;border-radius:16px;padding:18px 22px;overflow-x:auto;font-size:13px;line-height:1.5}
+  pre code{background:none;color:inherit;padding:0;font-size:inherit}
+
+  footer{text-align:center;color:var(--ink-mute);font-size:13px;padding:30px 0 0}
+  footer a{color:var(--rose-deep)}
+  @media print{body{background:#fff}section.card,.intro{border:none;padding:18px 0;margin:0}pre{white-space:pre-wrap}}
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <img src="manual-usuario/img/logo.png" alt="Nutrigabrielare" />
+  <div class="brand">Nutrigabrielare</div>
+  <div class="divider"></div>
+  <h1>Manual <em>Técnico</em></h1>
+</header>
+
+<div class="wrap">
+<div class="intro">
+<h1 id="manual-técnico-nutrigabrielare">Manual Técnico — Nutrigabrielare</h1>
+<blockquote>
+<p><strong>Versión del documento:</strong> Junio 2026
+<strong>Audiencia:</strong> desarrolladores y personal técnico que deba entender, operar y mantener el sistema.
+<strong>Sitio en producción:</strong> <a href="https://nutrigabrielare.com">https://nutrigabrielare.com</a></p>
+</blockquote>
+
+
+</div>
+<section class="card">
+<h2 id="índice">Índice</h2>
+<ol>
+<li><a href="#1-resumen-ejecutivo">Resumen ejecutivo</a></li>
+<li><a href="#2-arquitectura">Arquitectura</a></li>
+<li><a href="#3-estructura-del-repositorio">Estructura del repositorio</a></li>
+<li><a href="#4-rutas-del-sitio">Rutas del sitio</a></li>
+<li><a href="#5-base-de-datos">Base de datos</a></li>
+<li><a href="#6-variables-de-entorno">Variables de entorno</a></li>
+<li><a href="#7-integraciones">Integraciones</a></li>
+<li><a href="#8-cms-de-contenido-home_content">CMS de contenido (home_content)</a></li>
+<li><a href="#9-flujos-cr%C3%ADticos">Flujos críticos</a></li>
+<li><a href="#10-deploy">Deploy</a></li>
+<li><a href="#11-desarrollo-local">Desarrollo local</a></li>
+<li><a href="#12-runbooks-operativos">Runbooks operativos</a></li>
+<li><a href="#13-seguridad">Seguridad</a></li>
+</ol>
+
+
+</section>
+<section class="card">
+<h2 id="1-resumen-ejecutivo">1. Resumen ejecutivo</h2>
+<p><strong>Nutrigabrielare</strong> es la plataforma web de la marca de nutrición holística de Gabriela (El Salvador). Combina en una sola aplicación:</p>
+<ul>
+<li><strong>Sitio de marca</strong> (home editable desde un CMS propio).</li>
+<li><strong>Tienda e-commerce &quot;Pleno&quot;</strong> con tres tipos de producto (<code>kind</code>): físicos (suplementos), digitales (ebooks, cursos, guías) y servicios (consultas 1:1 reservables).</li>
+<li><strong>Blog editorial &quot;Fluir Femenino&quot;</strong> con artículos en Markdown.</li>
+<li><strong>Panel de administración</strong> (<code>/admin</code>) con roles diferenciados (admin / editor / gestor).</li>
+<li><strong>Pagos en línea</strong> vía Wompi (El Salvador) y <strong>correos transaccionales</strong> vía Resend.</li>
+</ul>
+<h3 id="stack-tecnológico">Stack tecnológico</h3>
+<table>
+<thead>
+<tr>
+<th>Capa</th>
+<th>Tecnología</th>
+<th>Detalle</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Frontend</td>
+<td><strong>Vite 5 + React 19</strong> (SPA)</td>
+<td>React Router DOM v7, GSAP + ScrollTrigger, Tailwind CSS 3, lucide-react, recharts (dashboard admin), react-markdown (blog)</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td><strong>Funciones serverless de Vercel</strong> (Node)</td>
+<td>Carpeta <code>api/</code> en la raíz del repo</td>
+</tr>
+<tr>
+<td>Base de datos / Auth / Storage</td>
+<td><strong>Supabase</strong> (PostgreSQL + RLS)</td>
+<td>Migraciones SQL versionadas en <code>supabase/migrations/</code></td>
+</tr>
+<tr>
+<td>Pagos</td>
+<td><strong>Wompi El Salvador</strong></td>
+<td>API <code>EnlacePago</code> (links de pago hospedados) + webhook firmado HMAC</td>
+</tr>
+<tr>
+<td>Correos</td>
+<td><strong>Resend</strong></td>
+<td>SDK <code>resend</code> v6, templates HTML en <code>api/_lib/email.js</code>, auditoría en tabla <code>email_logs</code></td>
+</tr>
+<tr>
+<td>Hosting / CDN</td>
+<td><strong>Vercel</strong></td>
+<td>Build estático del SPA + funciones <code>api/</code> en el mismo proyecto</td>
+</tr>
+<tr>
+<td>DNS y correo corporativo</td>
+<td><strong>Hostinger</strong></td>
+<td>Dominio <code>nutrigabrielare.com</code> apuntado a Vercel; buzones corporativos</td>
+</tr>
+</tbody></table>
+<h3 id="proveedores-externos-y-sus-paneles">Proveedores externos y sus paneles</h3>
+<table>
+<thead>
+<tr>
+<th>Proveedor</th>
+<th>Qué administra</th>
+<th>Panel</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Vercel</td>
+<td>Deploys, variables de entorno serverless, logs de funciones</td>
+<td>vercel.com</td>
+</tr>
+<tr>
+<td>Supabase</td>
+<td>Base de datos, usuarios (Auth), buckets de Storage, SQL Editor</td>
+<td>supabase.com</td>
+</tr>
+<tr>
+<td>Wompi</td>
+<td>Credenciales de pago, transacciones, reintentos de webhook</td>
+<td>wompi.sv</td>
+</tr>
+<tr>
+<td>Resend</td>
+<td>Dominio de envío verificado, API keys, actividad de correos</td>
+<td>resend.com</td>
+</tr>
+<tr>
+<td>Hostinger</td>
+<td>DNS del dominio, correo corporativo (bandejas)</td>
+<td>hostinger.com</td>
+</tr>
+</tbody></table>
+
+
+</section>
+<section class="card">
+<h2 id="2-arquitectura">2. Arquitectura</h2>
+<pre><code>                                   ┌─────────────────────────────┐
+                                   │   Hostinger (DNS + email)   │
+                                   │  nutrigabrielare.com        │
+                                   │  • A record  →  Vercel      │
+                                   │  • MX/buzones corporativos  │
+                                   │  • TXT/CNAME de Resend      │
+                                   └──────────────┬──────────────┘
+                                                  │ DNS
+                                                  ▼
+┌──────────────┐   HTTPS   ┌──────────────────────────────────────────────┐
+│   Navegador  │──────────▶│                  VERCEL                      │
+│  (clienta /  │           │  ┌────────────────────┐  ┌────────────────┐  │
+│   admin)     │           │  │  SPA Vite + React  │  │  Funciones     │  │
+└──────────────┘           │  │  (build estático,  │  │  serverless    │  │
+       ▲                   │  │  dist/ + rewrites  │  │  api/wompi/*   │  │
+       │ redirect          │  │  a index.html)     │  │  api/digital/* │  │
+       │ de pago           │  └─────────┬──────────┘  │  api/reserva…  │  │
+       │                   │            │             │  api/sitemap   │  │
+┌──────┴───────┐  webhook  │            │             └──────┬─────────┘  │
+│    WOMPI     │──────────▶│            │                    │            │
+│  (pagos SV)  │  HMAC     └────────────┼────────────────────┼────────────┘
+│  EnlacePago  │                        │ anon key (RLS)     │ service role
+└──────────────┘                        ▼                    ▼
+                           ┌──────────────────────────────────────────────┐
+                           │                  SUPABASE                    │
+                           │  • PostgreSQL + Row Level Security           │
+                           │  • Auth (email/password + Google OAuth)     │
+                           │  • Storage:                                  │
+                           │      product-images  (público)               │
+                           │      home-images     (público)               │
+                           │      blog-images     (público)               │
+                           │      digital-products(PRIVADO, signed URLs)  │
+                           └──────────────────────────────────────────────┘
+                                                  ▲
+                                                  │ API key
+                                       ┌──────────┴──────────┐
+                                       │       RESEND        │
+                                       │  correos transac-   │
+                                       │  cionales (dominio  │
+                                       │  verificado)        │
+                                       └─────────────────────┘
+</code></pre>
+<p>Puntos clave:</p>
+<ul>
+<li><strong>El frontend nunca habla directo con Wompi ni con Resend.</strong> Todo pasa por las funciones <code>api/</code>, que usan la <code>SUPABASE_SERVICE_ROLE_KEY</code> (omite RLS) y los secretos de Wompi/Resend.</li>
+<li><strong>El frontend habla con Supabase</strong> usando la <em>anon key</em> pública; la seguridad de datos la garantiza RLS (políticas por tabla).</li>
+<li><strong><code>vercel.json</code></strong> define los rewrites: <code>/api/*</code> → funciones, <code>/sitemap.xml</code> → <code>api/sitemap.xml.js</code>, y todo lo demás → <code>index.html</code> (SPA fallback).</li>
+<li>El dominio <code>nutrigabrielare.com</code> está registrado/gestionado en <strong>Hostinger</strong>: un <strong>A record apunta a Vercel</strong> (IP de Vercel) y los registros de correo (MX) quedan en Hostinger para el email corporativo. Los registros TXT/CNAME de verificación de Resend (SPF/DKIM) también viven en el DNS de Hostinger.</li>
+</ul>
+
+
+</section>
+<section class="card">
+<h2 id="3-estructura-del-repositorio">3. Estructura del repositorio</h2>
+<pre><code>nutrigabrielare/
+├── api/                          ← Funciones serverless de Vercel
+│   ├── _lib/
+│   │   ├── email.js              ← Cliente Resend + templates HTML + log a email_logs
+│   │   └── runtimeConfig.js      ← Validación de variables de entorno del servidor
+│   ├── digital/
+│   │   ├── refresh-url.js        ← Regenera signed URL (24 h) para la biblioteca del usuario
+│   │   └── resend-email.js       ← Reenvía correo de descargas (admin/gestor)
+│   ├── reservations/
+│   │   └── notify.js             ← Correo de confirmación de reserva (+ aviso al admin)
+│   ├── wompi/
+│   │   ├── create-link.js        ← Crea orden + link de pago Wompi
+│   │   ├── webhook.js            ← Recibe el webhook firmado de Wompi
+│   │   └── order-status.js       ← Estado de orden (invitada con key HMAC o sesión)
+│   └── sitemap.xml.js            ← Sitemap dinámico (posts + productos)
+├── src/
+│   ├── App.jsx                   ← Definición de TODAS las rutas + providers globales
+│   ├── main.jsx                  ← Entry point
+│   ├── index.css                 ← Estilos globales y utilidades custom
+│   ├── components/               ← Componentes compartidos del sitio público
+│   │   ├── Navbar.jsx, Footer.jsx, PlenoFooter.jsx
+│   │   ├── CartDrawer.jsx, CartIcon.jsx, ProductCard.jsx, VariantSelector.jsx
+│   │   ├── Hero.jsx, Philosophy.jsx, WhyChooseUs.jsx, Featured.jsx,
+│   │   │   Testimonials.jsx, DigitalResources.jsx (secciones del home, CMS)
+│   │   ├── ProtectedRoute.jsx    ← Gate de autenticación para rutas protegidas
+│   │   ├── ConfigurationErrorScreen.jsx ← Pantalla si faltan VITE_* críticas
+│   │   └── pleno/PlenoProductsPLP.jsx
+│   ├── pages/                    ← Una página por ruta pública (ver §4)
+│   ├── admin/
+│   │   ├── pages/                ← Páginas del panel (AdminDashboard, AdminOrdenes…)
+│   │   └── components/           ← AdminRoute (gate de roles), AdminLayout, AdminSidebar,
+│   │       │                        DataTable, ImageUploader, VariantEditor…
+│   │       └── home/             ← Editores del CMS (HeroEditor, TestimonialsEditor…)
+│   ├── context/
+│   │   ├── AuthContext.jsx       ← Sesión Supabase + rol (RPC get_my_profile)
+│   │   ├── CartContext.jsx       ← Carrito global persistido en localStorage
+│   │   ├── HomeContentContext.jsx← Contenido del CMS con fallback DEFAULT_HOME
+│   │   └── StoreThemeContext.jsx ← Tema visual por sección (pleno / nutri)
+│   ├── services/                 ← Capa de acceso a datos (Supabase + fetch a api/)
+│   │   ├── productService.js, categoryService.js, orderService.js,
+│   │   ├── paymentService.js     ← createPaymentLink / getCheckoutStatus
+│   │   ├── shippingService.js    ← Zonas de envío (incluye isPickup)
+│   │   ├── reservationService.js, libraryService.js (biblioteca digital),
+│   │   ├── blogService.js, homeContentService.js, emailLogService.js,
+│   │   └── adminService.js, analyticsService.js, userService.js
+│   ├── config/runtimeConfig.js   ← Schema de variables VITE_* (críticas vs opcionales)
+│   └── lib/supabase.js           ← Cliente Supabase del frontend (anon key)
+├── supabase/
+│   └── migrations/               ← 001…020 SQL aplicadas en orden (ver §5)
+├── docs/
+│   ├── email-setup.md            ← Guía de configuración de Resend
+│   └── manuales/                 ← Manuales entregables (este documento)
+├── public/                       ← Assets estáticos (favicons, manifest)
+├── media/                        ← Imágenes de marca usadas por el sitio
+├── scripts/                      ← Seeds y utilidades puntuales (create-admin.mjs, seed-*.cjs)
+├── vercel.json                   ← Rewrites (SPA + api + sitemap)
+├── vite.config.js                ← Configuración Vite (plugin React)
+├── tailwind.config.js            ← Design system (colores, fuentes)
+├── .env.example                  ← Plantilla de variables de entorno
+├── .npmrc                        ← legacy-peer-deps=true (compatibilidad React 19)
+└── package.json                  ← Scripts: dev / build / preview / lint
+</code></pre>
+<p>Archivos de raíz auxiliares: <code>full_migration.sql</code> (consolidado histórico de migraciones), <code>run-migrations.cjs</code>, <code>seed-categories.mjs</code>, <code>setup-db.js</code> (utilidades de provisión usadas durante el desarrollo; la fuente de verdad del schema son las migraciones numeradas).</p>
+
+
+</section>
+<section class="card">
+<h2 id="4-rutas-del-sitio">4. Rutas del sitio</h2>
+<p>Todas las rutas se declaran en <code>src/App.jsx</code>. El <code>Navbar</code>, el <code>Footer</code> y el <code>CartDrawer</code> se montan en todas las rutas <strong>no</strong> <code>/admin</code>. Las páginas admin se cargan con <code>React.lazy</code> (code-splitting).</p>
+<h3 id="41-rutas-públicas">4.1 Rutas públicas</h3>
+<table>
+<thead>
+<tr>
+<th>Ruta</th>
+<th>Página</th>
+<th>Acceso</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/</code></td>
+<td><code>HomePage</code> (secciones del CMS)</td>
+<td>Público</td>
+</tr>
+<tr>
+<td><code>/nutrigabrielare</code></td>
+<td><code>NutrigabrielareLandingPage</code> (recursos + consultas)</td>
+<td>Público</td>
+</tr>
+<tr>
+<td><code>/pleno</code></td>
+<td><code>PlenoLandingPage</code> (vitrina de la tienda)</td>
+<td>Público</td>
+</tr>
+<tr>
+<td><code>/pleno/:kindSlug</code></td>
+<td><code>PlenoCategoryPage</code> (listado por tipo: digitales, suplementos, servicios)</td>
+<td>Público</td>
+</tr>
+<tr>
+<td><code>/pleno/suplementos</code></td>
+<td>Redirect → <code>/pleno</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>/tienda</code>, <code>/tienda/*</code></td>
+<td>Redirect → <code>/pleno</code> (rutas legadas)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>/producto/:slug</code></td>
+<td><code>ProductoPage</code> (detalle, variantes, stock)</td>
+<td>Público</td>
+</tr>
+<tr>
+<td><code>/carrito</code></td>
+<td><code>CarritoPage</code></td>
+<td>Público</td>
+</tr>
+<tr>
+<td><code>/checkout</code></td>
+<td><code>CheckoutPage</code> — <strong>compra como invitada permitida</strong> (no requiere login)</td>
+<td>Público</td>
+</tr>
+<tr>
+<td><code>/gracias</code></td>
+<td><code>GraciasPage</code> — requiere <code>?order=&lt;id&gt;&amp;key=&lt;hmac&gt;</code> o sesión dueña de la orden</td>
+<td>Público*</td>
+</tr>
+<tr>
+<td><code>/tracking</code> y <code>/tracking/:code</code></td>
+<td><code>TrackingPage</code> (timeline de estados por código)</td>
+<td>Público</td>
+</tr>
+<tr>
+<td><code>/reservar/:slug</code></td>
+<td><code>ReservarPage</code> (reserva de servicio)</td>
+<td>🔒 Requiere sesión (<code>ProtectedRoute</code>)</td>
+</tr>
+<tr>
+<td><code>/cuenta</code></td>
+<td><code>CuentaPage</code> (pedidos, biblioteca digital &quot;Mis productos&quot;)</td>
+<td>🔒 Requiere sesión</td>
+</tr>
+<tr>
+<td><code>/login</code> / <code>/registro</code></td>
+<td><code>LoginPage</code> / <code>RegistroPage</code></td>
+<td>Público</td>
+</tr>
+<tr>
+<td><code>/fluir-femenino</code></td>
+<td><code>FluirFemeninoPage</code> (landing del blog)</td>
+<td>Público</td>
+</tr>
+<tr>
+<td><code>/fluir-femenino/articulos</code></td>
+<td><code>FluirFemeninoArchivePage</code> (archivo)</td>
+<td>Público</td>
+</tr>
+<tr>
+<td><code>/fluir-femenino/articulos/:slug</code></td>
+<td><code>FluirFemeninoPostPage</code> (artículo)</td>
+<td>Público</td>
+</tr>
+<tr>
+<td><code>/fluir-femenino-v2</code></td>
+<td><code>FluirFemeninoV2Page</code> (variante experimental)</td>
+<td>Público</td>
+</tr>
+<tr>
+<td><code>/donacion</code>, <code>/proyecto-banquita</code>, <code>/nutricion-con-alma</code>, <code>/comunidad</code></td>
+<td>Redirects → <code>/fluir-femenino</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>/contactanos</code></td>
+<td><code>ContactanosPage</code></td>
+<td>Público</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td><code>NotFoundPage</code></td>
+<td>Público</td>
+</tr>
+</tbody></table>
+<p>* <code>/gracias</code> es accesible sin sesión, pero los datos de la orden solo se muestran si la URL incluye la <code>key</code> HMAC correcta o si el usuario logueado es dueño de la orden (validado por <code>api/wompi/order-status.js</code>).</p>
+<h3 id="42-rutas-admin">4.2 Rutas admin</h3>
+<p>El gate es <code>src/admin/components/AdminRoute.jsx</code>: si no hay sesión redirige a <code>/admin/login?redirect=…</code>; si el rol del usuario no está en <code>allowedRoles</code> muestra &quot;Acceso denegado&quot;.</p>
+<table>
+<thead>
+<tr>
+<th>Ruta</th>
+<th>Página</th>
+<th>Roles permitidos</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/admin/login</code></td>
+<td><code>AdminLoginPage</code></td>
+<td>Público</td>
+</tr>
+<tr>
+<td><code>/admin</code></td>
+<td><code>AdminDashboard</code> (métricas, recharts)</td>
+<td><code>admin</code>, <code>editor</code>, <code>gestor</code></td>
+</tr>
+<tr>
+<td><code>/admin/home</code></td>
+<td><code>AdminHomePage</code> (CMS, ver §8)</td>
+<td><code>admin</code>, <code>editor</code></td>
+</tr>
+<tr>
+<td><code>/admin/fluir-femenino</code></td>
+<td><code>AdminBlog</code> (listado de posts)</td>
+<td><code>admin</code>, <code>editor</code></td>
+</tr>
+<tr>
+<td><code>/admin/fluir-femenino/nuevo</code></td>
+<td><code>AdminBlogForm</code></td>
+<td><code>admin</code>, <code>editor</code></td>
+</tr>
+<tr>
+<td><code>/admin/fluir-femenino/:id</code></td>
+<td><code>AdminBlogForm</code> (edición)</td>
+<td><code>admin</code>, <code>editor</code></td>
+</tr>
+<tr>
+<td><code>/admin/productos</code></td>
+<td><code>AdminProductos</code></td>
+<td><code>admin</code>, <code>editor</code></td>
+</tr>
+<tr>
+<td><code>/admin/productos/nuevo</code></td>
+<td><code>AdminProductoForm</code></td>
+<td><code>admin</code>, <code>editor</code></td>
+</tr>
+<tr>
+<td><code>/admin/productos/:id</code></td>
+<td><code>AdminProductoForm</code> (edición)</td>
+<td><code>admin</code>, <code>editor</code></td>
+</tr>
+<tr>
+<td><code>/admin/categorias</code></td>
+<td><code>AdminCategorias</code></td>
+<td><code>admin</code>, <code>editor</code></td>
+</tr>
+<tr>
+<td><code>/admin/ordenes</code></td>
+<td><code>AdminOrdenes</code></td>
+<td><code>admin</code>, <code>gestor</code></td>
+</tr>
+<tr>
+<td><code>/admin/ordenes/:id</code></td>
+<td><code>AdminOrdenDetalle</code> (estados, courier, <strong>reenviar descargas</strong>)</td>
+<td><code>admin</code>, <code>gestor</code></td>
+</tr>
+<tr>
+<td><code>/admin/reservas</code></td>
+<td><code>AdminReservas</code></td>
+<td><code>admin</code>, <code>gestor</code></td>
+</tr>
+<tr>
+<td><code>/admin/envios</code></td>
+<td><code>AdminEnvios</code> (zonas de envío / retiro en tienda)</td>
+<td><code>admin</code>, <code>gestor</code></td>
+</tr>
+<tr>
+<td><code>/admin/usuarios</code></td>
+<td><code>AdminUsuarios</code> (gestión de roles)</td>
+<td><code>admin</code></td>
+</tr>
+<tr>
+<td><code>/admin/emails</code></td>
+<td><code>AdminEmails</code> (visor de <code>email_logs</code>)</td>
+<td><code>admin</code></td>
+</tr>
+</tbody></table>
+
+
+</section>
+<section class="card">
+<h2 id="5-base-de-datos">5. Base de datos</h2>
+<p>Schema PostgreSQL gestionado por las migraciones <code>supabase/migrations/001…020</code>. <strong>Todas las tablas tienen RLS habilitado</strong> con políticas explícitas. Convención: archivos <code>NNN_descripcion.sql</code>, idempotentes, aplicados en orden numérico (manualmente en el SQL Editor de Supabase o con <code>supabase db push</code>).</p>
+<h3 id="51-historial-de-migraciones">5.1 Historial de migraciones</h3>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Archivo</th>
+<th>Qué hace</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>001</td>
+<td><code>001_initial_schema.sql</code></td>
+<td>profiles, product_categories, products, product_images, product_variants, orders, order_items, order_status_history, payments. RPC <code>generate_order_id()</code>. Trigger <code>handle_new_user</code>.</td>
+</tr>
+<tr>
+<td>002</td>
+<td><code>002_seed_data.sql</code></td>
+<td>Seed <strong>legado</strong> de la primera versión del catálogo: categorías y productos de prueba (reemplazado por el catálogo v2 de la migración 008).</td>
+</tr>
+<tr>
+<td>003</td>
+<td><code>003_fix_rls_recursion.sql</code></td>
+<td>Crea <code>is_admin()</code> (SECURITY DEFINER) y reescribe todas las políticas para evitar recursión infinita de RLS en <code>profiles</code>.</td>
+</tr>
+<tr>
+<td>004</td>
+<td><code>004_admin_roles.sql</code></td>
+<td>Roles <code>editor</code> y <code>gestor</code>; funciones <code>is_editor()</code> / <code>is_gestor()</code>; bucket <code>product-images</code> (público) con políticas de Storage.</td>
+</tr>
+<tr>
+<td>005</td>
+<td><code>005_get_my_profile_rpc.sql</code></td>
+<td>RPC <code>get_my_profile()</code> (SECURITY DEFINER) usado por <code>AuthContext</code> para leer nombre y rol sin pelear con RLS.</td>
+</tr>
+<tr>
+<td>006</td>
+<td><code>006_pending_payment_status.sql</code></td>
+<td>Agrega <code>pending_payment</code> al CHECK de <code>orders.status</code>.</td>
+</tr>
+<tr>
+<td>007</td>
+<td><code>007_home_content.sql</code></td>
+<td>Tabla <code>home_content</code> (CMS, fila única) + bucket <code>home-images</code> (público).</td>
+</tr>
+<tr>
+<td>008</td>
+<td><code>008_catalog_v2.sql</code></td>
+<td><code>products.kind</code> / <code>featured_order</code> / <code>digital_file_path</code>; <code>orders.courier_*</code>; tablas <code>shipping_zones</code>, <code>user_purchases</code>, <code>reservations</code>; bucket <strong>privado</strong> <code>digital-products</code>; función <code>set_updated_at()</code>; elimina columna <code>protocol</code> de <code>home_content</code>.</td>
+</tr>
+<tr>
+<td>009</td>
+<td><code>009_seed_catalog.sql</code></td>
+<td>Categorías reales (digitales, suplementos, servicios) + 6 servicios de consulta como productos <code>kind=&#39;service&#39;</code>.</td>
+</tr>
+<tr>
+<td>010</td>
+<td><code>010_orders_shipping_zone.sql</code></td>
+<td><code>orders.shipping_zone_id</code> (FK nullable) + <code>shipping_zone_name</code> (snapshot histórico).</td>
+</tr>
+<tr>
+<td>011</td>
+<td><code>011_featured_section.sql</code></td>
+<td>Columna JSONB <code>featured</code> en <code>home_content</code> (carrusel &quot;Pleno Market&quot;).</td>
+</tr>
+<tr>
+<td>012</td>
+<td><code>012_deactivate_legacy_categories.sql</code></td>
+<td>Desactiva (<code>active=false</code>) las categorías legadas de 002.</td>
+</tr>
+<tr>
+<td>013</td>
+<td><code>013_decrement_stock_rpc.sql</code></td>
+<td>Función <code>decrement_order_stock(p_order_id)</code> — descuento atómico de stock por orden (solo <code>service_role</code>).</td>
+</tr>
+<tr>
+<td>014</td>
+<td><code>014_email_logs.sql</code></td>
+<td>Tabla <code>email_logs</code> (auditoría de correos; lectura solo admin).</td>
+</tr>
+<tr>
+<td>015</td>
+<td><code>015_blog.sql</code></td>
+<td>Blog: <code>posts</code>, <code>post_categories</code>, <code>post_tags</code>, <code>post_to_tag</code> + bucket <code>blog-images</code> (público).</td>
+</tr>
+<tr>
+<td>016</td>
+<td><code>016_seed_blog.sql</code></td>
+<td>Categorías iniciales del blog.</td>
+</tr>
+<tr>
+<td>017</td>
+<td><code>017_digital_subtype.sql</code></td>
+<td><code>products.digital_subtype</code> (ebook / curso / guia / evento_grabado / programa / contenido).</td>
+</tr>
+<tr>
+<td>018</td>
+<td><code>018_testimonials.sql</code></td>
+<td>Columna JSONB <code>testimonials</code> en <code>home_content</code>.</td>
+</tr>
+<tr>
+<td>019</td>
+<td><code>019_landing_sections.sql</code></td>
+<td>Columnas JSONB <code>pleno_hero</code>, <code>nutri_hero</code>, <code>fluir_content</code> en <code>home_content</code>.</td>
+</tr>
+<tr>
+<td>020</td>
+<td><code>020_pickup_zones.sql</code></td>
+<td><code>shipping_zones.is_pickup</code> (retiro en tienda).</td>
+</tr>
+</tbody></table>
+<h3 id="52-tablas">5.2 Tablas</h3>
+<h4 id="profiles"><code>profiles</code></h4>
+<p>Perfil 1:1 con <code>auth.users</code> (se crea automáticamente al registrarse vía trigger <code>on_auth_user_created</code> → <code>handle_new_user()</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Columna</th>
+<th>Tipo</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>uuid PK</td>
+<td>FK → <code>auth.users(id)</code> ON DELETE CASCADE</td>
+</tr>
+<tr>
+<td><code>email</code></td>
+<td>text</td>
+<td></td>
+</tr>
+<tr>
+<td><code>first_name</code>, <code>last_name</code></td>
+<td>text</td>
+<td></td>
+</tr>
+<tr>
+<td><code>role</code></td>
+<td>text</td>
+<td>CHECK: <code>customer</code> | <code>admin</code> | <code>editor</code> | <code>gestor</code> (default <code>customer</code>)</td>
+</tr>
+<tr>
+<td><code>created_at</code>, <code>updated_at</code></td>
+<td>timestamptz</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>RLS: cada usuario lee/actualiza su fila; <code>is_admin()</code> lee y actualiza todas (incluyendo <code>role</code>).</p>
+<h4 id="productcategories"><code>product_categories</code></h4>
+<table>
+<thead>
+<tr>
+<th>Columna</th>
+<th>Tipo</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>text PK</td>
+<td>ej. <code>digitales</code>, <code>suplementos</code>, <code>servicios</code></td>
+</tr>
+<tr>
+<td><code>num</code>, <code>title</code>, <code>tagline</code>, <code>description</code>, <code>cta</code></td>
+<td>text</td>
+<td>textos de vitrina</td>
+</tr>
+<tr>
+<td><code>sort_order</code></td>
+<td>int</td>
+<td></td>
+</tr>
+<tr>
+<td><code>active</code></td>
+<td>boolean</td>
+<td>el frontend solo lista activas</td>
+</tr>
+</tbody></table>
+<p>RLS: SELECT público si <code>active=true</code>; gestión total con <code>is_editor()</code>.</p>
+<h4 id="products"><code>products</code></h4>
+<table>
+<thead>
+<tr>
+<th>Columna</th>
+<th>Tipo</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>text PK</td>
+<td>ej. <code>dig-001</code></td>
+</tr>
+<tr>
+<td><code>slug</code></td>
+<td>text UNIQUE</td>
+<td>usado en <code>/producto/:slug</code></td>
+</tr>
+<tr>
+<td><code>name</code>, <code>description</code>, <code>description_long</code></td>
+<td>text</td>
+<td></td>
+</tr>
+<tr>
+<td><code>category_id</code></td>
+<td>text</td>
+<td>FK → <code>product_categories</code></td>
+</tr>
+<tr>
+<td><code>price</code></td>
+<td>decimal(10,2)</td>
+<td>el backend SIEMPRE usa este precio, no el del cliente</td>
+</tr>
+<tr>
+<td><code>kind</code></td>
+<td>text</td>
+<td>CHECK: <code>physical</code> | <code>digital</code> | <code>service</code> (008)</td>
+</tr>
+<tr>
+<td><code>digital_subtype</code></td>
+<td>text nullable</td>
+<td>CHECK: <code>ebook</code>/<code>curso</code>/<code>guia</code>/<code>evento_grabado</code>/<code>programa</code>/<code>contenido</code> (017)</td>
+</tr>
+<tr>
+<td><code>digital_file_path</code></td>
+<td>text nullable</td>
+<td>ruta del archivo dentro del bucket <code>digital-products</code> (008)</td>
+</tr>
+<tr>
+<td><code>featured</code>, <code>featured_order</code></td>
+<td>boolean / int</td>
+<td>carrusel destacado</td>
+</tr>
+<tr>
+<td><code>active</code></td>
+<td>boolean</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>RLS: SELECT público si <code>active=true</code>; gestión con <code>is_editor()</code>.</p>
+<h4 id="productimages"><code>product_images</code></h4>
+<p><code>id</code> uuid PK, <code>product_id</code> FK (CASCADE), <code>url</code>, <code>sort_order</code>. SELECT público; gestión <code>is_editor()</code>.</p>
+<h4 id="productvariants"><code>product_variants</code></h4>
+<p>Stock <strong>por variante</strong> (combinación talla + color).</p>
+<table>
+<thead>
+<tr>
+<th>Columna</th>
+<th>Tipo</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>uuid PK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>product_id</code></td>
+<td>text FK</td>
+<td>CASCADE</td>
+</tr>
+<tr>
+<td><code>size</code>, <code>color_name</code>, <code>color_hex</code></td>
+<td>text</td>
+<td>UNIQUE (product_id, size, color_name)</td>
+</tr>
+<tr>
+<td><code>stock</code></td>
+<td>int</td>
+<td>descuento vía <code>decrement_order_stock</code></td>
+</tr>
+<tr>
+<td><code>active</code></td>
+<td>boolean</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>RLS: SELECT público si <code>active=true</code>; gestión <code>is_editor()</code>.</p>
+<h4 id="orders"><code>orders</code></h4>
+<table>
+<thead>
+<tr>
+<th>Columna</th>
+<th>Tipo</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>text PK</td>
+<td>formato <code>NTG-YYYY-NNNN</code> (RPC <code>generate_order_id</code>)</td>
+</tr>
+<tr>
+<td><code>tracking_code</code></td>
+<td>text UNIQUE</td>
+<td><code>&lt;id&gt;-TRK</code></td>
+</tr>
+<tr>
+<td><code>user_id</code></td>
+<td>uuid nullable</td>
+<td>FK → <code>auth.users</code>; <strong>NULL en compras de invitada</strong></td>
+</tr>
+<tr>
+<td><code>contact_name</code>, <code>contact_email</code>, <code>contact_phone</code></td>
+<td>text</td>
+<td></td>
+</tr>
+<tr>
+<td><code>shipping_address</code>, <code>shipping_city</code>, <code>shipping_department</code>, <code>shipping_notes</code></td>
+<td>text</td>
+<td>vacíos cuando la zona es retiro en tienda</td>
+</tr>
+<tr>
+<td><code>shipping_zone_id</code></td>
+<td>uuid nullable</td>
+<td>FK → <code>shipping_zones</code> (010)</td>
+</tr>
+<tr>
+<td><code>shipping_zone_name</code></td>
+<td>text</td>
+<td>snapshot del nombre de la zona (010)</td>
+</tr>
+<tr>
+<td><code>subtotal</code>, <code>shipping_cost</code>, <code>total</code></td>
+<td>decimal(10,2)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>text</td>
+<td>CHECK: <code>pending_payment</code> → <code>confirmed</code> → <code>preparing</code> → <code>shipped</code> → <code>delivered</code>, o <code>cancelled</code></td>
+</tr>
+<tr>
+<td><code>courier_name</code>, <code>courier_tracking_code</code></td>
+<td>text nullable</td>
+<td>datos del courier (008)</td>
+</tr>
+</tbody></table>
+<p>RLS: dueño lee/inserta las suyas; política pública de SELECT para tracking; gestión total <code>is_gestor()</code>. Las órdenes de invitadas las crea el backend con service role.</p>
+<h4 id="orderitems"><code>order_items</code></h4>
+<p><code>id</code> uuid PK, <code>order_id</code> FK (CASCADE), <code>product_id</code> FK, <code>product_name</code>, <code>size</code>, <code>color</code>, <code>price</code>, <code>quantity</code>, <code>image</code>. Snapshot del producto al momento de la compra (no se rompe si el producto cambia luego).</p>
+<h4 id="orderstatushistory"><code>order_status_history</code></h4>
+<p><code>id</code> uuid PK, <code>order_id</code> FK (CASCADE), <code>status</code>, <code>created_at</code>. Una fila por transición; alimenta el timeline de <code>/tracking/:code</code>. SELECT público.</p>
+<h4 id="payments"><code>payments</code></h4>
+<table>
+<thead>
+<tr>
+<th>Columna</th>
+<th>Tipo</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>uuid PK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>order_id</code></td>
+<td>text FK</td>
+<td>CASCADE</td>
+</tr>
+<tr>
+<td><code>provider</code></td>
+<td>text</td>
+<td><code>wompi</code></td>
+</tr>
+<tr>
+<td><code>provider_transaction_id</code></td>
+<td>text</td>
+<td><code>idEnlace</code> al crear, <code>IdTransaccion</code> al confirmar</td>
+</tr>
+<tr>
+<td><code>amount</code>, <code>currency</code></td>
+<td>decimal / text</td>
+<td>USD</td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>text</td>
+<td>CHECK: <code>pending</code> | <code>approved</code> | <code>declined</code> | <code>voided</code> | <code>error</code></td>
+</tr>
+<tr>
+<td><code>raw_response</code></td>
+<td>jsonb</td>
+<td>payload completo del webhook (debug)</td>
+</tr>
+</tbody></table>
+<p>RLS: dueño de la orden lee; gestión <code>is_gestor()</code>.</p>
+<h4 id="shippingzones"><code>shipping_zones</code></h4>
+<table>
+<thead>
+<tr>
+<th>Columna</th>
+<th>Tipo</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>uuid PK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>text UNIQUE</td>
+<td>ej. &quot;El Salvador&quot;, &quot;Retiro en tienda&quot;</td>
+</tr>
+<tr>
+<td><code>cost</code></td>
+<td>decimal(10,2)</td>
+<td></td>
+</tr>
+<tr>
+<td><code>free_threshold</code></td>
+<td>decimal nullable</td>
+<td>si <code>subtotal &gt;= free_threshold</code> ⇒ envío $0</td>
+</tr>
+<tr>
+<td><code>is_pickup</code></td>
+<td>boolean</td>
+<td><strong>retiro en tienda</strong> — el checkout omite la dirección (020)</td>
+</tr>
+<tr>
+<td><code>active</code>, <code>sort_order</code></td>
+<td>boolean / int</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>RLS: SELECT público si <code>active=true</code>; gestión <code>is_editor()</code>.</p>
+<h4 id="userpurchases"><code>user_purchases</code></h4>
+<p>Ledger de compras digitales por usuaria (biblioteca &quot;Mis productos&quot; en <code>/cuenta</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Columna</th>
+<th>Tipo</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>uuid PK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>user_id</code></td>
+<td>uuid FK</td>
+<td>CASCADE — <strong>solo se registra si la compra tuvo sesión</strong></td>
+</tr>
+<tr>
+<td><code>product_id</code></td>
+<td>text FK</td>
+<td>CASCADE</td>
+</tr>
+<tr>
+<td><code>order_id</code></td>
+<td>text FK nullable</td>
+<td>SET NULL</td>
+</tr>
+<tr>
+<td><code>purchased_at</code>, <code>expires_at</code></td>
+<td>timestamptz</td>
+<td><code>expires_at</code> es informativo (ventana del correo); la fila basta como prueba de compra para re-descargas</td>
+</tr>
+</tbody></table>
+<p>UNIQUE (user_id, product_id, order_id). RLS: dueña lee; gestión <code>is_gestor()</code>.</p>
+<h4 id="reservations"><code>reservations</code></h4>
+<table>
+<thead>
+<tr>
+<th>Columna</th>
+<th>Tipo</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>uuid PK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>user_id</code></td>
+<td>uuid nullable</td>
+<td>SET NULL</td>
+</tr>
+<tr>
+<td><code>product_id</code></td>
+<td>text FK</td>
+<td>servicio (<code>kind=&#39;service&#39;</code>)</td>
+</tr>
+<tr>
+<td><code>contact_name</code>, <code>contact_email</code>, <code>contact_phone</code></td>
+<td>text</td>
+<td></td>
+</tr>
+<tr>
+<td><code>preferred_date</code>, <code>preferred_time</code></td>
+<td>date / text</td>
+<td></td>
+</tr>
+<tr>
+<td><code>notes</code></td>
+<td>text</td>
+<td></td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>text</td>
+<td>CHECK: <code>pendiente</code> | <code>contactado</code> | <code>confirmado</code> | <code>completado</code> | <code>cancelado</code></td>
+</tr>
+</tbody></table>
+<p>RLS: dueña lee/crea las suyas; gestión <code>is_gestor()</code>.</p>
+<h4 id="emaillogs"><code>email_logs</code></h4>
+<p>Auditoría de cada intento de envío de correo (insertado por <code>api/_lib/email.js</code> con service role; <strong>el fallo del log nunca bloquea el envío</strong>).</p>
+<table>
+<thead>
+<tr>
+<th>Columna</th>
+<th>Tipo</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>id</code></td>
+<td>uuid PK</td>
+<td></td>
+</tr>
+<tr>
+<td><code>provider</code></td>
+<td>text</td>
+<td><code>resend</code></td>
+</tr>
+<tr>
+<td><code>template</code></td>
+<td>text</td>
+<td><code>purchase_confirm</code> | <code>digital_download</code> | <code>reservation_confirm</code></td>
+</tr>
+<tr>
+<td><code>recipient_email</code></td>
+<td>text</td>
+<td></td>
+</tr>
+<tr>
+<td><code>status</code></td>
+<td>text</td>
+<td>CHECK: <code>queued</code> | <code>sent</code> | <code>failed</code> | <code>skipped</code> | <code>bounced</code></td>
+</tr>
+<tr>
+<td><code>error_message</code></td>
+<td>text</td>
+<td>truncado a 1000 chars</td>
+</tr>
+<tr>
+<td><code>provider_message_id</code></td>
+<td>text</td>
+<td>id de Resend</td>
+</tr>
+<tr>
+<td><code>related_order_id</code></td>
+<td>text FK nullable</td>
+<td>SET NULL</td>
+</tr>
+<tr>
+<td><code>related_user_id</code></td>
+<td>uuid FK nullable</td>
+<td>SET NULL</td>
+</tr>
+<tr>
+<td><code>sent_at</code></td>
+<td>timestamptz</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>RLS: SELECT <strong>solo <code>is_admin()</code></strong> (visor en <code>/admin/emails</code>).</p>
+<h4 id="blog-posts-postcategories-posttags-posttotag">Blog: <code>posts</code>, <code>post_categories</code>, <code>post_tags</code>, <code>post_to_tag</code></h4>
+<ul>
+<li><code>posts</code>: <code>slug</code> UNIQUE, <code>title</code>, <code>excerpt</code>, <code>body_md</code> (Markdown), <code>cover_image_url</code>, <code>category_id</code> FK, <code>related_product_ids text[]</code> (referencias blandas, sin FK), <code>author_id</code> FK → profiles, <code>reading_minutes</code>, <code>published</code> + <code>published_at</code>, campos SEO (<code>seo_title</code>, <code>seo_description</code>, <code>og_image_url</code>).</li>
+<li>RLS: público lee solo <code>published=true</code>; <code>is_editor()</code> lee y gestiona todo.</li>
+</ul>
+<h4 id="homecontent"><code>home_content</code></h4>
+<p>Ver §8.</p>
+<h3 id="53-funciones-sql-y-triggers">5.3 Funciones SQL y triggers</h3>
+<table>
+<thead>
+<tr>
+<th>Función</th>
+<th>Tipo</th>
+<th>Para qué sirve</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>generate_order_id()</code></td>
+<td>RPC SECURITY DEFINER</td>
+<td>Genera el siguiente id <code>NTG-YYYY-NNNN</code> contando órdenes del año. La invoca <code>api/wompi/create-link.js</code>.</td>
+</tr>
+<tr>
+<td><code>is_admin()</code></td>
+<td>SQL SECURITY DEFINER</td>
+<td>Predicado de RLS: ¿el <code>auth.uid()</code> actual tiene rol <code>admin</code>? Evita recursión de políticas.</td>
+</tr>
+<tr>
+<td><code>is_editor()</code></td>
+<td>SQL SECURITY DEFINER</td>
+<td><code>true</code> si rol ∈ {admin, editor}. Protege catálogo, CMS, blog y buckets de imágenes.</td>
+</tr>
+<tr>
+<td><code>is_gestor()</code></td>
+<td>SQL SECURITY DEFINER</td>
+<td><code>true</code> si rol ∈ {admin, gestor}. Protege órdenes, pagos, reservas, envíos.</td>
+</tr>
+<tr>
+<td><code>get_my_profile()</code></td>
+<td>RPC SECURITY DEFINER</td>
+<td>Devuelve <code>{first_name, last_name, role}</code> del usuario actual. Usada por <code>AuthContext</code> vía REST directo.</td>
+</tr>
+<tr>
+<td><code>decrement_order_stock(p_order_id text)</code></td>
+<td>RPC SECURITY DEFINER</td>
+<td>Recorre los <code>order_items</code> de la orden y descuenta <code>product_variants.stock</code> (solo productos <code>kind=&#39;physical&#39;</code>; <code>GREATEST(stock - qty, 0)</code>). <strong>EXECUTE solo para <code>service_role</code></strong> — la llama el webhook de Wompi al confirmar el pago.</td>
+</tr>
+<tr>
+<td><code>handle_new_user()</code></td>
+<td>trigger en <code>auth.users</code></td>
+<td>Crea la fila de <code>profiles</code> al registrarse (toma first/last name del <code>raw_user_meta_data</code>).</td>
+</tr>
+<tr>
+<td><code>set_updated_at()</code></td>
+<td>trigger</td>
+<td>Mantiene <code>updated_at</code> en <code>shipping_zones</code>, <code>reservations</code>, <code>posts</code>.</td>
+</tr>
+</tbody></table>
+<h3 id="54-buckets-de-storage">5.4 Buckets de Storage</h3>
+<table>
+<thead>
+<tr>
+<th>Bucket</th>
+<th>Visibilidad</th>
+<th>Contenido</th>
+<th>Políticas</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>product-images</code></td>
+<td><strong>Público</strong></td>
+<td>Fotos de productos</td>
+<td>SELECT público; INSERT/UPDATE/DELETE <code>is_editor()</code></td>
+</tr>
+<tr>
+<td><code>home-images</code></td>
+<td><strong>Público</strong></td>
+<td>Imágenes del CMS del home</td>
+<td>SELECT público; escritura <code>is_editor()</code></td>
+</tr>
+<tr>
+<td><code>blog-images</code></td>
+<td><strong>Público</strong></td>
+<td>Portadas de artículos</td>
+<td>SELECT público; escritura <code>is_editor()</code></td>
+</tr>
+<tr>
+<td><code>digital-products</code></td>
+<td><strong>PRIVADO</strong></td>
+<td>Archivos vendibles (ebooks, etc.)</td>
+<td>Lectura/escritura solo <code>is_editor()</code>; los clientes acceden <strong>únicamente</strong> vía signed URLs creadas server-side (7 días en correos, 24 h en biblioteca)</td>
+</tr>
+</tbody></table>
+
+
+</section>
+<section class="card">
+<h2 id="6-variables-de-entorno">6. Variables de entorno</h2>
+<p>Plantilla completa en <strong><code>.env.example</code></strong>. Hay dos familias claramente separadas:</p>
+<h3 id="61-frontend-prefijo-vite-se-incrustan-en-el-build">6.1 Frontend (prefijo <code>VITE_</code> — se incrustan en el build)</h3>
+<p>Definidas en <code>.env</code> local y en <strong>Vercel → Project Settings → Environment Variables</strong>. ⚠️ Cualquier <code>VITE_*</code> queda <strong>visible en el bundle del navegador</strong>: nunca poner secretos aquí.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Obligatoria</th>
+<th>Para qué</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>VITE_SUPABASE_URL</code></td>
+<td>✅ crítica</td>
+<td>URL del proyecto Supabase (cliente del frontend)</td>
+</tr>
+<tr>
+<td><code>VITE_SUPABASE_ANON_KEY</code></td>
+<td>✅ crítica</td>
+<td>Anon/publishable key (segura de exponer; RLS protege los datos)</td>
+</tr>
+<tr>
+<td><code>VITE_WOMPI_APP_ID</code></td>
+<td>opcional</td>
+<td>App ID público de Wompi</td>
+</tr>
+</tbody></table>
+<p>Si falta una crítica, <code>src/config/runtimeConfig.js</code> lo detecta y <code>App.jsx</code> renderiza <code>ConfigurationErrorScreen</code> en lugar del sitio (la app nunca arranca &quot;a medias&quot;).</p>
+<h3 id="62-serverless-sin-prefijo-solo-runtime-de-las-funciones-api">6.2 Serverless (sin prefijo — solo runtime de las funciones <code>api/</code>)</h3>
+<p>Se configuran en el <strong>dashboard de Vercel</strong> (Production + Preview). Cada función valida su lista <code>REQUIRED_ENV</code> vía <code>api/_lib/runtimeConfig.js</code> y responde 500 con la lista de faltantes si algo no está.</p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Secreta</th>
+<th>Usada por</th>
+<th>Para qué</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>SUPABASE_URL</code></td>
+<td>no</td>
+<td>todas las funciones</td>
+<td>URL del proyecto Supabase</td>
+</tr>
+<tr>
+<td><code>SUPABASE_ANON_KEY</code></td>
+<td>no</td>
+<td><code>reservations/notify</code>, <code>sitemap.xml</code></td>
+<td>Cliente con RLS (en notify se combina con el JWT de la usuaria)</td>
+</tr>
+<tr>
+<td><code>SUPABASE_SERVICE_ROLE_KEY</code></td>
+<td><strong>SÍ</strong></td>
+<td><code>wompi/*</code>, <code>digital/*</code>, email logs</td>
+<td>Omite RLS. <strong>Jamás en el frontend ni con prefijo VITE_</strong></td>
+</tr>
+<tr>
+<td><code>WOMPI_APP_ID</code></td>
+<td>no</td>
+<td><code>wompi/create-link</code></td>
+<td>Client ID OAuth de Wompi</td>
+</tr>
+<tr>
+<td><code>WOMPI_API_SECRET</code></td>
+<td><strong>SÍ</strong></td>
+<td><code>wompi/create-link</code>, <code>wompi/webhook</code>, <code>wompi/order-status</code>, <code>digital/resend-email</code></td>
+<td>(1) client_secret OAuth, (2) clave HMAC del webhook, (3) clave HMAC de la <code>key</code> de acceso a órdenes</td>
+</tr>
+<tr>
+<td><code>APP_URL</code></td>
+<td>no</td>
+<td>varias</td>
+<td>URL canónica de producción (<code>https://nutrigabrielare.com</code>); construye returnUrl, webhookUrl y links de correo</td>
+</tr>
+<tr>
+<td><code>RESEND_API_KEY</code></td>
+<td><strong>SÍ</strong></td>
+<td><code>_lib/email.js</code>, <code>reservations/notify</code></td>
+<td>Envío de correos. Si falta, los envíos se omiten con log <code>skipped</code> (no rompe nada)</td>
+</tr>
+<tr>
+<td><code>EMAIL_FROM</code></td>
+<td>no</td>
+<td><code>_lib/email.js</code></td>
+<td>Remitente visible. Default: <code>Nutrigabriela &lt;shop@nutrigabrielare.com&gt;</code> (debe usar el dominio verificado en Resend)</td>
+</tr>
+<tr>
+<td><code>EMAIL_REPLY_TO</code></td>
+<td>no</td>
+<td><code>_lib/email.js</code></td>
+<td>Dirección de respuesta (buzón corporativo en Hostinger)</td>
+</tr>
+<tr>
+<td><code>ADMIN_NOTIFY_EMAIL</code></td>
+<td>no</td>
+<td><code>reservations/notify</code></td>
+<td>Si está definida, el admin recibe un aviso por cada reserva nueva</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p><strong>Nota:</strong> después de cambiar cualquier variable en Vercel hay que <strong>redeployar</strong> (las <code>VITE_*</code> requieren rebuild; las serverless se aplican en el siguiente deploy).</p>
+</blockquote>
+
+
+</section>
+<section class="card">
+<h2 id="7-integraciones">7. Integraciones</h2>
+<h3 id="71-wompi-pagos">7.1 Wompi (pagos)</h3>
+<p>Tres funciones serverless en <code>api/wompi/</code>:</p>
+<h4 id="flujo-de-pago-completo">Flujo de pago completo</h4>
+<pre><code>CheckoutPage (front)                     create-link.js (server)              Wompi
+       │                                        │                               │
+       │ POST /api/wompi/create-link            │                               │
+       │ body: { checkout }                     │                               │
+       │ header: Bearer &lt;JWT&gt;  (opcional,       │                               │
+       │         invitadas van sin token) ─────▶│                               │
+       │                                        │ 1. Valida items contra DB     │
+       │                                        │    (precio y active desde     │
+       │                                        │    products, NUNCA del front) │
+       │                                        │ 2. Valida zona de envío       │
+       │                                        │    (is_pickup ⇒ sin dirección)│
+       │                                        │ 3. generate_order_id() RPC    │
+       │                                        │ 4. INSERT orders              │
+       │                                        │    (status=pending_payment)   │
+       │                                        │    + order_items + history    │
+       │                                        │ 5. OAuth: POST                │
+       │                                        │    id.wompi.sv/connect/token ─▶
+       │                                        │ 6. POST api.wompi.sv/EnlacePago▶
+       │                                        │    identificadorEnlaceComercio│
+       │                                        │      = orderId                │
+       │                                        │    urlRedirect = APP_URL/     │
+       │                                        │      gracias?order=ID&amp;key=HMAC│
+       │                                        │    urlWebhook = APP_URL/      │
+       │                                        │      api/wompi/webhook        │
+       │                                        │ 7. INSERT payments (pending)  │
+       │◀── { orderId, orderKey, urlEnlace } ───│                               │
+       │                                        │                               │
+       │ window.location = urlEnlace ──────────────────────────────────────────▶│
+       │                                        │          (pago en página      │
+       │                                        │           hospedada de Wompi) │
+       │◀───────────── redirect a /gracias?order=ID&amp;key=HMAC ──────────────────│
+       │                                        │                               │
+       │                                        │◀── POST /api/wompi/webhook ───│
+       │                                        │    header wompi_hash =        │
+       │                                        │    HMAC-SHA256(rawBody,       │
+       │                                        │      WOMPI_API_SECRET)        │
+       │                                        │ webhook.js:                   │
+       │                                        │ • valida firma HMAC (401 si no)│
+       │                                        │ • idempotente: si payments ya │
+       │                                        │   está approved/declined sale │
+       │                                        │ • ExitosaAprobada ⇒           │
+       │                                        │   payment→approved,           │
+       │                                        │   order→confirmed, history    │
+       │                                        │ • si no ⇒ declined/cancelled  │
+       │                                        │ • decrement_order_stock RPC   │
+       │                                        │ • envía correo (físico o      │
+       │                                        │   digital) — no bloqueante    │
+       │                                        │                               │
+       │ GraciasPage hace polling:              │                               │
+       │ GET /api/wompi/order-status            │                               │
+       │     ?order=ID&amp;key=HMAC ───────────────▶│ order-status.js               │
+       │◀── { order, payment, downloadLinks } ──│                               │
+</code></pre>
+<h4 id="detalles-importantes">Detalles importantes</h4>
+<ul>
+<li><strong>URL del webhook:</strong> <code>https://nutrigabrielare.com/api/wompi/webhook</code> (se envía a Wompi en cada <code>EnlacePago</code> vía <code>configuracion.urlWebhook</code>; derivada de <code>APP_URL</code>).</li>
+<li><strong>Firma del webhook:</strong> header <code>wompi_hash</code> = HMAC-SHA256 del <strong>body crudo</strong> con <code>WOMPI_API_SECRET</code>. El handler desactiva el bodyParser de Vercel (<code>export const config = { api: { bodyParser: false } }</code>) para hashear los bytes exactos.</li>
+<li><strong>Key HMAC de acceso a órdenes (<code>orderKey</code>):</strong> <code>HMAC-SHA256(orderId, WOMPI_API_SECRET)</code> en hex. Se incluye en <code>urlRedirect</code> y en los correos digitales. Permite que una compradora <strong>sin cuenta</strong> vea su orden y regenere descargas en <code>/gracias?order=ID&amp;key=…</code>. <code>order-status.js</code> recalcula la HMAC y compara; alternativamente acepta el JWT de la dueña de la orden.</li>
+<li><strong>El monto siempre sale de la DB:</strong> <code>create-link.js</code> recalcula subtotal con <code>products.price</code> y el envío con <code>shipping_zones</code> (respeta <code>free_threshold</code> e <code>is_pickup</code>); el cliente no puede manipular precios.</li>
+<li><strong>Idempotencia del webhook:</strong> si <code>payments.status</code> ya es <code>approved</code> o <code>declined</code>, responde <code>Already processed</code> sin tocar nada (evita doble descuento de stock y correos duplicados).</li>
+<li>El frontend consume estas funciones vía <code>src/services/paymentService.js</code> (<code>createPaymentLink</code>, <code>getCheckoutStatus</code>).</li>
+</ul>
+<h3 id="72-resend-correos-transaccionales">7.2 Resend (correos transaccionales)</h3>
+<ul>
+<li><strong>Dominio verificado:</strong> <code>nutrigabrielare.com</code> debe estar verificado en Resend (registros DKIM/SPF agregados en el DNS de Hostinger). Guía paso a paso en <code>docs/email-setup.md</code>.</li>
+<li><strong>Módulo central:</strong> <code>api/_lib/email.js</code> — inicializa el cliente Resend (cacheado), define la maqueta de marca (<code>brandLayout</code>, paleta rosa <code>#EE7699</code>/<code>#D6517B</code>) y tres templates:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Template (función)</th>
+<th><code>email_logs.template</code></th>
+<th>Disparador</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>purchasePhysicalTemplate</code> → <code>sendPurchaseConfirmationEmail</code></td>
+<td><code>purchase_confirm</code></td>
+<td>Webhook Wompi aprobado con al menos un ítem no digital. Incluye nº de pedido, tracking code y CTA &quot;Seguir mi pedido&quot; → <code>/tracking/:code</code></td>
+</tr>
+<tr>
+<td><code>purchaseDigitalTemplate</code> → <code>sendDigitalDownloadEmail</code></td>
+<td><code>digital_download</code></td>
+<td>Webhook aprobado con <strong>todos</strong> los ítems digitales, o reenvío admin. Incluye botones de descarga (signed URLs de 7 días) y CTA &quot;Ver mi pedido&quot; → <code>/gracias?order&amp;key</code></td>
+</tr>
+<tr>
+<td><code>reservationConfirmationTemplate</code> → <code>sendReservationConfirmationEmail</code></td>
+<td><code>reservation_confirm</code></td>
+<td><code>api/reservations/notify.js</code> tras crear una reserva</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>Fail-safe:</strong> si <code>RESEND_API_KEY</code> no está configurada, los senders no lanzan error: registran <code>skipped</code> en <code>email_logs</code> y el flujo (webhook, reserva) continúa. Los fallos de Resend se registran como <code>failed</code> con <code>error_message</code>.</li>
+<li><strong>Auditoría:</strong> cada intento queda en <code>email_logs</code> (insertado con service role). Visor con filtros (destinataria / template / estado) en <strong><code>/admin/emails</code></strong> (solo rol admin), vía <code>src/services/emailLogService.js</code>.</li>
+<li><strong>Endpoint de reenvío admin:</strong> <code>POST /api/digital/resend-email</code> — requiere JWT con rol <code>admin</code> o <code>gestor</code>; valida que la orden esté en estado pagado (<code>confirmed</code>/<code>preparing</code>/<code>shipped</code>/<code>delivered</code>) y tenga ítems digitales con <code>digital_file_path</code>; regenera signed URLs de 7 días y reenvía el correo <code>digital_download</code>. Botón &quot;Reenviar enlaces de descarga&quot; en <code>/admin/ordenes/:id</code>.</li>
+<li><strong>Aviso al admin de reservas nuevas:</strong> si <code>ADMIN_NOTIFY_EMAIL</code> está configurada, <code>reservations/notify.js</code> envía un segundo correo con los datos de la reserva y link a <code>/admin/reservas</code>.</li>
+</ul>
+<h3 id="73-supabase">7.3 Supabase</h3>
+<ul>
+<li><strong>Auth:</strong> email/password + Google OAuth. <code>src/context/AuthContext.jsx</code> gestiona la sesión con <code>onAuthStateChange</code>, y obtiene el rol con una llamada REST directa a la RPC <code>get_my_profile</code> (evita problemas de locks del cliente JS). Expone <code>isAdmin</code>, <code>isEditor</code> (editor o admin), <code>isGestor</code> (gestor o admin).</li>
+<li><strong>Roles en <code>profiles.role</code>:</strong></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Alcance</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>customer</code></td>
+<td>Default. Compra, reserva, ve sus órdenes y biblioteca. Sin acceso a <code>/admin</code>.</td>
+</tr>
+<tr>
+<td><code>editor</code></td>
+<td>Catálogo (productos, categorías, variantes, imágenes), CMS del home, blog.</td>
+</tr>
+<tr>
+<td><code>gestor</code></td>
+<td>Órdenes, pagos, reservas, zonas de envío, reenvío de descargas.</td>
+</tr>
+<tr>
+<td><code>admin</code></td>
+<td>Todo lo anterior + usuarios/roles + visor de email logs.</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>Storage:</strong> ver tabla de buckets en §5.4. Regla de oro: <code>digital-products</code> es <strong>privado</strong>; el único camino de descarga para clientas son <strong>signed URLs</strong> generadas server-side — 7 días desde el webhook/reenvío, 24 horas desde la biblioteca (<code>POST /api/digital/refresh-url</code>, que valida la compra en <code>user_purchases</code>).</li>
+<li><strong>Clientes:</strong><ul>
+<li>Frontend: <code>src/lib/supabase.js</code> (anon key; si falta config exporta un proxy que lanza error explicativo).</li>
+<li>Serverless: cada función crea su cliente con <code>SUPABASE_SERVICE_ROLE_KEY</code> (omite RLS), salvo <code>reservations/notify.js</code> que usa la anon key + JWT de la usuaria (respeta RLS deliberadamente).</li>
+</ul>
+</li>
+</ul>
+
+
+</section>
+<section class="card">
+<h2 id="8-cms-de-contenido-homecontent">8. CMS de contenido (home_content)</h2>
+<p>Tabla <strong>de fila única</strong> (<code>id = &#39;main&#39;</code>) donde cada sección editable es una <strong>columna JSONB</strong> independiente. El sitio público la lee completa en cada carga (vía <code>HomeContentContext</code>, con deep-merge sobre <code>DEFAULT_HOME</code> para que el sitio <strong>nunca se rompa</strong> si Supabase falla o un campo falta). Los cambios se reflejan al instante: no hay draft/publish.</p>
+<table>
+<thead>
+<tr>
+<th>Columna JSONB</th>
+<th>Migración</th>
+<th>Qué controla</th>
+<th>Tab en <code>/admin/home</code></th>
+<th>Editor (<code>src/admin/components/home/</code>)</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>hero</code></td>
+<td>007</td>
+<td>Badge, líneas de título, subtítulo, CTAs, imagen hero, hojas decorativas</td>
+<td><strong>Hero</strong></td>
+<td><code>HeroEditor.jsx</code></td>
+</tr>
+<tr>
+<td><code>philosophy</code></td>
+<td>007</td>
+<td>Badge, título, 3 pilares (icono+label), 4 estadísticas, imágenes decorativas</td>
+<td><strong>Filosofía</strong></td>
+<td><code>PhilosophyEditor.jsx</code></td>
+</tr>
+<tr>
+<td><code>why_choose_us</code></td>
+<td>007</td>
+<td>Badge, título, 3 diferenciadores (icono+título+descripción), imagen del plato</td>
+<td><strong>Diferenciador</strong></td>
+<td><code>WhyChooseUsEditor.jsx</code></td>
+</tr>
+<tr>
+<td><code>featured</code></td>
+<td>011</td>
+<td>Carrusel &quot;Pleno Market&quot; del home: títulos, CTA, límite de productos</td>
+<td><strong>Pleno Market</strong></td>
+<td><code>FeaturedEditor.jsx</code></td>
+</tr>
+<tr>
+<td><code>testimonials</code></td>
+<td>018</td>
+<td>Título de sección y lista dinámica de testimonios (nombre, rol, ubicación, rating, cita)</td>
+<td><strong>Testimonios</strong></td>
+<td><code>TestimonialsEditor.jsx</code></td>
+</tr>
+<tr>
+<td><code>pleno_hero</code></td>
+<td>019</td>
+<td>Textos del hero de <code>/pleno</code></td>
+<td><strong>Pleno</strong></td>
+<td><code>PlenoHeroEditor.jsx</code></td>
+</tr>
+<tr>
+<td><code>nutri_hero</code></td>
+<td>019</td>
+<td>Textos del hero de <code>/nutrigabrielare</code></td>
+<td><strong>Nutrigabrielare</strong></td>
+<td><code>NutriHeroEditor.jsx</code></td>
+</tr>
+<tr>
+<td><code>fluir_content</code></td>
+<td>019</td>
+<td>Textos del landing <code>/fluir-femenino</code> (hero, lecturas, recursos)</td>
+<td><strong>Fluir Femenino</strong></td>
+<td><code>FluirContentEditor.jsx</code></td>
+</tr>
+</tbody></table>
+<p>Notas:</p>
+<ul>
+<li>La columna <code>features</code> original se conserva en la tabla pero la sección de servicios del catálogo migró a productos reales (<code>kind=&#39;service&#39;</code>, migración 009). La columna <code>protocol</code> fue eliminada en 008.</li>
+<li>RLS: SELECT público; INSERT/UPDATE solo <code>is_editor()</code>.</li>
+<li>Servicio: <code>src/services/homeContentService.js</code> (<code>getHomeContent</code>, <code>updateHomeSection(sectionName, data)</code>, <code>uploadHomeImage</code>/<code>deleteHomeImage</code> contra el bucket <code>home-images</code>).</li>
+<li>Componentes compartidos de los editores: <code>SingleImageUploader.jsx</code> (subida con preview) e <code>IconPicker.jsx</code> (íconos Lucide pre-aprobados).</li>
+</ul>
+
+
+</section>
+<section class="card">
+<h2 id="9-flujos-críticos">9. Flujos críticos</h2>
+<h3 id="91-compra-de-producto-físico">9.1 Compra de producto físico</h3>
+<ol>
+<li>La clienta agrega variantes (talla/color) al carrito (<code>CartContext</code>, persistido en <code>localStorage</code>).</li>
+<li>En <code>/checkout</code> completa contacto + zona de envío + dirección. <strong>No se exige login</strong> (si hay sesión, el token se adjunta y la orden queda asociada a <code>user_id</code>). El formulario se guarda como borrador en <code>localStorage</code> (<code>nutri-checkout-draft</code>).</li>
+<li><code>createPaymentLink(checkout, token?)</code> → <code>api/wompi/create-link.js</code> crea la orden <code>pending_payment</code> y devuelve <code>urlEnlace</code>; el front guarda <code>{id, key}</code> en <code>localStorage</code> (<code>nutri-pending-order</code>) y redirige a Wompi.</li>
+<li>Pago aprobado → webhook: orden <code>confirmed</code>, stock descontado (<code>decrement_order_stock</code>), correo <code>purchase_confirm</code> con tracking code.</li>
+<li>Gestión posterior en <code>/admin/ordenes/:id</code>: avanzar estado (<code>preparing</code> → <code>shipped</code> → <code>delivered</code>), registrar <code>courier_name</code> y <code>courier_tracking_code</code>.</li>
+<li>La clienta sigue su pedido en <code>/tracking/:code</code> (público, timeline desde <code>order_status_history</code>).</li>
+</ol>
+<h3 id="92-compra-digital-sin-login-enlaces-firmados">9.2 Compra digital (sin login, enlaces firmados)</h3>
+<ol>
+<li>Mismo checkout; si la zona elegida no aplica (productos digitales) el costo lo determina la zona igualmente — el flujo es idéntico hasta el webhook.</li>
+<li>Si <strong>todos</strong> los ítems de la orden son <code>kind=&#39;digital&#39;</code>, el webhook:<ul>
+<li>registra cada compra en <code>user_purchases</code> (solo si la orden tiene <code>user_id</code>);</li>
+<li>genera <strong>signed URLs de 7 días</strong> del bucket privado <code>digital-products</code> (una por <code>digital_file_path</code>);</li>
+<li>envía el correo <code>digital_download</code> con los botones de descarga y un link &quot;Ver mi pedido&quot; a <code>/gracias?order=ID&amp;key=HMAC</code>.</li>
+</ul>
+</li>
+<li><strong>Acceso sin sesión:</strong> la página <code>/gracias</code> con <code>order</code> + <code>key</code> llama a <code>api/wompi/order-status.js</code>, que valida la HMAC y, si la orden está pagada, <strong>regenera signed URLs frescas de 7 días</strong> en cada visita. Si los enlaces del correo vencen, basta volver a abrir esa URL.</li>
+<li><strong>Con sesión:</strong> además, la clienta ve su biblioteca en <code>/cuenta</code> (&quot;Mis productos&quot;, <code>libraryService.getUserDigitalLibrary</code>) y puede pedir un enlace nuevo de <strong>24 h</strong> vía <code>POST /api/digital/refresh-url</code> (valida propiedad contra <code>user_purchases</code>).</li>
+</ol>
+<h3 id="93-retiro-en-tienda-ispickup">9.3 Retiro en tienda (<code>is_pickup</code>)</h3>
+<ol>
+<li>En <code>/admin/envios</code> se crea/edita una zona con el flag <strong>retiro en tienda</strong> (<code>shipping_zones.is_pickup = true</code>), normalmente con costo $0.</li>
+<li>En el checkout, al seleccionar esa zona, el formulario <strong>oculta dirección/ciudad/departamento/notas</strong> y muestra &quot;Recoger en tienda&quot;; esos campos se envían vacíos.</li>
+<li><code>create-link.js</code> detecta <code>zone.is_pickup</code> y <strong>omite la validación de dirección</strong> (para zonas normales la dirección es obligatoria).</li>
+<li>La orden guarda <code>shipping_zone_name</code> como snapshot, así el historial conserva &quot;Retiro en tienda&quot; aunque la zona cambie después.</li>
+</ol>
+<h3 id="94-reservas-de-servicios">9.4 Reservas de servicios</h3>
+<ol>
+<li>Desde la página de un servicio (<code>/producto/:slug</code>, <code>kind=&#39;service&#39;</code>) se navega a <code>/reservar/:slug</code> — esta ruta <strong>sí requiere sesión</strong> (<code>ProtectedRoute</code>).</li>
+<li>El formulario inserta en <code>reservations</code> (estado <code>pendiente</code>) vía <code>reservationService</code> (RLS: la usuaria solo crea las suyas).</li>
+<li>Luego llama a <code>POST /api/reservations/notify</code> con el JWT; el servidor (cliente anon + JWT, respetando RLS) envía:<ul>
+<li>correo <code>reservation_confirm</code> a la clienta;</li>
+<li>aviso opcional al admin (<code>ADMIN_NOTIFY_EMAIL</code>) con link a <code>/admin/reservas</code>.</li>
+</ul>
+</li>
+<li>El equipo gestiona el ciclo en <code>/admin/reservas</code>: <code>pendiente → contactado → confirmado → completado</code> (o <code>cancelado</code>).</li>
+</ol>
+<h3 id="95-reenvío-de-descargas-desde-el-admin">9.5 Reenvío de descargas desde el admin</h3>
+<ol>
+<li><code>/admin/ordenes/:id</code> → botón <strong>&quot;Reenviar enlaces de descarga&quot;</strong> (visible para órdenes con productos digitales).</li>
+<li><code>orderService.resendDigitalDownloadEmail(orderId)</code> → <code>POST /api/digital/resend-email</code> con el JWT del admin.</li>
+<li>El servidor valida: rol <code>admin</code>/<code>gestor</code>, orden en estado pagado, ítems digitales con archivo. Regenera signed URLs (7 días) y reenvía el correo a <code>orders.contact_email</code>. El resultado (y cualquier error) queda en <code>email_logs</code>.</li>
+</ol>
+
+
+</section>
+<section class="card">
+<h2 id="10-deploy">10. Deploy</h2>
+<h3 id="101-frontend-funciones-vercel">10.1 Frontend + funciones (Vercel)</h3>
+<ul>
+<li><strong>Auto-deploy:</strong> cada push a la rama <strong><code>main</code></strong> dispara un build en Vercel (<code>npm run build</code> → <code>dist/</code>). Las funciones de <code>api/</code> se despliegan en el mismo deploy.</li>
+<li>Los PRs generan <strong>preview deployments</strong> con su propia URL.</li>
+<li><code>vercel.json</code> (rewrites): <code>/api/*</code> a funciones, <code>/sitemap.xml</code> a <code>api/sitemap.xml.js</code>, resto a <code>index.html</code>.</li>
+<li><code>.npmrc</code> con <code>legacy-peer-deps=true</code> y <code>overrides</code> de react/react-dom en <code>package.json</code> — necesarios para que el install no falle con React 19. <strong>No eliminarlos.</strong></li>
+<li>Tras cambiar variables <code>VITE_*</code> en Vercel hay que <strong>redeployar</strong> para que entren al bundle.</li>
+</ul>
+<h3 id="102-migraciones-sql-supabase-proceso-manual">10.2 Migraciones SQL (Supabase) — proceso manual</h3>
+<p>Las migraciones <strong>no se aplican automáticamente</strong> en el deploy. Procedimiento:</p>
+<ol>
+<li>Abrir Supabase → <strong>SQL Editor</strong> → New query.</li>
+<li>Pegar el contenido de la siguiente migración pendiente (el número más bajo aún no aplicado en <code>supabase/migrations/</code>).</li>
+<li>Ejecutar y verificar el resultado. Repetir por cada archivo pendiente, <strong>en orden numérico</strong>.</li>
+<li>Alternativa CLI: <code>supabase login &amp;&amp; supabase link --project-ref &lt;ref&gt; &amp;&amp; supabase db push</code>.</li>
+</ol>
+<blockquote>
+<p><strong>Orden obligatorio: migración primero, merge/deploy después.</strong> El código nuevo suele asumir columnas/tablas nuevas; si se deploya antes de migrar, producción rompe. Las migraciones son idempotentes (<code>IF NOT EXISTS</code>, <code>ON CONFLICT DO NOTHING</code>), así que re-ejecutarlas es seguro.</p>
+</blockquote>
+<h3 id="103-checklist-de-un-release-típico">10.3 Checklist de un release típico</h3>
+<ol>
+<li>Merge del PR a <code>main</code> <strong>después</strong> de aplicar la migración (si la hay).</li>
+<li>Verificar el deploy en Vercel (Deployments → estado Ready, revisar Function Logs si hay errores).</li>
+<li>Smoke test: home carga, <code>/pleno</code> lista productos, checkout llega a Wompi sandbox/producción, <code>/admin</code> autentica.</li>
+</ol>
+
+
+</section>
+<section class="card">
+<h2 id="11-desarrollo-local">11. Desarrollo local</h2>
+<pre><code class="language-bash"># 1. Clonar
+git clone &lt;url-del-repo&gt;
+cd nutrigabrielare
+
+# 2. Variables de entorno
+cp .env.example .env
+#   → completar VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY (mínimo crítico)
+#   → para probar pagos/correos: SUPABASE_SERVICE_ROLE_KEY, WOMPI_*, RESEND_API_KEY…
+
+# 3. Dependencias (el .npmrc ya fija legacy-peer-deps)
+npm install
+
+# 4. Servidor de desarrollo
+npm run dev        # Vite en http://localhost:5173
+</code></pre>
+<p>Otros scripts: <code>npm run build</code> (producción), <code>npm run preview</code> (sirve el build), <code>npm run lint</code> (ESLint). <strong>No hay framework de tests configurado.</strong></p>
+<p>⚠️ <strong>Funciones <code>api/</code> en local:</strong> <code>npm run dev</code> solo levanta el SPA (Vite no tiene proxy configurado para <code>/api</code>). Para probar checkout, webhooks o reenvíos localmente usá la CLI de Vercel:</p>
+<pre><code class="language-bash">npm i -g vercel
+vercel dev         # sirve SPA + funciones api/ en el mismo puerto
+</code></pre>
+<p>Para que Wompi alcance el webhook local se necesita un túnel público (ej. <code>ngrok</code>) y setear <code>APP_URL</code> al túnel; en la práctica lo más simple es probar pagos contra un preview deployment de Vercel.</p>
+
+
+</section>
+<section class="card">
+<h2 id="12-runbooks-operativos">12. Runbooks operativos</h2>
+<h3 id="121-rotar-resendapikey">12.1 Rotar <code>RESEND_API_KEY</code></h3>
+<ol>
+<li>Resend → <strong>API Keys</strong> → Create API Key (scope: Sending, dominio verificado). Copiar la <code>re_…</code>.</li>
+<li>Vercel → Project Settings → Environment Variables → reemplazar <code>RESEND_API_KEY</code> (Production y Preview).</li>
+<li><strong>Redeploy</strong> (Deployments → ⋯ → Redeploy del último build).</li>
+<li>Verificar: hacer una compra/reserva de prueba y confirmar en <code>/admin/emails</code> que el log queda <code>sent</code>.</li>
+<li>Revocar la key vieja en Resend.</li>
+</ol>
+<ul>
+<li>Impacto: ninguno sobre enlaces ya enviados (las signed URLs no dependen de Resend). Mientras la key esté ausente/ inválida, los correos quedan <code>skipped</code>/<code>failed</code> en <code>email_logs</code> pero <strong>los pagos y órdenes siguen procesándose</strong>.</li>
+</ul>
+<h3 id="122-rotar-wompiapisecret">12.2 Rotar <code>WOMPI_API_SECRET</code></h3>
+<blockquote>
+<p>⚠️ <strong>Advertencia importante:</strong> este secreto se usa para <strong>tres</strong> cosas: autenticación OAuth con Wompi, validación HMAC del webhook <strong>y derivación de la <code>orderKey</code></strong> (<code>HMAC-SHA256(orderId, WOMPI_API_SECRET)</code>). Rotarlo <strong>invalida todos los links &quot;Ver mi pedido&quot; / <code>/gracias?order&amp;key</code> ya enviados por correo</strong> — las compradoras invitadas dejarán de poder abrir su pedido con el link viejo.</p>
+</blockquote>
+<p>Procedimiento:</p>
+<ol>
+<li>Generar el nuevo secret en el dashboard de Wompi.</li>
+<li>Actualizar <code>WOMPI_API_SECRET</code> en Vercel y redeployar.</li>
+<li>Verificar un pago de prueba completo (create-link → pago → webhook 200). Si el webhook devuelve 401, el secret de Vercel y el de Wompi no coinciden.</li>
+<li><strong>Mitigación de links rotos:</strong> para clientas que reporten que su link de pedido ya no funciona, reenviar el correo de descargas desde <code>/admin/ordenes/:id</code> (el reenvío genera la <code>key</code> con el secret nuevo). Los pedidos asociados a una cuenta no se ven afectados (acceden con su sesión).</li>
+</ol>
+<h3 id="123-reenviar-correo-de-descargas">12.3 Reenviar correo de descargas</h3>
+<ol>
+<li><code>/admin/ordenes</code> → abrir la orden → sección de descargas digitales → <strong>&quot;Reenviar enlaces de descarga&quot;</strong>.</li>
+<li>Requisitos: orden en estado <code>confirmed</code>/<code>preparing</code>/<code>shipped</code>/<code>delivered</code>, con ítems digitales cuyo producto tenga <code>digital_file_path</code>.</li>
+<li>Errores comunes: <em>&quot;Esta orden no tiene productos digitales&quot;</em> (orden solo física), <em>&quot;No se pudieron generar los enlaces&quot;</em> (producto sin archivo subido al bucket — subirlo desde <code>/admin/productos/:id</code>), <em>&quot;El correo no pudo enviarse&quot;</em> (revisar <code>RESEND_API_KEY</code> y <code>/admin/emails</code>).</li>
+</ol>
+<h3 id="124-agregar-una-zona-de-envío">12.4 Agregar una zona de envío</h3>
+<ol>
+<li><code>/admin/envios</code> → nueva zona: <strong>nombre</strong> (único), <strong>costo</strong>, <strong>umbral de envío gratis</strong> (opcional — si <code>subtotal ≥ umbral</code>, envío $0), <strong>orden</strong> y <strong>activa</strong>.</li>
+<li>La zona aparece de inmediato en el selector del checkout (solo zonas <code>active=true</code>, ordenadas por <code>sort_order</code>).</li>
+<li>Las órdenes guardan el nombre como snapshot (<code>orders.shipping_zone_name</code>); renombrar o borrar la zona no altera órdenes históricas.</li>
+</ol>
+<h3 id="125-marcar-una-zona-como-retiro-en-tienda">12.5 Marcar una zona como retiro en tienda</h3>
+<ol>
+<li><code>/admin/envios</code> → editar la zona → activar el flag <strong>retiro en tienda</strong> (<code>is_pickup</code>). Sugerencia: costo <code>0</code> y nombre claro (&quot;Retiro en tienda — Santa Ana&quot;).</li>
+<li>Efecto inmediato: en el checkout esa zona oculta los campos de dirección, y el backend deja de exigirlos para esa orden.</li>
+</ol>
+<h3 id="126-ver-logs-de-correos">12.6 Ver logs de correos</h3>
+<ul>
+<li><code>/admin/emails</code> (solo rol <strong>admin</strong>). Filtros por destinataria (búsqueda parcial), template (<code>purchase_confirm</code> / <code>digital_download</code> / <code>reservation_confirm</code>) y estado (<code>sent</code> / <code>failed</code> / <code>skipped</code>).</li>
+<li>Cada fila enlaza <code>related_order_id</code> cuando aplica. <code>provider_message_id</code> permite cruzar con el dashboard de actividad de Resend.</li>
+<li><code>skipped</code> casi siempre significa <code>RESEND_API_KEY</code> ausente o destinataria vacía; <code>failed</code> trae el <code>error_message</code> de Resend.</li>
+</ul>
+<h3 id="127-un-pago-no-se-confirma-orden-atascada-en-pendingpayment">12.7 Un pago no se confirma (orden atascada en <code>pending_payment</code>)</h3>
+<p>Diagnóstico en orden:</p>
+<ol>
+<li><strong>Dashboard de Wompi:</strong> buscar la transacción del enlace (el <code>identificadorEnlaceComercio</code> es el id de la orden, ej. <code>NTG-2026-0042</code>). ¿La transacción existe y fue aprobada? ¿El webhook se entregó y con qué código de respuesta? Si Wompi muestra reintentos fallidos, reintentar el envío del webhook desde ahí.</li>
+<li><strong>Tabla <code>payments</code>:</strong> <code>status</code> sigue <code>pending</code> ⇒ el webhook nunca llegó o falló la firma. <code>raw_response</code> vacío confirma que no se procesó.</li>
+<li><strong>Logs de la función:</strong> Vercel → Functions → <code>api/wompi/webhook</code> → buscar <code>Webhook HMAC validation failed</code> (secret desalineado entre Wompi y Vercel) o errores de Supabase.</li>
+<li><strong><code>email_logs</code>:</strong> si hay un <code>purchase_confirm</code>/<code>digital_download</code> para la orden, el webhook SÍ corrió y el problema es solo de visualización en el front.</li>
+<li><strong>Resolución manual</strong> (si Wompi confirmó el cobro pero el webhook no se puede reentregar): actualizar <code>payments.status=&#39;approved&#39;</code> y <code>orders.status=&#39;confirmed&#39;</code> + fila en <code>order_status_history</code> desde el SQL Editor, <strong>descontar stock</strong> ejecutando <code>select public.decrement_order_stock(&#39;NTG-2026-XXXX&#39;);</code> y reenviar el correo de descargas desde el admin si era digital.</li>
+</ol>
+<h3 id="128-crear-o-cambiar-el-rol-de-un-usuario-admin">12.8 Crear o cambiar el rol de un usuario admin</h3>
+<ol>
+<li>El usuario se registra normalmente en <code>/registro</code> (o <code>/admin/login</code> → no entrará hasta tener rol).</li>
+<li>Un <strong>admin</strong> abre <code>/admin/usuarios</code> y asigna <code>admin</code>, <code>editor</code> o <code>gestor</code>.</li>
+<li>Vía SQL (primer admin del sistema): <code>update public.profiles set role = &#39;admin&#39; where email = &#39;&lt;correo&gt;&#39;;</code> (también existe <code>scripts/create-admin.mjs</code>).</li>
+</ol>
+
+
+</section>
+<section class="card">
+<h2 id="13-seguridad">13. Seguridad</h2>
+<table>
+<thead>
+<tr>
+<th>Mecanismo</th>
+<th>Implementación</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>RLS en todas las tablas</strong></td>
+<td>Cada tabla de <code>public</code> tiene políticas explícitas. Lo público (catálogo activo, posts publicados, tracking) usa <code>USING (true)</code> o <code>active=true</code>; lo sensible exige <code>auth.uid()</code> o los predicados <code>is_admin()</code> / <code>is_editor()</code> / <code>is_gestor()</code> (SECURITY DEFINER, definidos en migraciones 003–004).</td>
+</tr>
+<tr>
+<td><strong>Service role solo server-side</strong></td>
+<td><code>SUPABASE_SERVICE_ROLE_KEY</code> vive únicamente en variables de entorno de Vercel y se usa solo dentro de <code>api/</code>. Nunca tiene prefijo <code>VITE_</code> ni aparece en el bundle. El frontend opera con la anon key + RLS.</td>
+</tr>
+<tr>
+<td><strong>HMAC doble con <code>WOMPI_API_SECRET</code></strong></td>
+<td>(1) El webhook valida <code>wompi_hash</code> = HMAC-SHA256 del body crudo — payloads no firmados reciben 401 y no tocan la DB. (2) La <code>orderKey</code> de acceso a órdenes de invitadas es HMAC-SHA256 del orderId — no es adivinable ni enumerable.</td>
+</tr>
+<tr>
+<td><strong>Bucket privado para digitales</strong></td>
+<td><code>digital-products</code> no es público; el contenido vendible solo se sirve con signed URLs temporales generadas con service role (7 días correo / 24 h biblioteca). Las políticas de Storage limitan la lectura directa a <code>is_editor()</code>.</td>
+</tr>
+<tr>
+<td><strong>Precios y montos del lado servidor</strong></td>
+<td><code>create-link.js</code> recalcula subtotal/envío/total desde la DB e ignora cualquier monto del cliente. El webhook usa el estado de <code>payments</code> para impedir reprocesos.</td>
+</tr>
+<tr>
+<td><strong>Roles con mínimo privilegio</strong></td>
+<td><code>editor</code> no ve órdenes ni pagos; <code>gestor</code> no toca catálogo ni CMS; solo <code>admin</code> administra usuarios y logs de correo. El gate se aplica en frontend (<code>AdminRoute</code>) <strong>y</strong> en backend (RLS + verificación de rol en <code>api/digital/resend-email.js</code>).</td>
+</tr>
+<tr>
+<td><strong>Idempotencia y no-bloqueo</strong></td>
+<td>El webhook es idempotente (no duplica stock/correos); el descuento de stock y los envíos de correo son no-bloqueantes (un fallo no pierde la confirmación del pago); los inserts a <code>email_logs</code> jamás interrumpen el flujo.</td>
+</tr>
+<tr>
+<td><strong>Validación de configuración</strong></td>
+<td><code>src/config/runtimeConfig.js</code> (front) y <code>api/_lib/runtimeConfig.js</code> (server) detectan variables faltantes y fallan de forma explícita y controlada en vez de comportamientos a medias.</td>
+</tr>
+<tr>
+<td><strong><code>decrement_order_stock</code> restringido</strong></td>
+<td><code>REVOKE ALL … FROM PUBLIC; GRANT EXECUTE … TO service_role;</code> — solo el backend puede descontar stock.</td>
+</tr>
+</tbody></table>
+<h3 id="recomendaciones-permanentes">Recomendaciones permanentes</h3>
+<ul>
+<li>No subir <code>.env</code> ni <code>.env.local</code> al repositorio (están gitignored; <code>.env.example</code> es la única plantilla versionada).</li>
+<li>Rotar <code>SUPABASE_SERVICE_ROLE_KEY</code>, <code>WOMPI_API_SECRET</code> y <code>RESEND_API_KEY</code> ante cualquier sospecha de filtración (ver runbooks; recordar el impacto de rotar el secret de Wompi sobre los links de invitadas).</li>
+<li>Mantener un único usuario con rol <code>admin</code> por persona real; no compartir credenciales.</li>
+<li>Antes de tocar políticas RLS, probar en un proyecto Supabase de staging: un <code>USING (true)</code> mal puesto expone datos; un predicado mal puesto rompe el sitio público.</li>
+</ul>
+
+</section>
+<footer>
+  <p>Manual técnico · <strong>nutrigabrielare.com</strong> · Fuente: <code>docs/manuales/manual-tecnico.md</code></p>
+  <p>Soporte técnico: <a href="mailto:bryanquezadap@gmail.com">bryanquezadap@gmail.com</a></p>
+</footer>
+</div>
+</body>
+</html>

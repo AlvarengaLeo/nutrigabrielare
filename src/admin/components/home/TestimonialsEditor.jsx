@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { Check, AlertCircle, Plus, Trash2, ChevronUp, ChevronDown, Star } from 'lucide-react';
-import { updateHomeSection } from '../../../services/homeContentService';
+import React, { useRef, useState } from 'react';
+import { Check, AlertCircle, Plus, Trash2, ChevronUp, ChevronDown, Star, Camera, X } from 'lucide-react';
+import { updateHomeSection, uploadHomeImage, deleteHomeImage } from '../../../services/homeContentService';
 
 const MAX_ITEMS = 9;
 const MIN_ITEMS = 1;
 
-const EMPTY_ITEM = { name: '', role: '', location: '', rating: 5, quote: '' };
+const EMPTY_ITEM = { name: '', role: '', location: '', rating: 5, quote: '', photo: '' };
 
 const inputCls =
   'w-full px-3 py-2 border border-primary/10 rounded-lg font-body text-sm focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/20';
@@ -21,6 +21,9 @@ export default function TestimonialsEditor({ data, onSaved }) {
   });
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(null);
+  const [uploadingIdx, setUploadingIdx] = useState(null);
+  const fileInputRef = useRef(null);
+  const pendingPhotoIdx = useRef(null);
 
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
 
@@ -53,6 +56,46 @@ export default function TestimonialsEditor({ data, onSaved }) {
     setTimeout(() => setToast(null), ms);
   };
 
+  const pickPhoto = (idx) => {
+    pendingPhotoIdx.current = idx;
+    fileInputRef.current?.click();
+  };
+
+  async function handlePhotoFile(e) {
+    const file = e.target.files?.[0];
+    e.target.value = ''; // permite reseleccionar el mismo archivo
+    const idx = pendingPhotoIdx.current;
+    if (!file || idx == null) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      flash('error', 'La foto no puede superar 2MB');
+      return;
+    }
+
+    setUploadingIdx(idx);
+    try {
+      const url = await uploadHomeImage(file, 'testimonios');
+      const previous = form.items[idx]?.photo;
+      updateItem(idx, 'photo', url);
+      if (previous) {
+        deleteHomeImage(previous).catch(() => {});
+      }
+      flash('success', 'Foto subida. No olvides guardar.');
+    } catch (err) {
+      flash('error', err?.message || 'Error al subir la foto', 4000);
+    } finally {
+      setUploadingIdx(null);
+    }
+  }
+
+  async function removePhoto(idx) {
+    const previous = form.items[idx]?.photo;
+    updateItem(idx, 'photo', '');
+    if (previous) {
+      deleteHomeImage(previous).catch(() => {});
+    }
+  }
+
   async function handleSave(e) {
     e.preventDefault();
     if (!form.titleLine1?.trim()) {
@@ -66,6 +109,7 @@ export default function TestimonialsEditor({ data, onSaved }) {
         location: (i.location || '').trim(),
         rating: Math.min(5, Math.max(0, Number(i.rating) || 0)),
         quote: (i.quote || '').trim(),
+        photo: (i.photo || '').trim(),
       }))
       .filter((i) => i.name || i.quote);
 
@@ -94,6 +138,14 @@ export default function TestimonialsEditor({ data, onSaved }) {
 
   return (
     <form onSubmit={handleSave} className="space-y-6">
+      {/* Input de archivo compartido para las fotos de testimonios */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+        onChange={handlePhotoFile}
+        className="hidden"
+      />
       {toast && (
         <div
           className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-body ${
@@ -178,6 +230,39 @@ export default function TestimonialsEditor({ data, onSaved }) {
                     className="p-1.5 rounded-lg text-red-400 hover:text-red-600 hover:bg-red-50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
                     <Trash2 size={15} />
                   </button>
+                </div>
+              </div>
+
+              {/* Foto (opcional, con fallback a iniciales en el sitio) */}
+              <div className="flex items-center gap-3 mb-3">
+                {item.photo ? (
+                  <img src={item.photo} alt="Foto del testimonio"
+                    className="h-12 w-12 rounded-full object-cover ring-2 ring-accent/20 flex-shrink-0" />
+                ) : (
+                  <span className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-primary/5 text-primary/30">
+                    <Camera size={18} />
+                  </span>
+                )}
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => pickPhoto(i)} disabled={uploadingIdx === i}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-heading font-bold text-accent bg-accent/10 rounded-lg hover:bg-accent/20 transition-colors disabled:opacity-40">
+                      {uploadingIdx === i ? (
+                        <><div className="w-3 h-3 border-2 border-accent/30 border-t-accent rounded-full animate-spin" /> Subiendo…</>
+                      ) : (
+                        <><Camera size={13} /> {item.photo ? 'Cambiar foto' : 'Subir foto'}</>
+                      )}
+                    </button>
+                    {item.photo && (
+                      <button type="button" onClick={() => removePhoto(i)}
+                        className="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-heading font-bold text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">
+                        <X size={13} /> Quitar
+                      </button>
+                    )}
+                  </div>
+                  <p className="font-body text-[11px] text-primary/40 mt-1">
+                    Opcional — si no hay foto, el sitio muestra las iniciales. Cuadrada, máx 2MB.
+                  </p>
                 </div>
               </div>
 

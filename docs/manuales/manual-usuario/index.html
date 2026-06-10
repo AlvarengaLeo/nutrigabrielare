@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Manual de Usuario · Nutrigabrielare</title>
+<link rel="icon" href="img/logo.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Outfit:wght@300;400;600&family=Cormorant+Garamond:ital@1&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --rose:#EE7699; --rose-deep:#D6517B; --mist:#FDF1F4; --soft:#FBE4EB;
+    --ink:#3A1A22; --ink-soft:#6A3E48; --ink-mute:#8A6068; --line:#F7D7DE;
+    --green:#0E7A3F; --green-deep:#0A4D2E; --paper:#FEF9FA;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--mist);color:var(--ink);font-family:'Outfit',sans-serif;line-height:1.65;font-size:16px}
+  .wrap{max-width:880px;margin:0 auto;padding:0 24px 80px}
+
+  /* Portada */
+  header.cover{text-align:center;padding:72px 24px 56px}
+  header.cover img{width:84px;height:84px;display:block;margin:0 auto 16px}
+  header.cover .brand{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:28px;letter-spacing:-.01em}
+  header.cover h1{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:44px;margin:18px 0 6px;letter-spacing:-.02em}
+  header.cover h1 em{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:400;color:var(--rose-deep)}
+  header.cover p{color:var(--ink-mute);max-width:520px;margin:10px auto 0}
+  .divider{width:56px;height:4px;background:var(--rose);border-radius:99px;margin:22px auto}
+
+  /* Tarjetas / secciones */
+  section.card{background:#fff;border:1px solid var(--line);border-radius:24px;padding:40px 44px;margin:26px 0}
+  h2{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:26px;margin:0 0 4px;letter-spacing:-.01em}
+  h2 .num{color:var(--rose);margin-right:10px}
+  h3{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:18px;margin:34px 0 8px;color:var(--ink)}
+  h3::before{content:"";display:inline-block;width:10px;height:10px;border-radius:99px;background:var(--rose);margin-right:10px}
+  p{margin:10px 0;color:var(--ink-soft)}
+  strong{color:var(--ink)}
+  .lead{font-size:17px}
+
+  figure{margin:18px 0 8px}
+  figure img{width:100%;border:1px solid var(--line);border-radius:16px;box-shadow:0 18px 40px -22px rgba(214,81,123,.25)}
+  figcaption{font-size:13px;color:var(--ink-mute);margin-top:8px;text-align:center}
+
+  .tip{background:var(--mist);border:1px solid var(--line);border-left:4px solid var(--rose);border-radius:12px;padding:14px 18px;margin:16px 0;font-size:15px;color:var(--ink-soft)}
+  .tip b{color:var(--rose-deep)}
+  .warn{background:#FFF8F0;border:1px solid #F5E3C8;border-left:4px solid #E5A33D;border-radius:12px;padding:14px 18px;margin:16px 0;font-size:15px;color:#7A5A22}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0;font-size:15px}
+  th{font-family:'Plus Jakarta Sans',sans-serif;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--rose-deep);padding:10px 12px;border-bottom:2px solid var(--line)}
+  td{padding:10px 12px;border-bottom:1px solid var(--line);color:var(--ink-soft);vertical-align:top}
+  code{background:var(--soft);color:var(--rose-deep);padding:2px 8px;border-radius:8px;font-size:14px}
+
+  /* Índice */
+  nav.toc{background:#fff;border:1px solid var(--line);border-radius:24px;padding:34px 44px;margin:0 0 26px}
+  nav.toc h2{margin-bottom:14px}
+  nav.toc ol{margin:0;padding-left:22px;columns:2;gap:40px}
+  nav.toc li{margin:6px 0;color:var(--ink-soft)}
+  nav.toc a{color:var(--ink-soft);text-decoration:none}
+  nav.toc a:hover{color:var(--rose-deep)}
+
+  .pill{display:inline-block;background:var(--soft);color:var(--rose-deep);font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:12px;padding:4px 12px;border-radius:99px;margin-right:6px}
+  .pill.green{background:#E8F1EA;color:var(--green)}
+
+  footer{text-align:center;color:var(--ink-mute);font-size:13px;padding:30px 0 0}
+  footer a{color:var(--rose-deep)}
+
+  @media print{
+    body{background:#fff}
+    section.card{border:none;padding:24px 0;margin:0;break-inside:avoid-page}
+    nav.toc{border:none}
+    figure img{box-shadow:none}
+  }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <img src="img/logo.png" alt="Nutrigabrielare" />
+  <div class="brand">Nutrigabrielare</div>
+  <div class="divider"></div>
+  <h1>Manual de <em>Usuario</em></h1>
+  <p>Guía completa del sitio <strong>nutrigabrielare.com</strong> y su panel administrativo: qué es cada módulo, para qué sirve y cómo usarlo en el día a día.</p>
+</header>
+
+<div class="wrap">
+
+<nav class="toc">
+  <h2>Índice</h2>
+  <ol>
+    <li><a href="#sitio">El sitio público</a></li>
+    <li><a href="#compra">Cómo compra tu clienta</a></li>
+    <li><a href="#acceso">Entrar al panel administrativo</a></li>
+    <li><a href="#dashboard">Dashboard</a></li>
+    <li><a href="#cms">Página Principal (textos del sitio)</a></li>
+    <li><a href="#productos">Productos</a></li>
+    <li><a href="#categorias">Categorías</a></li>
+    <li><a href="#ordenes">Órdenes</a></li>
+    <li><a href="#envios">Envíos y retiro en tienda</a></li>
+    <li><a href="#reservas">Reservas</a></li>
+    <li><a href="#emails">Correos automáticos</a></li>
+    <li><a href="#usuarios">Usuarios y roles</a></li>
+    <li><a href="#blog">Blog Fluir Femenino</a></li>
+    <li><a href="#faq">Preguntas frecuentes</a></li>
+  </ol>
+</nav>
+
+<!-- ─────────────────────────── 1. SITIO PÚBLICO ─────────────────────────── -->
+<section class="card" id="sitio">
+  <h2><span class="num">1.</span>El sitio público</h2>
+  <p class="lead">Tu sitio tiene una página de inicio y tres vitrinas, cada una con su propia identidad: <span class="pill">Nutrigabrielare</span> recursos digitales y consultas, <span class="pill green">Pleno</span> suplementos físicos, y <span class="pill">Fluir Femenino</span> el blog y la comunidad.</p>
+
+  <h3>La página de inicio</h3>
+  <p>Es la carta de presentación. Todos sus textos e imágenes se editan desde el panel (sección <strong>Página Principal</strong>, ver capítulo 5) — nunca necesitás tocar código para cambiar un título, una foto o un testimonio.</p>
+  <figure><img src="img/01-home-hero.png" alt="Hero de la página de inicio" /><figcaption>El hero de inicio: título, subtítulo, botones y foto se editan desde el panel.</figcaption></figure>
+  <p>Más abajo, la sección <strong>Pleno Market</strong> muestra automáticamente los suplementos que marcaste como <em>destacados</em>, y la sección de <strong>testimonios</strong> muestra las historias que cargás en el panel.</p>
+  <figure><img src="img/02-home-pleno-market.png" alt="Pleno Market en la home" /><figcaption>Pleno Market: solo aparecen productos físicos destacados.</figcaption></figure>
+  <figure><img src="img/03-home-testimonios.png" alt="Testimonios" /><figcaption>Testimonios: editables desde el panel. Cada uno puede llevar foto — y si no tiene, se muestran las iniciales automáticamente.</figcaption></figure>
+
+  <h3>Vitrina Nutrigabrielare (digital y servicios)</h3>
+  <figure><img src="img/04-nutrigabrielare.png" alt="Vitrina Nutrigabrielare" /><figcaption>nutrigabrielare.com/nutrigabrielare — ebooks, cursos, guías y consultas.</figcaption></figure>
+  <p>El catálogo se filtra por categoría (Recursos digitales / Servicios), tipo de recurso y precio. Los botones del inicio "Ver Recursos y Ebooks" y "Ver Servicios" llevan aquí con el filtro ya aplicado.</p>
+
+  <h3>Vitrina Pleno (suplementos)</h3>
+  <figure><img src="img/05-pleno.png" alt="Vitrina Pleno" /><figcaption>nutrigabrielare.com/pleno — la tienda verde de suplementos físicos.</figcaption></figure>
+
+  <h3>Fluir Femenino (blog)</h3>
+  <figure><img src="img/06-fluir-femenino.png" alt="Fluir Femenino" /><figcaption>Artículos del blog + recursos recomendados. Los artículos se escriben desde el panel.</figcaption></figure>
+
+  <h3>Página de producto</h3>
+  <p>Cada producto tiene su propia página con galería, descripción y botón de compra. El color de la página sigue a la vitrina: <strong>verde</strong> para suplementos, <strong>rosa</strong> para digitales y servicios.</p>
+  <figure><img src="img/07-producto-digital.png" alt="Producto digital" /><figcaption>Producto digital: "Comprar y descargar" — la clienta recibe los archivos por correo.</figcaption></figure>
+  <figure><img src="img/08-producto-fisico.png" alt="Producto físico" /><figcaption>Producto físico: muestra stock y se envía a domicilio o se retira en tienda.</figcaption></figure>
+</section>
+
+<!-- ─────────────────────────── 2. CÓMO COMPRA ─────────────────────────── -->
+<section class="card" id="compra">
+  <h2><span class="num">2.</span>Cómo compra tu clienta</h2>
+  <p class="lead">El flujo está pensado para el <strong>mínimo de fricción</strong>: no se pide crear cuenta ni iniciar sesión en ningún paso.</p>
+
+  <h3>Carrito</h3>
+  <figure><img src="img/09-carrito.png" alt="Carrito" /><figcaption>El carrito guarda los productos aunque la clienta cierre el navegador.</figcaption></figure>
+
+  <h3>Checkout (datos y pago)</h3>
+  <figure><img src="img/10-checkout.png" alt="Checkout" /><figcaption>Solo pide datos de contacto y entrega. Si elige "Recoger en Tienda", los campos de dirección desaparecen.</figcaption></figure>
+  <p>Al presionar <strong>"Pagar con Wompi"</strong> la clienta va a la página segura de Wompi, paga con tarjeta y vuelve al sitio con su pedido confirmado. El número de pedido y el código de seguimiento llegan también por correo.</p>
+
+  <h3>Después del pago</h3>
+  <table>
+    <tr><th>Tipo de compra</th><th>Qué recibe la clienta</th></tr>
+    <tr><td><strong>Suplementos</strong> (físico)</td><td>Correo de confirmación con resumen, número de pedido y botón "Seguir mi pedido" → página de seguimiento con la línea de tiempo del envío.</td></tr>
+    <tr><td><strong>Digital</strong> (ebooks, cursos…)</td><td>Correo con botones de <strong>Descargar</strong> (válidos 7 días) y botón "Ver mi pedido" → una página personal donde puede volver a descargar <strong>sin iniciar sesión</strong>, con enlaces que se renuevan solos en cada visita.</td></tr>
+  </table>
+
+  <h3>Seguimiento del pedido</h3>
+  <figure><img src="img/11-tracking.png" alt="Tracking" /><figcaption>La página de seguimiento es pública: basta el código NTG-…-TRK que llega por correo.</figcaption></figure>
+</section>
+
+<!-- ─────────────────────────── 3. ACCESO ADMIN ─────────────────────────── -->
+<section class="card" id="acceso">
+  <h2><span class="num">3.</span>Entrar al panel administrativo</h2>
+  <p class="lead">El panel vive en <code>nutrigabrielare.com/admin/login</code>. Ingresá con tu correo y contraseña de administradora.</p>
+  <figure><img src="img/20-admin-login.png" alt="Login del panel" /><figcaption>Acceso al panel. Si olvidás la contraseña, contactá al soporte técnico.</figcaption></figure>
+  <div class="tip"><b>Tip:</b> guardá esta dirección en favoritos del navegador. El panel funciona también desde el teléfono, pero es más cómodo desde una computadora.</div>
+</section>
+
+<!-- ─────────────────────────── 4. DASHBOARD ─────────────────────────── -->
+<section class="card" id="dashboard">
+  <h2><span class="num">4.</span>Dashboard</h2>
+  <p class="lead">La primera pantalla resume la salud del negocio: ingresos, ticket promedio, órdenes confirmadas, gráficos por día y alertas.</p>
+  <figure><img src="img/21-admin-dashboard.png" alt="Dashboard" /><figcaption>KPIs del período, ingresos por día, estado de órdenes, stock crítico y reservas próximas.</figcaption></figure>
+  <p>Prestale atención a dos bloques: <strong>Stock crítico</strong> (productos por agotarse — reponé antes de que lleguen a cero) y <strong>Reservas próximas</strong> (consultas que requieren tu confirmación).</p>
+</section>
+
+<!-- ─────────────────────────── 5. CMS ─────────────────────────── -->
+<section class="card" id="cms">
+  <h2><span class="num">5.</span>Página Principal — los textos del sitio</h2>
+  <p class="lead">Desde <strong>Página Principal</strong> editás los textos, fotos y tarjetas del sitio público <strong>sin tocar código</strong>. Los cambios se publican al instante al guardar.</p>
+  <figure><img src="img/22-admin-home-cms.png" alt="CMS de la home" /><figcaption>Cada pestaña edita una sección distinta del sitio.</figcaption></figure>
+  <table>
+    <tr><th>Pestaña</th><th>Qué edita</th></tr>
+    <tr><td><strong>Hero</strong></td><td>Título, subtítulo, botones y foto principal del inicio.</td></tr>
+    <tr><td><strong>Filosofía</strong></td><td>La sección "Bienestar Integral…": pilares, descripción y estadísticas (99% casos de éxito, etc.).</td></tr>
+    <tr><td><strong>Diferenciador</strong></td><td>"Más que una dieta…": las 3 razones con sus íconos y la foto del plato.</td></tr>
+    <tr><td><strong>Pleno Market</strong></td><td>Título del carrusel de destacados y cuántos productos muestra.</td></tr>
+    <tr><td><strong>Testimonios</strong></td><td>Las historias de clientas: foto (opcional), nombre, rol, ubicación, calificación y cita.</td></tr>
+    <tr><td><strong>Pleno</strong></td><td>El texto del hero verde de la vitrina /pleno.</td></tr>
+    <tr><td><strong>Nutrigabrielare</strong></td><td>El texto del hero de la vitrina /nutrigabrielare.</td></tr>
+    <tr><td><strong>Fluir Femenino</strong></td><td>Los textos de la página del blog: hero, "Lecturas recientes" y el bloque de recursos.</td></tr>
+  </table>
+  <h3>Testimonios con foto</h3>
+  <figure><img src="img/33-admin-testimonios.png" alt="Editor de testimonios" /><figcaption>El editor de testimonios: cada uno tiene su botón "Subir foto" (cuadrada, máx 2MB).</figcaption></figure>
+  <p>En la pestaña <strong>Testimonios</strong>, cada historia tiene un botón <strong>"Subir foto"</strong>. La foto es opcional: si una clienta no quiere mostrar la suya, el sitio muestra sus <strong>iniciales</strong> en un círculo de color — igual de elegante. Después de subir o quitar fotos, recordá presionar <strong>Guardar Testimonios</strong>.</p>
+
+  <div class="tip"><b>Tip de imágenes:</b> para las fotos decorativas usá <b>PNG con fondo transparente</b> — se funden con cualquier fondo y se ven perfectas en todos los teléfonos.</div>
+</section>
+
+<!-- ─────────────────────────── 6. PRODUCTOS ─────────────────────────── -->
+<section class="card" id="productos">
+  <h2><span class="num">6.</span>Productos</h2>
+  <p class="lead">El corazón de la tienda: acá creás, editás y organizás todo lo que vendés.</p>
+  <figure><img src="img/23-admin-productos.png" alt="Listado de productos" /><figcaption>El listado muestra a qué vitrina publica cada producto (columna "Vitrina").</figcaption></figure>
+
+  <h3>Tipos de producto y a dónde van</h3>
+  <table>
+    <tr><th>Tipo</th><th>Vitrina</th><th>Particularidades</th></tr>
+    <tr><td>Suplemento (físico)</td><td><span class="pill green">Pleno</span></td><td>Maneja stock por variante y requiere envío.</td></tr>
+    <tr><td>Digital (ebook, curso, guía…)</td><td><span class="pill">Nutrigabrielare</span></td><td>Lleva un <strong>archivo digital</strong> adjunto que la clienta descarga tras pagar.</td></tr>
+    <tr><td>Servicio (consultas)</td><td><span class="pill">Nutrigabrielare</span></td><td>Se reservan desde la página del servicio.</td></tr>
+  </table>
+
+  <h3>Crear o editar un producto</h3>
+  <figure><img src="img/24-admin-producto-form.png" alt="Formulario de producto" /><figcaption>Formulario completo: datos, fotos, variantes/stock y archivo digital.</figcaption></figure>
+  <p>Los puntos importantes del formulario:</p>
+  <table>
+    <tr><th>Campo</th><th>Para qué sirve</th></tr>
+    <tr><td><strong>Tipo</strong></td><td>Define la vitrina donde se publica (el formulario te lo indica debajo del selector).</td></tr>
+    <tr><td><strong>Destacado</strong></td><td>Lo hace aparecer en el carrusel Pleno Market del inicio (si es físico) o como protagonista del hero de su vitrina.</td></tr>
+    <tr><td><strong>Imágenes</strong></td><td>La primera foto es la principal. Usá fondos claros y uniformes.</td></tr>
+    <tr><td><strong>Variantes y stock</strong></td><td>Para físicos: cada combinación tiene su propio stock. Al venderse, el stock baja solo.</td></tr>
+    <tr><td><strong>Archivo digital</strong></td><td>Para digitales: subí el PDF/ZIP/MP4. Se guarda en un depósito privado — nadie puede descargarlo sin haber comprado.</td></tr>
+  </table>
+</section>
+
+<!-- ─────────────────────────── 7. CATEGORÍAS ─────────────────────────── -->
+<section class="card" id="categorias">
+  <h2><span class="num">7.</span>Categorías</h2>
+  <figure><img src="img/25-admin-categorias.png" alt="Categorías" /><figcaption>Las categorías agrupan productos dentro de las vitrinas.</figcaption></figure>
+  <p>Cada producto pertenece a una categoría. Podés crear nuevas o reordenar las existentes; el orden acá define el orden en que aparecen en el sitio.</p>
+</section>
+
+<!-- ─────────────────────────── 8. ÓRDENES ─────────────────────────── -->
+<section class="card" id="ordenes">
+  <h2><span class="num">8.</span>Órdenes</h2>
+  <p class="lead">Cada compra genera una orden con número único (NTG-AÑO-####). Acá las gestionás de principio a fin.</p>
+  <figure><img src="img/26-admin-ordenes.png" alt="Listado de órdenes" /><figcaption>Listado con estado, total y fecha de cada orden.</figcaption></figure>
+
+  <h3>Los estados de una orden</h3>
+  <table>
+    <tr><th>Estado</th><th>Significa</th><th>Quién lo cambia</th></tr>
+    <tr><td>Pendiente de pago</td><td>La clienta no completó el pago en Wompi.</td><td>Automático</td></tr>
+    <tr><td>Confirmada</td><td>Pago acreditado. Las digitales terminan aquí.</td><td>Automático (Wompi)</td></tr>
+    <tr><td>Preparando</td><td>Estás armando el paquete.</td><td><strong>Vos</strong></td></tr>
+    <tr><td>En camino</td><td>Entregado a la mensajería.</td><td><strong>Vos</strong></td></tr>
+    <tr><td>Entregado</td><td>La clienta lo recibió.</td><td><strong>Vos</strong></td></tr>
+    <tr><td>Cancelada</td><td>Pago rechazado o cancelación manual.</td><td>Automático / vos</td></tr>
+  </table>
+  <p>Cada cambio de estado se refleja al instante en la página de seguimiento que ve la clienta.</p>
+
+  <h3>Detalle de la orden</h3>
+  <figure><img src="img/27-admin-orden-detalle.png" alt="Detalle de orden" /><figcaption>Cliente, artículos, historial, despacho y actualización de estado.</figcaption></figure>
+  <p>En el detalle podés: registrar la <strong>mensajería y el código del courier</strong> (aparece en el seguimiento de la clienta), avanzar el <strong>estado</strong>, y — para órdenes con productos digitales — <strong>reenviar los enlaces de descarga</strong>: genera enlaces frescos de 7 días y reenvía el correo. Usalo cuando una clienta te escriba "se me venció el link".</p>
+</section>
+
+<!-- ─────────────────────────── 9. ENVÍOS ─────────────────────────── -->
+<section class="card" id="envios">
+  <h2><span class="num">9.</span>Envíos y retiro en tienda</h2>
+  <figure><img src="img/28-admin-envios.png" alt="Zonas de envío" /><figcaption>Zonas con costo, umbral de envío gratis y la marca "Retiro en tienda".</figcaption></figure>
+  <p>Cada zona tiene un <strong>costo</strong> y, opcionalmente, un <strong>umbral de envío gratis</strong> (ej.: gratis en compras sobre $50). La casilla <strong>"Retiro en tienda"</strong> marca la zona como retiro personal: cuando la clienta la elige en el checkout, <strong>no se le pide dirección</strong>.</p>
+</section>
+
+<!-- ─────────────────────────── 10. RESERVAS ─────────────────────────── -->
+<section class="card" id="reservas">
+  <h2><span class="num">10.</span>Reservas</h2>
+  <figure><img src="img/29-admin-reservas.png" alt="Reservas" /><figcaption>Solicitudes de consulta con fecha preferida y notas de la clienta.</figcaption></figure>
+  <p>Cuando alguien reserva una consulta, recibís copia por correo y la solicitud aparece acá. Confirmá el día y la hora con la clienta (por WhatsApp o respondiendo su correo) y actualizá el estado de la reserva.</p>
+</section>
+
+<!-- ─────────────────────────── 11. CORREOS ─────────────────────────── -->
+<section class="card" id="emails">
+  <h2><span class="num">11.</span>Correos automáticos</h2>
+  <p class="lead">El sitio envía correos con el diseño de la marca desde <code>shop@nutrigabrielare.com</code>. No tenés que hacer nada — salen solos.</p>
+  <table>
+    <tr><th>Correo</th><th>Cuándo se envía</th></tr>
+    <tr><td>Confirmación de pedido</td><td>Al acreditarse el pago de una compra física.</td></tr>
+    <tr><td>Tus productos digitales</td><td>Al acreditarse una compra digital: botones de descarga + "Ver mi pedido".</td></tr>
+    <tr><td>Confirmación de reserva</td><td>Al solicitar una consulta (y copia para vos).</td></tr>
+  </table>
+  <figure><img src="img/30-admin-emails.png" alt="Registro de correos" /><figcaption>La sección Correos del panel registra cada envío: a quién, cuándo y si llegó.</figcaption></figure>
+  <div class="tip"><b>Tip:</b> si una clienta dice que no recibió un correo, primero revisá acá. Si figura "sent", pedile que mire spam; si figura "failed", contactá al soporte técnico.</div>
+</section>
+
+<!-- ─────────────────────────── 12. USUARIOS ─────────────────────────── -->
+<section class="card" id="usuarios">
+  <h2><span class="num">12.</span>Usuarios y roles</h2>
+  <figure><img src="img/31-admin-usuarios.png" alt="Usuarios" /><figcaption>Las personas con acceso al panel y sus roles.</figcaption></figure>
+  <table>
+    <tr><th>Rol</th><th>Puede</th></tr>
+    <tr><td><strong>Admin</strong></td><td>Todo: contenido, productos, órdenes, usuarios y correos.</td></tr>
+    <tr><td><strong>Editor</strong></td><td>Contenido del sitio, productos, categorías y blog (no ve órdenes).</td></tr>
+    <tr><td><strong>Gestor</strong></td><td>Órdenes, envíos y reservas (no edita contenido).</td></tr>
+  </table>
+  <div class="warn"><b>Importante:</b> dá acceso de Admin solo a personas de máxima confianza. Para una asistente que solo procesa pedidos, el rol <b>Gestor</b> es suficiente.</div>
+</section>
+
+<!-- ─────────────────────────── 13. BLOG ─────────────────────────── -->
+<section class="card" id="blog">
+  <h2><span class="num">13.</span>Blog Fluir Femenino</h2>
+  <figure><img src="img/32-admin-blog.png" alt="Blog" /><figcaption>Artículos del blog: borrador → publicado.</figcaption></figure>
+  <p>Escribí artículos con texto enriquecido, foto de portada y minutos de lectura. Al publicar, aparecen en <code>/fluir-femenino</code> y en "Lecturas recientes". Podés guardar borradores y publicarlos cuando quieras.</p>
+</section>
+
+<!-- ─────────────────────────── 14. FAQ ─────────────────────────── -->
+<section class="card" id="faq">
+  <h2><span class="num">14.</span>Preguntas frecuentes</h2>
+
+  <h3>"Quiero cambiar un texto del inicio"</h3>
+  <p>Panel → <strong>Página Principal</strong> → pestaña de la sección → editá → <strong>Guardar</strong>. El cambio es inmediato.</p>
+
+  <h3>"Una clienta no puede descargar su ebook"</h3>
+  <p>Panel → <strong>Órdenes</strong> → abrí su orden → <strong>Reenviar enlaces de descarga</strong>. Le llega un correo nuevo con enlaces frescos por 7 días. Además, el botón "Ver mi pedido" de su correo siempre regenera enlaces vigentes.</p>
+
+  <h3>"¿Cómo destaco un producto en el inicio?"</h3>
+  <p>Panel → <strong>Productos</strong> → editá el producto → activá <strong>Destacado</strong>. Los físicos destacados aparecen en Pleno Market.</p>
+
+  <h3>"Se está agotando un suplemento"</h3>
+  <p>Panel → <strong>Productos</strong> → editá el producto → actualizá el stock de la variante. El Dashboard te avisa con "Stock crítico".</p>
+
+  <h3>"¿Dónde veo cuánto vendí este mes?"</h3>
+  <p>En el <strong>Dashboard</strong>: cambiá el período (7 / 30 / 90 días) arriba a la derecha.</p>
+
+  <h3>"Quiero pausar un producto sin borrarlo"</h3>
+  <p>Editalo y desactivá <strong>Activo</strong>. Desaparece del sitio pero conserva su historial; podés reactivarlo cuando quieras.</p>
+</section>
+
+<footer>
+  <p>Manual de usuario · <strong>nutrigabrielare.com</strong> · Generado con capturas reales del sistema en producción.</p>
+  <p>Soporte técnico: <a href="mailto:bryanquezadap@gmail.com">bryanquezadap@gmail.com</a></p>
+</footer>
+
+</div>
+</body>
+</html>
