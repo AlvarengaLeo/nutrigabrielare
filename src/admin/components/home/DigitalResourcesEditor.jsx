@@ -1,39 +1,18 @@
 import React, { useState } from 'react';
 import { Check, AlertCircle } from 'lucide-react';
-import SingleImageUploader from './SingleImageUploader';
-import { updateHomeSection, uploadHomeImage, deleteHomeImage } from '../../../services/homeContentService';
+import { updateHomeSection } from '../../../services/homeContentService';
 
-export default function NutriHeroEditor({ data, onSaved }) {
+export default function DigitalResourcesEditor({ data, onSaved }) {
   const [form, setForm] = useState({
-    titleLine1: data?.titleLine1 ?? 'Recursos y consultas',
-    titleHighlight: data?.titleHighlight ?? 'para tu camino.',
-    subtitle: data?.subtitle ?? 'Ebooks, guías y consultas 1:1 con enfoque holístico. Descargables al instante y acompañamiento real cuando lo necesitás.',
-    image: data?.image ?? '',
+    eyebrow: data?.eyebrow ?? 'APRENDE CON GABRIELA',
+    titleLine1: data?.titleLine1 ?? 'Recursos que puedes',
+    titleLine2: data?.titleLine2 ?? 'usar hoy.',
+    subtitle: data?.subtitle ?? 'Ebooks, guías y cursos diseñados por Gabriela. Cómpralos de una vez y úsalos ¡siempre!',
   });
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(null);
 
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
-
-  async function handleImageUpload(file) {
-    try {
-      const url = await uploadHomeImage(file, 'vitrinas', 'nutri-hero');
-      set('image', url);
-      setToast({ type: 'success', msg: 'Foto subida. No olvides guardar.' });
-      setTimeout(() => setToast(null), 3000);
-    } catch (err) {
-      setToast({ type: 'error', msg: err?.message || 'Error al subir la foto' });
-      setTimeout(() => setToast(null), 4000);
-      throw err;
-    }
-  }
-
-  async function handleImageDelete() {
-    try {
-      if (form.image) await deleteHomeImage(form.image);
-    } catch { /* ignore */ }
-    set('image', '');
-  }
 
   async function handleSave(e) {
     e.preventDefault();
@@ -43,9 +22,9 @@ export default function NutriHeroEditor({ data, onSaved }) {
     }
     setSaving(true);
     try {
-      const updated = await updateHomeSection('nutri_hero', form);
-      onSaved?.(updated.nutri_hero);
-      setToast({ type: 'success', msg: 'Hero de Nutrigabrielare guardado correctamente' });
+      const updated = await updateHomeSection('digital_resources', form);
+      onSaved?.(updated.digital_resources);
+      setToast({ type: 'success', msg: 'Recursos guardado correctamente' });
     } catch (err) {
       setToast({ type: 'error', msg: err.message || 'Error al guardar' });
     } finally {
@@ -56,7 +35,9 @@ export default function NutriHeroEditor({ data, onSaved }) {
 
   return (
     <form onSubmit={handleSave} className="space-y-6">
-      <p className="font-body text-xs text-primary/40">Estos textos aparecen en el hero de /nutrigabrielare.</p>
+      <p className="font-body text-xs text-primary/40">
+        Es el bloque "Recursos" del inicio (los ebooks/cursos que aparecen debajo de la barra de casos de éxito).
+      </p>
 
       {toast && (
         <div className={`flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-body ${
@@ -67,13 +48,24 @@ export default function NutriHeroEditor({ data, onSaved }) {
         </div>
       )}
 
+      <div>
+        <label className="block font-heading font-semibold text-sm text-primary mb-1.5">
+          Etiqueta <span className="text-accent font-normal">(mayúsculas, arriba del título)</span>
+        </label>
+        <input
+          type="text" value={form.eyebrow} onChange={(e) => set('eyebrow', e.target.value)}
+          className="w-full px-4 py-2.5 border border-primary/10 rounded-xl font-body text-sm focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/20"
+          placeholder="APRENDE CON GABRIELA"
+        />
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block font-heading font-semibold text-sm text-primary mb-1.5">Título línea 1</label>
           <input
             type="text" value={form.titleLine1} onChange={(e) => set('titleLine1', e.target.value)}
             className="w-full px-4 py-2.5 border border-primary/10 rounded-xl font-body text-sm focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/20"
-            placeholder="Recursos y consultas" required
+            placeholder="Recursos que puedes" required
           />
         </div>
         <div>
@@ -81,9 +73,9 @@ export default function NutriHeroEditor({ data, onSaved }) {
             Título destacado <span className="text-accent font-normal">(itálica rosa)</span>
           </label>
           <input
-            type="text" value={form.titleHighlight} onChange={(e) => set('titleHighlight', e.target.value)}
+            type="text" value={form.titleLine2} onChange={(e) => set('titleLine2', e.target.value)}
             className="w-full px-4 py-2.5 border border-primary/10 rounded-xl font-body text-sm focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/20"
-            placeholder="para tu camino."
+            placeholder="usar hoy."
           />
         </div>
       </div>
@@ -94,17 +86,9 @@ export default function NutriHeroEditor({ data, onSaved }) {
           value={form.subtitle} onChange={(e) => set('subtitle', e.target.value)}
           rows={3}
           className="w-full px-4 py-2.5 border border-primary/10 rounded-xl font-body text-sm focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/20 resize-none"
-          placeholder="Ebooks, guías y consultas 1:1 con enfoque holístico."
+          placeholder="Ebooks, guías y cursos diseñados por Gabriela."
         />
       </div>
-
-      <SingleImageUploader
-        label="Foto de la vitrina (opcional)"
-        value={form.image}
-        onUpload={handleImageUpload}
-        onDelete={handleImageDelete}
-        hint="Tu foto aparece a la derecha del hero. Si la dejás vacía, se muestra el producto destacado. PNG recomendado, máx 2MB."
-      />
 
       <button
         type="submit" disabled={saving}
@@ -118,7 +102,7 @@ export default function NutriHeroEditor({ data, onSaved }) {
         ) : (
           <>
             <Check size={16} />
-            Guardar Hero Nutrigabrielare
+            Guardar Recursos
           </>
         )}
       </button>

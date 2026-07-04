@@ -1,4 +1,6 @@
 import React, { useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowRight } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useHomeContent } from '../context/HomeContentContext';
@@ -46,7 +48,7 @@ export default function Testimonials() {
     <section
       ref={sectionRef}
       aria-labelledby="testimonios-heading"
-      className="relative w-full overflow-hidden bg-gradient-to-b from-nutri-rose-mist via-white to-white py-24 md:py-32"
+      className="relative w-full overflow-hidden bg-gradient-to-b from-nutri-rose-mist via-white to-white py-16 md:py-24"
     >
       {/* Soft decorative glows */}
       <div
@@ -93,6 +95,19 @@ export default function Testimonials() {
             />
           ))}
         </div>
+
+        {/* CTA — arranca el proceso llevando a los recursos/ebooks */}
+        {d.ctaLabel && d.ctaTo && (
+          <div className="testi-header mt-12 flex justify-center md:mt-16">
+            <Link
+              to={d.ctaTo}
+              className="group inline-flex items-center gap-2 rounded-full bg-accent px-8 py-4 font-heading text-sm font-bold text-white shadow-lg shadow-accent/20 transition-all hover:scale-[1.03] hover:bg-accent/90"
+            >
+              {d.ctaLabel}
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+            </Link>
+          </div>
+        )}
       </div>
     </section>
   );

@@ -57,9 +57,16 @@ export const DEFAULT_HOME = {
   featured: {
     titleLine1: 'Pleno',
     titleLine2: 'Market.',
+    subtitle: 'Seleccionados por Gabriela para tu bienestar',
     ctaLabel: 'Ver todo',
     ctaTo: '/pleno',
     productLimit: 5,
+  },
+  digital_resources: {
+    eyebrow: 'APRENDE CON GABRIELA',
+    titleLine1: 'Recursos que puedes',
+    titleLine2: 'usar hoy.',
+    subtitle: 'Ebooks, guías y cursos diseñados por Gabriela. Cómpralos de una vez y úsalos ¡siempre!',
   },
   testimonials: {
     badge: 'Testimonios',
@@ -68,6 +75,8 @@ export const DEFAULT_HOME = {
     titleLine2: 'que recuperaron su',
     titleHighlight2: 'Equilibrio',
     subtitle: 'Acompañamiento cercano, sin dietas extremas. Esto es lo que viven quienes confían su salud hormonal, metabólica y digestiva a este proceso.',
+    ctaLabel: 'Quiero empezar mi proceso',
+    ctaTo: '/nutrigabrielare?categoria=digital#nutri-catalogo',
     items: [
       {
         name: 'Andrea Martínez',
@@ -117,11 +126,13 @@ export const DEFAULT_HOME = {
     titleLine1: 'Bienestar en su forma',
     titleLine2: 'más plena.',
     subtitle: 'Productos digitales, suplementos seleccionados y consultas con acompañamiento real. Una sola tienda para tu bienestar integral.',
+    image: '', // foto fija de la vitrina; vacío = usa el producto destacado
   },
   nutri_hero: {
     titleLine1: 'Recursos y consultas',
     titleHighlight: 'para tu camino.',
     subtitle: 'Ebooks, guías y consultas 1:1 con enfoque holístico. Descargables al instante y acompañamiento real cuando lo necesitás.',
+    image: '', // foto fija de la vitrina; vacío = usa el producto destacado
   },
   fluir_content: {
     heroTitle: 'Un espacio para fluir',
@@ -142,7 +153,7 @@ const HomeContentContext = createContext(null);
 // Stale-while-revalidate: la última fila conocida de home_content se cachea en
 // localStorage para que las visitas siguientes rendericen el contenido real al
 // instante (sin flash de los textos default) mientras se refresca en silencio.
-const CACHE_KEY = 'nutri-home-content:v1';
+const CACHE_KEY = 'nutri-home-content:v2';
 
 function mergeRow(data) {
   return {
@@ -150,6 +161,7 @@ function mergeRow(data) {
     philosophy: { ...DEFAULT_HOME.philosophy, ...(data.philosophy || {}) },
     why_choose_us: { ...DEFAULT_HOME.why_choose_us, ...(data.why_choose_us || {}) },
     featured: { ...DEFAULT_HOME.featured, ...(data.featured || {}) },
+    digital_resources: { ...DEFAULT_HOME.digital_resources, ...(data.digital_resources || {}) },
     testimonials: { ...DEFAULT_HOME.testimonials, ...(data.testimonials || {}) },
     pleno_hero: { ...DEFAULT_HOME.pleno_hero, ...(data.pleno_hero || {}) },
     nutri_hero: { ...DEFAULT_HOME.nutri_hero, ...(data.nutri_hero || {}) },

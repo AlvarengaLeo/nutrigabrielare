@@ -24,6 +24,7 @@ export default function ProductCarousel({
   eyebrow,
   titleLine1,
   titleLine2,
+  subtitle,
   products = [],
   ctaLabel,
   ctaTo,
@@ -106,7 +107,7 @@ export default function ProductCarousel({
   if (!products.length) return null;
 
   return (
-    <section id={id} ref={sectionRef} className={`py-20 md:py-24 ${bg} relative w-full overflow-hidden`}>
+    <section id={id} ref={sectionRef} className={`py-14 md:py-20 ${bg} relative w-full overflow-hidden`}>
       <div className="container mx-auto px-6 max-w-7xl">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10 md:mb-14">
@@ -126,6 +127,11 @@ export default function ProductCarousel({
                   </>
                 )}
               </h2>
+            )}
+            {subtitle && (
+              <p className="carousel-el font-body text-base md:text-lg text-primary/60 mt-4 max-w-xl leading-relaxed">
+                {subtitle}
+              </p>
             )}
           </div>
 

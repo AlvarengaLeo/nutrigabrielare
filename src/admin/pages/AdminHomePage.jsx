@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { Home, Sparkles, Heart, Shield, ShoppingBag, MessageCircleHeart, ExternalLink, Clock, Leaf, BookOpen, Flower2 } from 'lucide-react';
+import { Home, Sparkles, Heart, Shield, ShoppingBag, MessageCircleHeart, ExternalLink, Clock, Leaf, BookOpen, Flower2, GraduationCap } from 'lucide-react';
 import AdminLayout from '../components/AdminLayout';
 import { getHomeContent } from '../../services/homeContentService';
 import { DEFAULT_HOME } from '../../context/HomeContentContext';
@@ -8,6 +8,7 @@ import HeroEditor from '../components/home/HeroEditor';
 import PhilosophyEditor from '../components/home/PhilosophyEditor';
 import WhyChooseUsEditor from '../components/home/WhyChooseUsEditor';
 import FeaturedEditor from '../components/home/FeaturedEditor';
+import DigitalResourcesEditor from '../components/home/DigitalResourcesEditor';
 import TestimonialsEditor from '../components/home/TestimonialsEditor';
 import PlenoHeroEditor from '../components/home/PlenoHeroEditor';
 import NutriHeroEditor from '../components/home/NutriHeroEditor';
@@ -16,9 +17,10 @@ import FluirContentEditor from '../components/home/FluirContentEditor';
 const TABS = [
   { id: 'hero', label: 'Hero', icon: Sparkles },
   { id: 'philosophy', label: 'Filosofía', icon: Heart },
-  { id: 'why_choose_us', label: 'Diferenciador', icon: Shield },
+  { id: 'digital_resources', label: 'Recursos', icon: GraduationCap },
   { id: 'featured', label: 'Pleno Market', icon: ShoppingBag },
   { id: 'testimonials', label: 'Testimonios', icon: MessageCircleHeart },
+  { id: 'why_choose_us', label: 'Diferenciador', icon: Shield },
   { id: 'pleno_hero', label: 'Pleno', icon: Leaf },
   { id: 'nutri_hero', label: 'Nutrigabrielare', icon: BookOpen },
   { id: 'fluir_content', label: 'Fluir Femenino', icon: Flower2 },
@@ -40,6 +42,7 @@ export default function AdminHomePage() {
             philosophy: { ...DEFAULT_HOME.philosophy, ...(data.philosophy || {}) },
             why_choose_us: { ...DEFAULT_HOME.why_choose_us, ...(data.why_choose_us || {}) },
             featured: { ...DEFAULT_HOME.featured, ...(data.featured || {}) },
+            digital_resources: { ...DEFAULT_HOME.digital_resources, ...(data.digital_resources || {}) },
             testimonials: { ...DEFAULT_HOME.testimonials, ...(data.testimonials || {}) },
             pleno_hero: { ...DEFAULT_HOME.pleno_hero, ...(data.pleno_hero || {}) },
             nutri_hero: { ...DEFAULT_HOME.nutri_hero, ...(data.nutri_hero || {}) },
@@ -95,6 +98,8 @@ export default function AdminHomePage() {
         return <WhyChooseUsEditor data={content.why_choose_us} onSaved={(d) => handleSectionSaved('why_choose_us', d)} />;
       case 'featured':
         return <FeaturedEditor data={content.featured} onSaved={(d) => handleSectionSaved('featured', d)} />;
+      case 'digital_resources':
+        return <DigitalResourcesEditor data={content.digital_resources} onSaved={(d) => handleSectionSaved('digital_resources', d)} />;
       case 'testimonials':
         return <TestimonialsEditor data={content.testimonials} onSaved={(d) => handleSectionSaved('testimonials', d)} />;
       case 'pleno_hero':

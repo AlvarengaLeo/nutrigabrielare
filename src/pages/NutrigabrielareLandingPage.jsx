@@ -46,7 +46,10 @@ function NutrigabrielareLandingContent() {
     return () => ctx.revert();
   }, [loading]);
 
-  const featuredImage = featured?.images?.[0] ?? null;
+  // Foto fija de la vitrina (CMS) tiene prioridad; si no hay, cae al producto destacado.
+  const heroPhoto = cfg.image?.trim() || null;
+  const featuredImage = heroPhoto || featured?.images?.[0] || null;
+  const isPhoto = Boolean(heroPhoto);
 
   return (
     <div className="bg-background text-primary">
@@ -76,6 +79,23 @@ function NutrigabrielareLandingContent() {
 
           <div className="relative hidden xl:grid place-items-center min-h-[480px] overflow-hidden">
             {!loading && (featuredImage ? (
+              isPhoto ? (
+                <div className="nutri-hero-el relative grid place-items-center">
+                  <div
+                    className="absolute -inset-12 rounded-full blur-3xl opacity-60"
+                    style={{
+                      background:
+                        'radial-gradient(closest-side, rgba(238,118,153,0.35), transparent 70%)',
+                    }}
+                  />
+                  <img
+                    src={featuredImage}
+                    alt="Gabriela Retana"
+                    className="relative max-h-[520px] w-auto object-contain object-bottom drop-shadow-[0_60px_120px_rgba(0,0,0,0.18)]"
+                    loading="eager"
+                  />
+                </div>
+              ) : (
               <Link
                 to={featured ? `/producto/${featured.slug}` : '#'}
                 className="nutri-hero-el group relative grid place-items-center"
@@ -95,6 +115,7 @@ function NutrigabrielareLandingContent() {
                   loading="lazy"
                 />
               </Link>
+              )
             ) : (
               <div
                 className="nutri-hero-el rounded-full opacity-40"

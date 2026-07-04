@@ -24,7 +24,7 @@ export async function getHomeContent() {
 
 /**
  * Update a single section of the home content.
- * @param {'hero'|'philosophy'|'why_choose_us'|'featured'|'testimonials'|'pleno_hero'|'nutri_hero'|'fluir_content'} sectionName
+ * @param {'hero'|'philosophy'|'why_choose_us'|'featured'|'digital_resources'|'testimonials'|'pleno_hero'|'nutri_hero'|'fluir_content'} sectionName
  * @param {object} sectionData — the JSONB payload for that section
  */
 export async function updateHomeSection(sectionName, sectionData) {
