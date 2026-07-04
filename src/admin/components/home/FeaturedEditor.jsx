@@ -6,6 +6,7 @@ export default function FeaturedEditor({ data, onSaved }) {
   const [form, setForm] = useState({
     titleLine1: data?.titleLine1 ?? 'Pleno',
     titleLine2: data?.titleLine2 ?? 'Market.',
+    subtitle: data?.subtitle ?? 'Seleccionados por Gabriela para tu bienestar',
     ctaLabel: data?.ctaLabel ?? 'Ver todo',
     ctaTo: data?.ctaTo ?? '/pleno',
     productLimit: data?.productLimit ?? 5,
@@ -70,6 +71,15 @@ export default function FeaturedEditor({ data, onSaved }) {
             placeholder="Market."
           />
         </div>
+      </div>
+
+      <div>
+        <label className="block font-heading font-semibold text-sm text-primary mb-1.5">Subtítulo</label>
+        <input
+          type="text" value={form.subtitle} onChange={(e) => set('subtitle', e.target.value)}
+          className="w-full px-4 py-2.5 border border-primary/10 rounded-xl font-body text-sm focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/20"
+          placeholder="Seleccionados por Gabriela para tu bienestar"
+        />
       </div>
 
       <div className="border border-primary/5 rounded-2xl p-5 bg-primary/[0.02]">

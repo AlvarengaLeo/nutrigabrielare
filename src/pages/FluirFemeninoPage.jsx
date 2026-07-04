@@ -207,7 +207,7 @@ function FluirFemeninoContent() {
                   </svg>
                 </a>
                 <a
-                  href={`https://wa.me/50376284719?text=${encodeURIComponent('¡Hola! Quiero unirme al círculo de Fluir Femenino ✨')}`}
+                  href="https://www.instagram.com/channel/AbYKe3xZIc4Us7cy/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full border border-fluir-ink/20 text-fluir-ink text-sm font-heading font-bold hover:bg-fluir-ink hover:text-white transition-colors"
@@ -372,7 +372,7 @@ function FluirFemeninoContent() {
                   </p>
                 </div>
                 <a
-                  href={`https://wa.me/50376284719?text=${encodeURIComponent('¡Hola! Quiero unirme al círculo de Fluir Femenino ✨')}`}
+                  href="https://www.instagram.com/channel/AbYKe3xZIc4Us7cy/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center bg-fluir-magenta text-white px-6 py-3.5 rounded-full font-heading font-bold text-sm hover:bg-fluir-rose hover:text-fluir-ink transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-fluir-ink whitespace-nowrap min-h-[44px]"
@@ -602,7 +602,7 @@ function FluirFemeninoContent() {
               </p>
               <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <a
-                  href={`https://wa.me/50376284719?text=${encodeURIComponent('¡Hola! Quiero unirme al círculo de Fluir Femenino ✨')}`}
+                  href="https://www.instagram.com/channel/AbYKe3xZIc4Us7cy/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center justify-center bg-fluir-magenta text-white px-7 sm:px-8 py-3.5 sm:py-4 rounded-full font-heading font-bold text-sm hover:bg-fluir-rose hover:text-fluir-ink transition-colors duration-200 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-fluir-ink min-h-[44px]"

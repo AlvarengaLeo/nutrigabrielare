@@ -64,7 +64,7 @@ export default function WhyChooseUs() {
   }, []);
 
   return (
-    <section ref={containerRef} className="py-24 md:py-32 bg-white relative w-full overflow-hidden">
+    <section ref={containerRef} className="py-16 md:py-24 bg-white relative w-full overflow-hidden">
       {/* Background soft shadow gradient on the left like the mockup */}
       <div className="absolute top-0 left-0 w-1/3 h-full bg-gradient-to-r from-health/5 to-transparent pointer-events-none" />
 
@@ -103,10 +103,10 @@ export default function WhyChooseUs() {
           {/* Right Floating Plate */}
           <div className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 w-[45%] h-full z-10 pointer-events-auto items-center justify-end translate-x-[20%]">
             <div className="plate-wrapper w-full max-w-[800px]">
-              <img 
+              <img
                 src={d.plateImage || '/media/healthy_plate.png'}
-                alt="Platillo Saludable" 
-                className="wcu-plate w-full h-auto object-contain mix-blend-multiply contrast-[1.15] brightness-110 hover:scale-105 hover:-rotate-6 transition-all duration-[1s] ease-out cursor-pointer"
+                alt="Gabriela Retana"
+                className="wcu-plate w-full h-auto object-contain hover:scale-105 hover:-rotate-6 transition-all duration-[1s] ease-out cursor-pointer"
               />
             </div>
           </div>

@@ -1,17 +1,39 @@
 import React, { useState } from 'react';
 import { Check, AlertCircle } from 'lucide-react';
-import { updateHomeSection } from '../../../services/homeContentService';
+import SingleImageUploader from './SingleImageUploader';
+import { updateHomeSection, uploadHomeImage, deleteHomeImage } from '../../../services/homeContentService';
 
 export default function PlenoHeroEditor({ data, onSaved }) {
   const [form, setForm] = useState({
     titleLine1: data?.titleLine1 ?? 'Bienestar en su forma',
     titleLine2: data?.titleLine2 ?? 'más plena.',
     subtitle: data?.subtitle ?? 'Productos digitales, suplementos seleccionados y consultas con acompañamiento real. Una sola tienda para tu bienestar integral.',
+    image: data?.image ?? '',
   });
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState(null);
 
   const set = (key, val) => setForm((f) => ({ ...f, [key]: val }));
+
+  async function handleImageUpload(file) {
+    try {
+      const url = await uploadHomeImage(file, 'vitrinas', 'pleno-hero');
+      set('image', url);
+      setToast({ type: 'success', msg: 'Foto subida. No olvides guardar.' });
+      setTimeout(() => setToast(null), 3000);
+    } catch (err) {
+      setToast({ type: 'error', msg: err?.message || 'Error al subir la foto' });
+      setTimeout(() => setToast(null), 4000);
+      throw err;
+    }
+  }
+
+  async function handleImageDelete() {
+    try {
+      if (form.image) await deleteHomeImage(form.image);
+    } catch { /* ignore */ }
+    set('image', '');
+  }
 
   async function handleSave(e) {
     e.preventDefault();
@@ -75,6 +97,14 @@ export default function PlenoHeroEditor({ data, onSaved }) {
           placeholder="Productos digitales, suplementos seleccionados y consultas con acompañamiento real."
         />
       </div>
+
+      <SingleImageUploader
+        label="Foto de la vitrina (opcional)"
+        value={form.image}
+        onUpload={handleImageUpload}
+        onDelete={handleImageDelete}
+        hint="Tu foto aparece a la derecha del hero verde. Si la dejás vacía, se muestra el producto destacado. PNG recomendado, máx 2MB."
+      />
 
       <button
         type="submit" disabled={saving}

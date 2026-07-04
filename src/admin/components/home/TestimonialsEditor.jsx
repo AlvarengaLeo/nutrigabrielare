@@ -17,6 +17,8 @@ export default function TestimonialsEditor({ data, onSaved }) {
     titleLine2: data?.titleLine2 ?? '',
     titleHighlight2: data?.titleHighlight2 ?? '',
     subtitle: data?.subtitle ?? '',
+    ctaLabel: data?.ctaLabel ?? 'Quiero empezar mi proceso',
+    ctaTo: data?.ctaTo ?? '/nutrigabrielare?categoria=digital#nutri-catalogo',
     items: Array.isArray(data?.items) && data.items.length ? data.items.map((i) => ({ ...EMPTY_ITEM, ...i })) : [{ ...EMPTY_ITEM }],
   });
   const [saving, setSaving] = useState(false);
@@ -195,6 +197,26 @@ export default function TestimonialsEditor({ data, onSaved }) {
         <textarea value={form.subtitle} onChange={(e) => set('subtitle', e.target.value)} rows={2}
           className="w-full px-4 py-2.5 border border-primary/10 rounded-xl font-body text-sm focus:outline-none focus:border-accent/50 focus:ring-1 focus:ring-accent/20 resize-none"
           placeholder="Texto breve debajo del título" />
+      </div>
+
+      {/* Botón CTA (debajo de las tarjetas) */}
+      <div className="border border-primary/5 rounded-2xl p-5 bg-primary/[0.02]">
+        <h4 className="font-heading font-bold text-sm text-primary mb-1">Botón de llamado a la acción</h4>
+        <p className="font-body text-xs text-primary/40 mb-4">Aparece debajo de los testimonios. Dejá el texto vacío si no querés mostrarlo.</p>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block font-body text-xs text-primary/50 mb-1">Texto del botón</label>
+            <input type="text" value={form.ctaLabel} onChange={(e) => set('ctaLabel', e.target.value)}
+              className="w-full px-3 py-2 border border-primary/10 rounded-lg font-body text-sm focus:outline-none focus:border-accent/50"
+              placeholder="Quiero empezar mi proceso" />
+          </div>
+          <div>
+            <label className="block font-body text-xs text-primary/50 mb-1">Enlace destino</label>
+            <input type="text" value={form.ctaTo} onChange={(e) => set('ctaTo', e.target.value)}
+              className="w-full px-3 py-2 border border-primary/10 rounded-lg font-body text-sm focus:outline-none focus:border-accent/50"
+              placeholder="/nutrigabrielare?categoria=digital#nutri-catalogo" />
+          </div>
+        </div>
       </div>
 
       {/* Items */}

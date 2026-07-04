@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
 import { useStoreTheme } from '../context/StoreThemeContext';
 
 const TIENDA_LINKS = [
@@ -27,7 +26,6 @@ const THEMES = {
       'Suplementos, productos digitales y consultas con acompañamiento real. Una sola tienda para tu bienestar integral. Hecho en El Salvador.',
     sectionTitle: 'Pleno',
     copyright: 'Pleno',
-    submitTextColor: '#16693d',
   },
   nutri: {
     bg: '#D6517B',
@@ -40,7 +38,6 @@ const THEMES = {
       'Recursos digitales y consultas 1:1 para acompañar tu bienestar — descargables al instante y acompañamiento real cuando lo necesitás.',
     sectionTitle: 'Nutrigabrielare',
     copyright: 'Nutrigabrielare',
-    submitTextColor: '#EE7699',
   },
 };
 
@@ -79,7 +76,7 @@ export default function PlenoFooter() {
       style={{ backgroundColor: t.bg }}
     >
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1fr_1.2fr] gap-10 lg:gap-12 pb-9 border-b border-white/15">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-[1.8fr_1fr_1fr] gap-10 lg:gap-12 pb-9 border-b border-white/15">
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2.5 mb-4">
@@ -120,34 +117,6 @@ export default function PlenoFooter() {
                 <FooterLink to="https://www.instagram.com/nutrigabrielare/">Instagram</FooterLink>
               </li>
             </ul>
-          </div>
-
-          {/* Newsletter */}
-          <div>
-            <h4 className="font-drama text-base font-medium tracking-[0.04em] text-white m-0 mb-3.5">
-              Recibe nuestras novedades
-            </h4>
-            <p className="opacity-75 m-0 mb-3 leading-[1.6]">
-              Una nota mensual sobre rituales, recetas y bienestar.
-            </p>
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="flex items-center gap-2"
-            >
-              <input
-                type="email"
-                placeholder="Tu correo"
-                className="flex-1 px-4 py-2.5 rounded-full bg-transparent border border-white/30 text-white text-[12px] placeholder:text-white/55 focus:outline-none focus:border-white/60 transition-colors"
-              />
-              <button
-                type="submit"
-                aria-label="Suscribirme"
-                style={{ color: t.submitTextColor }}
-                className="grid place-items-center w-10 h-10 rounded-full bg-white hover:bg-white/90 transition-colors shrink-0"
-              >
-                <ArrowRight size={16} strokeWidth={2} />
-              </button>
-            </form>
           </div>
         </div>
 

@@ -37,6 +37,7 @@ export default function Featured() {
       id="destacados"
       titleLine1={cfg.titleLine1}
       titleLine2={cfg.titleLine2}
+      subtitle={cfg.subtitle}
       products={products}
       ctaLabel={cfg.ctaLabel}
       ctaTo={cfg.ctaTo}

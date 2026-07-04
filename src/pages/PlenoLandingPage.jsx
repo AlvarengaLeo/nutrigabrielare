@@ -45,7 +45,10 @@ function PlenoLandingContent() {
     return () => ctx.revert();
   }, [loading]);
 
-  const featuredImage = featured?.images?.[0] ?? null;
+  // Foto fija de la vitrina (CMS) tiene prioridad; si no hay, cae al producto destacado.
+  const heroPhoto = cfg.image?.trim() || null;
+  const featuredImage = heroPhoto || featured?.images?.[0] || null;
+  const isPhoto = Boolean(heroPhoto);
 
   return (
     <div className="bg-pleno-paper text-pleno-ink">
@@ -89,6 +92,23 @@ function PlenoLandingContent() {
           {/* Producto destacado — solo en xl+ */}
           <div className="relative hidden xl:grid place-items-center min-h-[480px] overflow-hidden">
             {!loading && (featuredImage ? (
+              isPhoto ? (
+                <div className="pleno-hero-el relative grid place-items-center">
+                  <div
+                    className="absolute -inset-12 rounded-full blur-3xl opacity-50"
+                    style={{
+                      background:
+                        'radial-gradient(closest-side, rgba(255,255,255,0.18), transparent 70%)',
+                    }}
+                  />
+                  <img
+                    src={featuredImage}
+                    alt="Gabriela Retana"
+                    className="relative max-h-[520px] w-auto object-contain object-bottom drop-shadow-[0_60px_120px_rgba(0,0,0,0.45)]"
+                    loading="eager"
+                  />
+                </div>
+              ) : (
               <Link
                 to={featured ? `/producto/${featured.slug}` : '#'}
                 className="pleno-hero-el group relative grid place-items-center"
@@ -108,6 +128,7 @@ function PlenoLandingContent() {
                   loading="lazy"
                 />
               </Link>
+              )
             ) : (
               <div
                 className="pleno-hero-el rounded-full opacity-30"

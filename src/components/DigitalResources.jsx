@@ -83,7 +83,7 @@ export default function DigitalResources({
   const bgClass = bg === 'cream' ? 'bg-[#FAF7F2]' : 'bg-white';
 
   return (
-    <section ref={sectionRef} className={`py-20 md:py-28 ${bgClass} relative w-full`}>
+    <section ref={sectionRef} className={`py-14 md:py-20 ${bgClass} relative w-full`}>
       <div className="container mx-auto px-6 max-w-7xl">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12 md:mb-16">
