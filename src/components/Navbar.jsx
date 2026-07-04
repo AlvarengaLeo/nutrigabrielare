@@ -6,9 +6,9 @@ import { useStoreTheme } from '../context/StoreThemeContext';
 
 const navItems = [
   { label: 'Inicio', path: '/' },
-  { label: 'Nutrigabrielare', path: '/nutrigabrielare' },
-  { label: 'Pleno', path: '/pleno' },
-  { label: 'Fluir Femenino', path: '/fluir-femenino' },
+  { label: 'Recursos y Ebooks', path: '/nutrigabrielare' },
+  { label: 'Market Pleno', path: '/pleno' },
+  { label: 'Comunidad', path: '/fluir-femenino' },
 ];
 
 const PLENO_NAV_BG = '#16693d';
@@ -130,7 +130,7 @@ export default function Navbar() {
       </div>
 
       {/* Center Nav Items */}
-      <div className="hidden md:flex items-center justify-center space-x-8 text-sm font-medium">
+      <div className="hidden md:flex items-center justify-center space-x-5 lg:space-x-7 text-[13px] lg:text-sm font-medium whitespace-nowrap">
         {navItems.map((item) => (
           <Link
             key={item.label}

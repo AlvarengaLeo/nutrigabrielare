@@ -90,7 +90,7 @@ export default function Philosophy() {
   const imgs = d.decorativeImages || {};
 
   return (
-    <section ref={sectionRef} className="py-24 md:py-32 bg-white relative z-10 w-full overflow-hidden">
+    <section ref={sectionRef} className="py-16 md:py-20 bg-white relative z-10 w-full overflow-hidden">
       <div className="container mx-auto px-6 max-w-5xl relative">
         {/* Left Side (slide in from left) */}
         <div className="blobs-left absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[2%] -left-[2%] md:top-[5%] md:left-[2%] xl:left-[5%] opacity-100">
@@ -116,7 +116,7 @@ export default function Philosophy() {
             </div>
         </div>
 
-        <div className="flex flex-col items-center text-center relative z-20 mb-20">
+        <div className="flex flex-col items-center text-center relative z-20 mb-12">
           <h2 className="philo-element font-drama italic text-4xl md:text-5xl lg:text-[4rem] text-primary tracking-tight leading-[1.1] mb-12 max-w-3xl mx-auto">
             {d.titleLine1} <span className="font-heading not-italic">{d.titleHighlight1}</span><br/>
             {d.titleLine2} <span className="font-heading not-italic text-accent">{d.titleHighlight2}</span>

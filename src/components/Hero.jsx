@@ -76,7 +76,7 @@ export default function Hero() {
   };
 
   return (
-    <section ref={containerRef} className="relative lg:min-h-[95vh] w-full flex flex-col lg:flex-row overflow-hidden bg-[#F2FCFA]">
+    <section ref={containerRef} className="relative lg:min-h-[86vh] w-full flex flex-col lg:flex-row overflow-hidden bg-[#F2FCFA]">
 
       {/* Decorative Fluir Femenino icons */}
       {d.showDecorativeLeaves !== false && (
@@ -89,19 +89,19 @@ export default function Hero() {
       )}
 
       {/* Content (Left) */}
-      <div className="w-full lg:w-[60%] pt-40 lg:pt-48 pb-0 lg:pb-24 px-6 md:px-12 lg:pl-[10%] flex items-center relative z-10">
+      <div className="w-full lg:w-[58%] pt-32 lg:pt-36 pb-0 lg:pb-16 px-6 md:px-12 lg:pl-[10%] flex items-center relative z-10">
         
         {!loading && (
         <div className="max-w-2xl xl:max-w-3xl relative z-20">
 
           {/* Headline */}
-          <h1 className="hero-element font-drama italic text-5xl md:text-6xl lg:text-[5rem] xl:text-[5.5rem] tracking-tight text-primary leading-[1.05] mb-6">
+          <h1 className="hero-element font-drama italic text-[2.75rem] md:text-5xl lg:text-[4rem] xl:text-[4.5rem] tracking-tight text-primary leading-[1.05] mb-5">
             {d.titleLine1} <span className="font-heading not-italic">{d.titleHighlight1}</span>{' '}
             {d.titleLine2} <span className="font-heading not-italic text-accent">{d.titleHighlight2}</span>
           </h1>
-          
+
           {/* Subheadline */}
-          <p className="hero-element font-body text-lg md:text-xl text-primary/70 mb-10 max-w-lg leading-relaxed">
+          <p className="hero-element font-body text-base md:text-lg text-primary/70 mb-8 max-w-lg leading-relaxed">
             {d.subtitle}
           </p>
           
@@ -145,7 +145,7 @@ export default function Hero() {
 
       {/* Main Image Layering */}
       {!loading && (
-        <div className="hidden lg:flex absolute bottom-0 right-0 lg:w-[45%] lg:h-[95%] pointer-events-none z-20 justify-end items-end lg:pr-24 xl:pr-48">
+        <div className="hidden lg:flex absolute bottom-0 right-0 lg:w-[46%] lg:h-[84%] pointer-events-none z-20 justify-end items-end lg:pr-16 xl:pr-28">
           <div className="model-wrapper relative w-full h-full flex justify-end items-end origin-bottom">
             <img
               src={d.heroImage || '/media/hero_model.png'}

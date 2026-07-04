@@ -4,7 +4,7 @@ import Hero from '../components/Hero';
 import Philosophy from '../components/Philosophy';
 import WhyChooseUs from '../components/WhyChooseUs';
 import Featured from '../components/Featured';
-import DigitalResources from '../components/DigitalResources';
+import HomeResources from '../components/HomeResources';
 import Testimonials from '../components/Testimonials';
 
 export default function HomePage() {
@@ -12,10 +12,10 @@ export default function HomePage() {
     <HomeContentProvider>
       <Hero />
       <Philosophy />
+      <HomeResources />
       <Featured />
-      <DigitalResources />
-      <WhyChooseUs />
       <Testimonials />
+      <WhyChooseUs />
       {/* White extender that fills the footer's rounded-corner cut so it
           matches the white bg of the section above instead of revealing
           the page background. */}
