@@ -1,9 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import { Home, Sparkles, Heart, Shield, ShoppingBag, MessageCircleHeart, ExternalLink, Clock, Leaf, BookOpen, Flower2, GraduationCap } from 'lucide-react';
+import { Home, Sparkles, Heart, Shield, ShoppingBag, MessageCircleHeart, ExternalLink, Clock, Leaf, BookOpen, Flower2, GraduationCap, ListOrdered } from 'lucide-react';
 import AdminLayout from '../components/AdminLayout';
 import { getHomeContent } from '../../services/homeContentService';
 import { DEFAULT_HOME } from '../../context/HomeContentContext';
+import { reconcileSectionOrder } from '../../config/homeSections';
+import SectionOrderEditor from '../components/home/SectionOrderEditor';
 import HeroEditor from '../components/home/HeroEditor';
 import PhilosophyEditor from '../components/home/PhilosophyEditor';
 import WhyChooseUsEditor from '../components/home/WhyChooseUsEditor';
@@ -15,6 +17,7 @@ import NutriHeroEditor from '../components/home/NutriHeroEditor';
 import FluirContentEditor from '../components/home/FluirContentEditor';
 
 const TABS = [
+  { id: 'section_order', label: 'Orden', icon: ListOrdered },
   { id: 'hero', label: 'Hero', icon: Sparkles },
   { id: 'philosophy', label: 'Filosofía', icon: Heart },
   { id: 'digital_resources', label: 'Recursos', icon: GraduationCap },
@@ -47,6 +50,7 @@ export default function AdminHomePage() {
             pleno_hero: { ...DEFAULT_HOME.pleno_hero, ...(data.pleno_hero || {}) },
             nutri_hero: { ...DEFAULT_HOME.nutri_hero, ...(data.nutri_hero || {}) },
             fluir_content: { ...DEFAULT_HOME.fluir_content, ...(data.fluir_content || {}) },
+            section_order: reconcileSectionOrder(data.section_order),
           });
           setUpdatedAt(data.updated_at);
         } else {
@@ -90,6 +94,8 @@ export default function AdminHomePage() {
   const renderEditor = () => {
     if (!content) return null;
     switch (activeTab) {
+      case 'section_order':
+        return <SectionOrderEditor data={content.section_order} onSaved={(d) => handleSectionSaved('section_order', d)} />;
       case 'hero':
         return <HeroEditor data={content.hero} onSaved={(d) => handleSectionSaved('hero', d)} />;
       case 'philosophy':
