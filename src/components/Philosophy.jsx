@@ -80,14 +80,24 @@ export default function Philosophy() {
     <section ref={sectionRef} className="py-16 md:py-20 bg-white relative z-10 w-full overflow-hidden">
       <div className="container mx-auto px-6 max-w-5xl relative">
         {/* Left Side (slide in from left) */}
-        <div className="blobs-left absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[20%] -left-[14%] md:top-[30%] md:-left-[15%] xl:-left-[20%] opacity-100">
+        <div className="blobs-left absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[2%] -left-[2%] md:top-[5%] md:left-[2%] xl:left-[5%] opacity-100">
+            <div className="floating-blob">
+                <img src={imgs.topLeft || '/media/ora.png'} alt="Decorativo" className="w-20 h-20 md:w-40 md:h-40 object-contain md:hover:scale-110 md:hover:-rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
+            </div>
+        </div>
+        <div className="blobs-left absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[40%] -left-[14%] md:top-[35%] md:-left-[15%] xl:-left-[20%] opacity-100">
             <div className="floating-blob">
                 <img src={imgs.midLeft || '/media/pom.png'} alt="Decorativo" className="w-32 h-32 md:w-64 md:h-64 object-contain md:hover:scale-110 md:hover:-rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
             </div>
         </div>
 
         {/* Right Side (slide in from right) */}
-        <div className="blobs-right absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[30%] -right-[14%] md:top-[35%] md:-right-[15%] xl:-right-[20%] opacity-100">
+        <div className="blobs-right absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[15%] -right-[2%] md:top-[15%] md:right-[8%] xl:right-[12%] opacity-100">
+            <div className="floating-blob">
+                <img src={imgs.topRight || '/media/tom.png'} alt="Decorativo" className="w-16 h-16 md:w-28 md:h-28 object-contain md:hover:scale-110 md:hover:rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
+            </div>
+        </div>
+        <div className="blobs-right absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[48%] -right-[14%] md:top-[45%] md:-right-[15%] xl:-right-[20%] opacity-100">
             <div className="floating-blob">
                 <img src={imgs.midRight || '/media/broc.png'} alt="Decorativo" className="w-40 h-40 md:w-80 md:h-80 object-contain md:hover:scale-110 md:hover:rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
             </div>
