@@ -37,18 +37,6 @@ export default function Philosophy() {
         ease: 'power3.out'
       });
 
-      // Stats block reveal
-      gsap.from('.stats-container', {
-        scrollTrigger: {
-          trigger: '.stats-container',
-          start: 'top 85%',
-        },
-        scale: 0.95,
-        opacity: 0,
-        y: 30,
-        duration: 1,
-        ease: 'power3.out'
-      });
       // Reveal items from left
       gsap.from('.blobs-left', {
         scrollTrigger: { trigger: sectionRef.current, start: 'top 80%' },
@@ -86,38 +74,27 @@ export default function Philosophy() {
     label: v.label,
   }));
 
-  const stats = d.stats || [];
   const imgs = d.decorativeImages || {};
 
   return (
     <section ref={sectionRef} className="py-16 md:py-20 bg-white relative z-10 w-full overflow-hidden">
       <div className="container mx-auto px-6 max-w-5xl relative">
         {/* Left Side (slide in from left) */}
-        <div className="blobs-left absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[2%] -left-[2%] md:top-[5%] md:left-[2%] xl:left-[5%] opacity-100">
-            <div className="floating-blob">
-                <img src={imgs.topLeft || '/media/ora.png'} alt="Decorativo" className="w-20 h-20 md:w-40 md:h-40 object-contain md:hover:scale-110 md:hover:-rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
-            </div>
-        </div>
-        <div className="blobs-left absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[40%] -left-[14%] md:top-[35%] md:-left-[15%] xl:-left-[20%] opacity-100">
+        <div className="blobs-left absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[20%] -left-[14%] md:top-[30%] md:-left-[15%] xl:-left-[20%] opacity-100">
             <div className="floating-blob">
                 <img src={imgs.midLeft || '/media/pom.png'} alt="Decorativo" className="w-32 h-32 md:w-64 md:h-64 object-contain md:hover:scale-110 md:hover:-rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
             </div>
         </div>
 
         {/* Right Side (slide in from right) */}
-        <div className="blobs-right absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[15%] -right-[2%] md:top-[15%] md:right-[8%] xl:right-[12%] opacity-100">
-            <div className="floating-blob">
-                <img src={imgs.topRight || '/media/tom.png'} alt="Decorativo" className="w-16 h-16 md:w-28 md:h-28 object-contain md:hover:scale-110 md:hover:rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
-            </div>
-        </div>
-        <div className="blobs-right absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[48%] -right-[14%] md:top-[45%] md:-right-[15%] xl:-right-[20%] opacity-100">
+        <div className="blobs-right absolute w-fit h-fit z-0 md:z-10 pointer-events-none md:pointer-events-auto top-[30%] -right-[14%] md:top-[35%] md:-right-[15%] xl:-right-[20%] opacity-100">
             <div className="floating-blob">
                 <img src={imgs.midRight || '/media/broc.png'} alt="Decorativo" className="w-40 h-40 md:w-80 md:h-80 object-contain md:hover:scale-110 md:hover:rotate-12 transition-all duration-1000 ease-out cursor-pointer" />
             </div>
         </div>
 
-        <div className="flex flex-col items-center text-center relative z-20 mb-12">
-          <h2 className="philo-element font-drama italic text-4xl md:text-5xl lg:text-[4rem] text-primary tracking-tight leading-[1.1] mb-12 max-w-3xl mx-auto">
+        <div className="flex flex-col items-center text-center relative z-20">
+          <h2 className="philo-element font-drama italic text-4xl md:text-5xl lg:text-[4rem] text-primary tracking-tight leading-[1.1] mb-10 max-w-3xl mx-auto">
             {d.titleLine1} <span className="font-heading not-italic">{d.titleHighlight1}</span><br/>
             {d.titleLine2} <span className="font-heading not-italic text-accent">{d.titleHighlight2}</span>
           </h2>
@@ -138,22 +115,6 @@ export default function Philosophy() {
           <p className="philo-element font-body text-lg md:text-xl text-primary/70 max-w-2xl leading-relaxed">
             {d.description}
           </p>
-        </div>
-
-        {/* Stats Section */}
-        <div className="stats-container w-full max-w-4xl mx-auto border-2 border-dashed border-primary/20 rounded-[2rem] bg-background md:bg-health/5 p-8 md:p-12 relative z-20 hover:border-primary/40 transition-colors duration-500">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((stat, idx) => (
-              <div key={idx} className="flex flex-col items-center text-center">
-                <div className="font-drama text-4xl md:text-5xl italic font-bold text-primary mb-2">
-                  {stat.value}
-                </div>
-                <div className="font-body text-sm font-semibold text-primary/60 tracking-wider">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
 
       </div>
