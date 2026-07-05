@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { getHomeContent } from '../services/homeContentService';
+import { DEFAULT_SECTION_ORDER, reconcileSectionOrder } from '../config/homeSections';
 
 // ─── Default content (current hardcoded values as fallback) ──────────────────
 
@@ -68,6 +69,7 @@ export const DEFAULT_HOME = {
     titleLine2: 'usar hoy.',
     subtitle: 'Ebooks, guías y cursos diseñados por Gabriela. Cómpralos de una vez y úsalos ¡siempre!',
   },
+  section_order: DEFAULT_SECTION_ORDER,
   testimonials: {
     badge: 'Testimonios',
     titleLine1: 'Historias reales de',
@@ -153,7 +155,7 @@ const HomeContentContext = createContext(null);
 // Stale-while-revalidate: la última fila conocida de home_content se cachea en
 // localStorage para que las visitas siguientes rendericen el contenido real al
 // instante (sin flash de los textos default) mientras se refresca en silencio.
-const CACHE_KEY = 'nutri-home-content:v2';
+const CACHE_KEY = 'nutri-home-content:v3';
 
 function mergeRow(data) {
   return {
@@ -166,6 +168,7 @@ function mergeRow(data) {
     pleno_hero: { ...DEFAULT_HOME.pleno_hero, ...(data.pleno_hero || {}) },
     nutri_hero: { ...DEFAULT_HOME.nutri_hero, ...(data.nutri_hero || {}) },
     fluir_content: { ...DEFAULT_HOME.fluir_content, ...(data.fluir_content || {}) },
+    section_order: reconcileSectionOrder(data.section_order),
   };
 }
 
